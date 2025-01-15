@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:connect/features/on_boarding/view/screens/topic_selection_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -21,7 +22,7 @@ class _SplashScreenState extends State<SplashScreen> {
       () {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const SelectionTopic()),
+          MaterialPageRoute(builder: (context) => const TopicSelectionScreen()),
         );
       },
     );
