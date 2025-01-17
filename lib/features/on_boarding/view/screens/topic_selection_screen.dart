@@ -1,3 +1,6 @@
+
+import 'package:connect/features/auth/view/screens/login_screens/login_screen.dart';
+import 'package:connect/features/auth/view/screens/signup_type_screen.dart';
 import 'package:connect/features/splash_screen/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -5,7 +8,6 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/constants/text_style.dart';
 import '../../../../core/widgets/buttons/submit_button.dart';
 import '../../view_model/topic_viewmodel.dart';
-
 
 class TopicSelectionScreen extends ConsumerWidget {
   const TopicSelectionScreen({Key? key}) : super(key: key);
@@ -33,7 +35,7 @@ class TopicSelectionScreen extends ConsumerWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const SplashScreen(),
+                        builder: (context) => LoginScreen(),
                       ),
                     );
                   },
@@ -95,15 +97,16 @@ class TopicSelectionScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 40),
             SubmitButton(
-              submit: isAnyTopicSelected,
-              onsubmit: () {
+              isEnabled: isAnyTopicSelected, // Ensures the button is enabled only when a topic is selected
+              onSubmit: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const SplashScreen(),
+                    builder: (context) =>SignupTypeScreen(),
                   ),
                 );
               },
+              buttonText: 'Continue', // Optional: you can set this to customize the button text
             ),
           ],
         ),

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "292613607082",
+    "project_id": "connect-cb2aa",
+    "storage_bucket": "connect-cb2aa.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:292613607082:android:f719d40083d1c74c8f8ad3",
+        "android_client_info": {
+          "package_name": "com.connect.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCgSTCydk_EtV4czH17ujlrRQQz2qhMQOQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
