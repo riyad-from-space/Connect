@@ -1,10 +1,9 @@
 
-import 'package:connect/features/auth/view/screens/login_screens/login_screen.dart';
-import 'package:connect/features/auth/view/screens/signup_type_screen.dart';
-import 'package:connect/features/splash_screen/splash_screen.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../../../core/constants/text_style.dart';
 import '../../../../core/widgets/buttons/submit_button.dart';
 import '../../view_model/topic_viewmodel.dart';
@@ -12,10 +11,13 @@ import '../../view_model/topic_viewmodel.dart';
 class TopicSelectionScreen extends ConsumerWidget {
   const TopicSelectionScreen({Key? key}) : super(key: key);
 
+
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final topics = ref.watch(topicViewModelProvider);
     final isAnyTopicSelected = topics.any((topic) => topic.isSelected);
+
 
     return Scaffold(
       body: Padding(
@@ -32,12 +34,7 @@ class TopicSelectionScreen extends ConsumerWidget {
                 ),
                 InkWell(
                   onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => LoginScreen(),
-                      ),
-                    );
+                    Navigator.pushReplacementNamed(context, '/login');
                   },
                   child: Text(
                     'Log In',
@@ -79,6 +76,7 @@ class TopicSelectionScreen extends ConsumerWidget {
                     ),
                     child: InkWell(
                       onTap: () {
+
                         ref.read(topicViewModelProvider.notifier).toggleTopicSelection(index);
                       },
                       child: Text(
@@ -97,14 +95,25 @@ class TopicSelectionScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 40),
             SubmitButton(
-              isEnabled: isAnyTopicSelected, // Ensures the button is enabled only when a topic is selected
-              onSubmit: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) =>SignupTypeScreen(),
-                  ),
-                );
+              isEnabled: isAnyTopicSelected,
+
+              // Ensures the button is enabled only when a topic is selected
+              onSubmit: () async {
+
+                if (isAnyTopicSelected) {
+
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Please select at least one topic!'),
+                      backgroundColor: Colors.orange,
+                    ),
+                  );
+
+                }
+
+                SharedPreferences prefs = await SharedPreferences.getInstance();
+                prefs.setBool('seenOnboarding', true);
+                Navigator.pushReplacementNamed(context, '/signup-type');
               },
               buttonText: 'Continue', // Optional: you can set this to customize the button text
             ),

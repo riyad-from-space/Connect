@@ -1,9 +1,7 @@
 import 'dart:async';
-
-import 'package:connect/features/on_boarding/view/screens/topic_selection_screen.dart';
+import 'package:connect/features/auth/widgets/auth_checker.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-
 import '../../core/constants/text_style.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -22,7 +20,7 @@ class _SplashScreenState extends State<SplashScreen> {
       () {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const TopicSelectionScreen()),
+          MaterialPageRoute(builder: (context) => AuthChecker()),
         );
       },
     );
@@ -53,7 +51,7 @@ class _SplashScreenState extends State<SplashScreen> {
             child: Padding(
               padding: const EdgeInsets.only(bottom: 20),
               child: Text(
-                'Powered by UI HUT',
+                'Powered by Riyad',
                 style: KTextStyle.subtitle1.copyWith(
                   fontFamily: GoogleFonts.openSans().fontFamily,
                   fontWeight: FontWeight.w400,

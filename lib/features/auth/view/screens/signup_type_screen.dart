@@ -7,7 +7,6 @@ import '../../../../core/constants/colours.dart';
 import '../../../../core/constants/text_style.dart';
 import '../../widgets/signup_type_button.dart';
 
-
 class SignupTypeScreen extends StatefulWidget {
   const SignupTypeScreen({Key? key}) : super(key: key);
 
@@ -42,12 +41,7 @@ class _SignupTypeScreenState extends State<SignupTypeScreen> {
             const SizedBox(height: 30),
             InkWell(
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) =>
-                         SignupScreen()),
-                  );
+                  Navigator.pushReplacementNamed(context, '/signup');
                 },
                 child: SignupTypeButton(
                   background_color: KColor.black,
@@ -61,12 +55,7 @@ class _SignupTypeScreenState extends State<SignupTypeScreen> {
             const SizedBox(height: 30),
             InkWell(
               onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) =>
-                          SignupScreen()), // Use EmailUsername instead of EmailUSername
-                );
+                Navigator.pushReplacementNamed(context, '/signup');
               },
               child: SignupTypeButton(
                 background_color: KColor.backgrounforGoogle,
@@ -79,12 +68,7 @@ class _SignupTypeScreenState extends State<SignupTypeScreen> {
             const SizedBox(height: 30),
             InkWell(
               onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) =>
-                          SignupScreen()), // Use EmailUsername instead of EmailUSername
-                );
+                Navigator.pushReplacementNamed(context, '/user-info');
               },
               child: SignupTypeButton(
                 background_color: KColor.backgrounforEmail,
@@ -112,18 +96,13 @@ class _SignupTypeScreenState extends State<SignupTypeScreen> {
                 const SizedBox(width: 2),
                 InkWell(
                   onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => SignupScreen()),
-                    );
+                    Navigator.pushReplacementNamed(context, '/login');
                   },
                   child: InkWell(
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(
-                            builder: (context) => LoginScreen()),
+                        MaterialPageRoute(builder: (context) => LoginScreen()),
                       );
                     },
                     child: Text(

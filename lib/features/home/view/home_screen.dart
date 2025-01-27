@@ -72,9 +72,19 @@ class _HomeState extends State<Home> {
                       shape: BoxShape.circle,
                       border: Border.all(color: const Color(0xffD6E5EA)),
                     ),
-                    child: const Icon(
-                      Icons.notifications_none_rounded,
-                      color: Color(0xff7E7F88),
+                    child: InkWell(
+                      onTap: (){
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Under Development!'),
+                            backgroundColor: Colors.orange,
+                          ),
+                        );
+                      },
+                      child: const Icon(
+                        Icons.notifications_none_rounded,
+                        color: Color(0xff7E7F88),
+                      ),
                     ),
                   ),
                 ],
@@ -155,12 +165,22 @@ class _HomeState extends State<Home> {
                           ),
                           Row(
                             children: [
-                              Text(
-                                'Sort By',
-                                style: KTextStyle.subtitle1.copyWith(
-                                  fontWeight: FontWeight.w600,
-                                  color: const Color(0xff17131B),
-                                  fontSize: 14,
+                              InkWell(
+                                onTap: (){
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text('Under Development!'),
+                                      backgroundColor: Colors.orange,
+                                    ),
+                                  );
+                                },
+                                child: Text(
+                                  'Sort By',
+                                  style: KTextStyle.subtitle1.copyWith(
+                                    fontWeight: FontWeight.w600,
+                                    color: const Color(0xff17131B),
+                                    fontSize: 14,
+                                  ),
                                 ),
                               ),
                               const SizedBox(
@@ -171,6 +191,7 @@ class _HomeState extends State<Home> {
                           )
                         ],
                       ),
+                      SizedBox(height: 10,),
                       FutureBuilder<List<Properties>>(
                         future: contentsFuture,
                         builder: (context, snapshot) {
@@ -393,24 +414,56 @@ class _HomeState extends State<Home> {
               label: 'Home',
             ),
             BottomNavigationBarItem(
-              icon: Image.asset(
-                'assets/images/8666693_search_icon.png',
-                width: 25,
-                height: 25,
-                color: const Color(0xff5C5D67),
+              icon: InkWell(
+                onTap: (){
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Under Development!'),
+                      backgroundColor: Colors.orange,
+                    ),
+                  );
+                },
+                child: Ink(
+                  child: Image.asset(
+                    'assets/images/8666693_search_icon.png',
+                    width: 25,
+                    height: 25,
+                    color: const Color(0xff5C5D67),
+                  ),
+                ),
               ),
               label: 'Search',
             ),
-            const BottomNavigationBarItem(
-              icon: CircleAvatar(
-                backgroundColor: Color(0xffA76FFF),
-                radius: 30,
-                child: Icon(Icons.add, size: 40, color: Colors.white),
+            BottomNavigationBarItem(
+              icon: InkWell(
+                onTap: (){
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Under Development!'),
+                      backgroundColor: Colors.orange,
+                    ),
+                  );
+                },
+                child: const CircleAvatar(
+                  backgroundColor: Color(0xffA76FFF),
+                  radius: 30,
+                  child: Icon(Icons.add, size: 40, color: Colors.white),
+                ),
               ),
               label: 'Floating',
             ),
             BottomNavigationBarItem(
-              icon: Image.asset('assets/images/Bookmark.png'),
+              icon: InkWell(
+                  onTap: (){
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Under Development!'),
+                        backgroundColor: Colors.orange,
+                      ),
+                    );
+
+                  },
+                  child: Image.asset('assets/images/Bookmark.png')),
               label: 'Save',
             ),
             BottomNavigationBarItem(

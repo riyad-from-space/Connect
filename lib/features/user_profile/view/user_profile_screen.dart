@@ -41,7 +41,7 @@ class _MyProfileState extends State<MyProfile> {
             child: const CustomBackButton()
         ),
         title:  Text(
-          '@adom007',
+          'riyad007',
           style: KTextStyle.subtitle1.copyWith(
             fontWeight: FontWeight.w600,
             color: const Color(0xff17131B),
@@ -66,65 +66,96 @@ class _MyProfileState extends State<MyProfile> {
                     fit: BoxFit.cover,
                   ),
                 ),
-                Column(
-                  children: [
-                    Text(
-                      '20k',
-                      style: KTextStyle.subtitle1.copyWith(
-                        fontWeight: FontWeight.w600,
-                        color: const Color(0xff17131B),
-                        fontSize: 16,
+                InkWell(
+                  onTap: (){
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Under Development!'),
+                        backgroundColor: Colors.orange,
                       ),
-                    ),
-                    Text(
-                      'Followers',
-                      style: KTextStyle.subtitle1.copyWith(
-                        fontWeight: FontWeight.w400,
-                        color: const Color(0xff5C5D67),
-                        fontSize: 14,
+                    );
+                  },
+                  child: Column(
+                    children: [
+                      Text(
+                        '20k',
+                        style: KTextStyle.subtitle1.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: const Color(0xff17131B),
+                          fontSize: 16,
+                        ),
                       ),
-                    ),
-                  ],
+                      Text(
+                        'Followers',
+                        style: KTextStyle.subtitle1.copyWith(
+                          fontWeight: FontWeight.w400,
+                          color: const Color(0xff5C5D67),
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-                Column(
-                  children: [
-                    Text(
-                      '10',
-                      style: KTextStyle.subtitle1.copyWith(
-                        fontWeight: FontWeight.w600,
-                        color: const Color(0xff17131B),
-                        fontSize: 16,
+                InkWell(
+                  onTap: (){
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Under Development!'),
+                        backgroundColor: Colors.orange,
                       ),
-                    ),
-                    Text(
-                      'Following',
-                      style: KTextStyle.subtitle1.copyWith(
-                        fontWeight: FontWeight.w400,
-                        color: const Color(0xff5C5D67),
-                        fontSize: 14,
+                    );
+                  },
+                  child: Column(
+                    children: [
+                      Text(
+                        '10',
+                        style: KTextStyle.subtitle1.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: const Color(0xff17131B),
+                          fontSize: 16,
+                        ),
                       ),
-                    ),
-                  ],
+                      Text(
+                        'Following',
+                        style: KTextStyle.subtitle1.copyWith(
+                          fontWeight: FontWeight.w400,
+                          color: const Color(0xff5C5D67),
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-                Column(
-                  children: [
-                    Text(
-                      '03',
-                      style: KTextStyle.subtitle1.copyWith(
-                        fontWeight: FontWeight.w600,
-                        color: const Color(0xff17131B),
-                        fontSize: 16,
+                InkWell(
+                  onTap: (){
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Under Development!'),
+                        backgroundColor: Colors.orange,
                       ),
-                    ),
-                    Text(
-                      'posts',
-                      style: KTextStyle.subtitle1.copyWith(
-                        fontWeight: FontWeight.w400,
-                        color: const Color(0xff5C5D67),
-                        fontSize: 14,
+                    );
+                  },
+
+                  child: Column(
+                    children: [
+                      Text(
+                        '03',
+                        style: KTextStyle.subtitle1.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: const Color(0xff17131B),
+                          fontSize: 16,
+                        ),
                       ),
-                    ),
-                  ],
+                      Text(
+                        'posts',
+                        style: KTextStyle.subtitle1.copyWith(
+                          fontWeight: FontWeight.w400,
+                          color: const Color(0xff5C5D67),
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -153,20 +184,30 @@ class _MyProfileState extends State<MyProfile> {
                   ],
                 ),
                 const SizedBox(width: 100),
-                Container(
-                  height: 34,
-                  width: 104,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(40),
-                    color:  const Color(0xffE1E1E1),
-                  ),
-                  child:  Center(
-                    child: Text(
-                      'Edit',
-                      style: KTextStyle.subtitle1.copyWith(
-                        fontWeight: FontWeight.w600,
-                        color: const Color(0xff17131B),
-                        fontSize: 14,
+                InkWell(
+                  onTap: (){
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Under Development!'),
+                        backgroundColor: Colors.orange,
+                      ),
+                    );
+                  },
+                  child: Container(
+                    height: 34,
+                    width: 104,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(40),
+                      color:  const Color(0xffE1E1E1),
+                    ),
+                    child:  Center(
+                      child: Text(
+                        'Edit',
+                        style: KTextStyle.subtitle1.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: const Color(0xff17131B),
+                          fontSize: 14,
+                        ),
                       ),
                     ),
                   ),

@@ -1,3 +1,4 @@
+import 'package:connect/features/blogs/view/comments_bottomsheet.dart';
 import 'package:flutter/material.dart';
 
 
@@ -23,7 +24,7 @@ class _PostDetailsState extends State<PostDetails> {
         image: 'assets/images/Ellipse 4.png'),
   ];
   bool isImageToggled = false;
-  int heartCount = 20;
+  int heartCount = 0;
 
   void _toggleHeart() {
     setState(() {
@@ -46,7 +47,7 @@ class _PostDetailsState extends State<PostDetails> {
 
       isScrollControlled: true,
       builder: (BuildContext context) {
-        return const Home();
+        return const CustomBottomSheet();
       },
     );
   }
@@ -389,11 +390,29 @@ class _PostDetailsState extends State<PostDetails> {
             label: 'comment',
           ),
           BottomNavigationBarItem(
-            icon: Image.asset('assets/images/Share.png'),
+            icon: InkWell(
+                onTap: (){
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Under Development!'),
+                      backgroundColor: Colors.orange,
+                    ),
+                  );
+                },
+                child: Image.asset('assets/images/Share.png')),
             label: 'share',
           ),
           BottomNavigationBarItem(
-            icon: Image.asset('assets/images/Bookmark.png'),
+            icon: InkWell(
+                onTap: (){
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Under Development!'),
+                      backgroundColor: Colors.orange,
+                    ),
+                  );
+                },
+                child: Image.asset('assets/images/Bookmark.png')),
             label: 'save',
           ),
         ],

@@ -102,12 +102,7 @@ class _VerificationCodeScreenState extends State<VerificationCodeScreen> {
               child: SubmitButton(
                 isEnabled: true,
                 onSubmit: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ResetPasswordScreen(),
-                    ),
-                  );
+                  Navigator.pushReplacementNamed(context, '/home');
                 },
               ),
             ),

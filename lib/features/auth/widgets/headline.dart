@@ -8,7 +8,7 @@ class Headline extends StatelessWidget {
   Headline({super.key, required this.headline, required this.sub_headline});
 
   String headline;
-  String sub_headline;
+  String? sub_headline;
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +16,7 @@ class Headline extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(headline, style: KTextStyle.headline),
-        Text(sub_headline,style:KTextStyle.sub_headline ,)
+        Text(sub_headline!,style:KTextStyle.sub_headline ,)
 
       ],
     );

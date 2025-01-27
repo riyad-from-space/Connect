@@ -1,5 +1,6 @@
 import 'package:connect/core/widgets/buttons/submit_button.dart';
 import 'package:connect/features/auth/view/screens/verification_code_screen.dart';
+import 'package:connect/features/home/view/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -34,26 +35,21 @@ class LoginScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        leading: InkWell(
-          onTap: () {
-            Navigator.pop(context);
-          },
-          child: const CustomBackButton(),
-        ),
+        automaticallyImplyLeading: false,
+        // leading: InkWell(
+        //   onTap: () {
+        //     Navigator.pop(context);
+        //   },
+        //   child: const CustomBackButton(),
+        // ),
         actions: [
           InkWell(
             onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const VerificationCodeScreen(),
-                ),
-              );
+              Navigator.pushReplacementNamed(context, '/verification-code');
             },
             child: Padding(
               padding: const EdgeInsets.all(16),
               child: Text(
-
                 'Forgotten Password?',
                 style: KTextStyle.subtitle1.copyWith(
                   fontFamily: GoogleFonts.openSans().fontFamily,
@@ -83,6 +79,20 @@ class LoginScreen extends ConsumerWidget {
                       height: 60,
                       width: 60,
                       alignment: Alignment.center,
+                    ),
+                    SizedBox(
+                      width: 10,
+                    ),
+                    Column(
+                      children: [
+                        SizedBox(
+                          height: 12,
+                        ),
+                        Headline(
+                          headline: 'Login',
+                          sub_headline: '',
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -155,11 +165,13 @@ class LoginScreen extends ConsumerWidget {
                                 );
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
-                                content: Text('Sign Up Successful!'),
+                                content: Text('Login Successful!'),
                                 backgroundColor: Colors.green,
                               ),
                             );
-                            Navigator.pushNamed(context, '/notes');
+
+                            // Navigate to Sign Up page
+                            Navigator.pushReplacementNamed(context, '/home');
                           } catch (e) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
@@ -189,12 +201,7 @@ class LoginScreen extends ConsumerWidget {
                         TextButton(
                           onPressed: () {
                             // Navigate to Sign Up page
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => SignupScreen(),
-                              ),
-                            );
+                            Navigator.pushReplacementNamed(context, '/signup');
                           },
                           child: const Text(
                             'Signup',
