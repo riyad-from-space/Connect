@@ -19,10 +19,15 @@ class AuthViewModel{
 
   //Signout method
 
-  Future<void> logout ()async{
-    await _authRepository.logout();
-  }
-}
+  Future<void> logout() async {
+    try {
+      // Call the repository's logout method
+      await _authRepository.logout();
+    } catch (e) {
+      // Handle errors if the logout process fails
+      throw Exception('Logout failed: ${e.toString()}');
+    }
+  }}
 
 final authViewModelProvider = Provider((ref){
   final authRepository = ref.watch(authRepositoryProvider);

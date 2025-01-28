@@ -45,7 +45,7 @@ class LoginScreen extends ConsumerWidget {
         actions: [
           InkWell(
             onTap: () {
-              Navigator.pushReplacementNamed(context, '/verification-code');
+              Navigator.pushNamed(context, '/verification-code');
             },
             child: Padding(
               padding: const EdgeInsets.all(16),

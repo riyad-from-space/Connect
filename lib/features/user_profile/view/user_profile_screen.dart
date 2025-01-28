@@ -1,8 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-
 
 import '../../../core/constants/text_style.dart';
 import '../../../core/widgets/buttons/back_button.dart';
+import '../../auth/view/screens/login_screens/login_screen.dart';
 
 class MyProfile extends StatefulWidget {
   const MyProfile({Key? key}) : super(key: key);
@@ -38,9 +39,8 @@ class _MyProfileState extends State<MyProfile> {
             onTap: () {
               Navigator.pop(context);
             },
-            child: const CustomBackButton()
-        ),
-        title:  Text(
+            child: const CustomBackButton()),
+        title: Text(
           'riyad007',
           style: KTextStyle.subtitle1.copyWith(
             fontWeight: FontWeight.w600,
@@ -51,7 +51,7 @@ class _MyProfileState extends State<MyProfile> {
         centerTitle: true,
       ),
       body: Padding(
-        padding:  const EdgeInsets.only(right: 20, left: 20, top: 30),
+        padding: const EdgeInsets.only(right: 20, left: 20, top: 30),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -67,7 +67,7 @@ class _MyProfileState extends State<MyProfile> {
                   ),
                 ),
                 InkWell(
-                  onTap: (){
+                  onTap: () {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
                         content: Text('Under Development!'),
@@ -97,7 +97,7 @@ class _MyProfileState extends State<MyProfile> {
                   ),
                 ),
                 InkWell(
-                  onTap: (){
+                  onTap: () {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
                         content: Text('Under Development!'),
@@ -127,7 +127,7 @@ class _MyProfileState extends State<MyProfile> {
                   ),
                 ),
                 InkWell(
-                  onTap: (){
+                  onTap: () {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
                         content: Text('Under Development!'),
@@ -135,7 +135,6 @@ class _MyProfileState extends State<MyProfile> {
                       ),
                     );
                   },
-
                   child: Column(
                     children: [
                       Text(
@@ -161,12 +160,13 @@ class _MyProfileState extends State<MyProfile> {
             ),
             const SizedBox(height: 20),
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Adom Shafi',
+                      'Riyad Ahmed',
                       style: KTextStyle.subtitle1.copyWith(
                         fontWeight: FontWeight.w700,
                         color: const Color(0xff17131B),
@@ -183,9 +183,9 @@ class _MyProfileState extends State<MyProfile> {
                     ),
                   ],
                 ),
-                const SizedBox(width: 100),
+                const SizedBox(width: 20),
                 InkWell(
-                  onTap: (){
+                  onTap: () {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
                         content: Text('Under Development!'),
@@ -198,11 +198,50 @@ class _MyProfileState extends State<MyProfile> {
                     width: 104,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(40),
-                      color:  const Color(0xffE1E1E1),
+                      color: const Color(0xffE1E1E1),
                     ),
-                    child:  Center(
+                    child: Center(
                       child: Text(
                         'Edit',
+                        style: KTextStyle.subtitle1.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: const Color(0xff17131B),
+                          fontSize: 14,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+
+                SizedBox(width: 20,),
+                InkWell(
+                  onTap: () async {
+                    await FirebaseAuth.instance.signOut();
+
+                    // Navigate to login screen and remove all previous routes from the stack
+                    Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(builder: (context) => LoginScreen()),
+                          (route) => false, // Removes all previous routes
+                    );
+
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Logged Out!'),
+                        backgroundColor: Colors.orange,
+                      ),
+                    );
+                  },
+                  child: Container(
+                    height: 34,
+                    width: 104,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(40),
+                      color: Colors.red,
+                    ),
+                    child: Center(
+                      child: Text(
+                        'Log out',
                         style: KTextStyle.subtitle1.copyWith(
                           fontWeight: FontWeight.w600,
                           color: const Color(0xff17131B),
@@ -215,7 +254,7 @@ class _MyProfileState extends State<MyProfile> {
               ],
             ),
             const SizedBox(height: 20),
-            Container(height: 1, color:  const Color(0xffEAEAEA)),
+            Container(height: 1, color: const Color(0xffEAEAEA)),
             const SizedBox(height: 20),
             Text(
               'POST FROM ADOM',
@@ -225,28 +264,25 @@ class _MyProfileState extends State<MyProfile> {
                 fontSize: 16,
               ),
             ),
-
             Expanded(
               child: ListView.builder(
                 scrollDirection: Axis.vertical,
                 shrinkWrap: true,
-                physics:  const NeverScrollableScrollPhysics(),
+                physics: const NeverScrollableScrollPhysics(),
                 itemCount: contents.length,
                 itemBuilder: (context, index) {
                   return Dismissible(
                     key: Key(contents[index].name),
                     onDismissed: (direction) {
                       setState(() {
-
                         contents.removeAt(index);
                       });
                     },
                     background: Container(
                         color: Colors.white,
                         alignment: Alignment.centerRight,
-                        padding:  const EdgeInsets.only(right: 20),
-                        child: Image.asset('assets/images/Delete.png')
-                    ),
+                        padding: const EdgeInsets.only(right: 20),
+                        child: Image.asset('assets/images/Delete.png')),
                     child: buildListItem(contents[index]),
                   );
                 },
@@ -277,7 +313,7 @@ class _MyProfileState extends State<MyProfile> {
                 children: [
                   Text(
                     property.name,
-                    style:  KTextStyle.subtitle1.copyWith(
+                    style: KTextStyle.subtitle1.copyWith(
                       fontWeight: FontWeight.w600,
                       color: const Color(0xff17131B),
                       fontSize: 18,
@@ -285,7 +321,7 @@ class _MyProfileState extends State<MyProfile> {
                   ),
                   Text(
                     property.topic,
-                    style:  KTextStyle.subtitle1.copyWith(
+                    style: KTextStyle.subtitle1.copyWith(
                       fontWeight: FontWeight.w600,
                       color: const Color(0xff5C5D67),
                       fontSize: 16,
@@ -304,7 +340,7 @@ class _MyProfileState extends State<MyProfile> {
             ],
           ),
           const SizedBox(height: 20),
-          Container(height: 1, color:  const Color(0xffEAEAEA)),
+          Container(height: 1, color: const Color(0xffEAEAEA)),
           const SizedBox(height: 20),
         ],
       ),
@@ -322,5 +358,4 @@ class UserProperties {
     required this.topic,
     required this.image,
   });
-
 }

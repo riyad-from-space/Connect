@@ -41,7 +41,7 @@ class _SignupTypeScreenState extends State<SignupTypeScreen> {
             const SizedBox(height: 30),
             InkWell(
                 onTap: () {
-                  Navigator.pushReplacementNamed(context, '/signup');
+                  Navigator.pushNamed(context, '/signup');
                 },
                 child: SignupTypeButton(
                   background_color: KColor.black,
@@ -55,7 +55,7 @@ class _SignupTypeScreenState extends State<SignupTypeScreen> {
             const SizedBox(height: 30),
             InkWell(
               onTap: () {
-                Navigator.pushReplacementNamed(context, '/signup');
+                Navigator.pushNamed(context, '/signup');
               },
               child: SignupTypeButton(
                 background_color: KColor.backgrounforGoogle,
@@ -68,7 +68,7 @@ class _SignupTypeScreenState extends State<SignupTypeScreen> {
             const SizedBox(height: 30),
             InkWell(
               onTap: () {
-                Navigator.pushReplacementNamed(context, '/user-info');
+                Navigator.pushNamed(context, '/signup');
               },
               child: SignupTypeButton(
                 background_color: KColor.backgrounforEmail,
@@ -96,7 +96,7 @@ class _SignupTypeScreenState extends State<SignupTypeScreen> {
                 const SizedBox(width: 2),
                 InkWell(
                   onTap: () {
-                    Navigator.pushReplacementNamed(context, '/login');
+                    Navigator.pushNamed(context, '/login');
                   },
                   child: InkWell(
                     onTap: () {

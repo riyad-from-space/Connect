@@ -1,3 +1,4 @@
+import 'package:connect/features/auth/view/screens/sign_screens/signup_screen.dart';
 import 'package:connect/features/auth/view/screens/signup_type_screen.dart';
 import 'package:connect/features/auth/view/screens/user_info_input_screen.dart';
 import 'package:connect/features/auth/view/screens/verification_code_screen.dart';
@@ -15,7 +16,7 @@ class AppRouter {
       case '/auth-checker':
         return MaterialPageRoute(builder: (_) => AuthChecker());
       case '/signup':
-        return MaterialPageRoute(builder: (_) => LoginScreen());
+        return MaterialPageRoute(builder: (_) => SignupScreen());
       case '/login':
         return MaterialPageRoute(builder: (_) => LoginScreen());
       case '/signup-type':
@@ -26,10 +27,7 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => UserInfoInputScreen());
       case '/home':
         return MaterialPageRoute(builder: (_) => Home());
-      case '/home':
-        return MaterialPageRoute(builder: (_) => Home());
-      case '/home':
-        return MaterialPageRoute(builder: (_) => Home());
+
 
 
       default:

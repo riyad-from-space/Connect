@@ -1,5 +1,6 @@
 import 'package:connect/core/widgets/buttons/submit_button.dart';
 import 'package:connect/features/auth/view/screens/sign_screens/signup_screen.dart';
+import 'package:connect/features/home/view/home_screen.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -20,18 +21,18 @@ class ResetPasswordScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // Watch the isFormValidProvider
-    final isFormValid = ref.watch(isFormValidProvider);
-
-    // Function to check if both fields are filled
-    void _updateFormValidity() {
-      final emailFilled = _newPasswordController.text.isNotEmpty;
-      final passwordFilled = _confirmPasswordController.text.isNotEmpty;
-      ref.read(isFormValidProvider.notifier).state = emailFilled && passwordFilled;
-    }
-
-    // Add listeners to the controllers
-    _newPasswordController.addListener(_updateFormValidity);
-    _confirmPasswordController.addListener(_updateFormValidity);
+    // final isFormValid = ref.watch(isFormValidProvider);
+    //
+    // // Function to check if both fields are filled
+    // void _updateFormValidity() {
+    //   final emailFilled = _newPasswordController.text.isNotEmpty;
+    //   final passwordFilled = _confirmPasswordController.text.isNotEmpty;
+    //   ref.read(isFormValidProvider.notifier).state = emailFilled && passwordFilled;
+    // }
+    //
+    // // Add listeners to the controllers
+    // _newPasswordController.addListener(_updateFormValidity);
+    // _confirmPasswordController.addListener(_updateFormValidity);
 
     return Scaffold(
       appBar: AppBar(
@@ -80,21 +81,21 @@ class ResetPasswordScreen extends ConsumerWidget {
                     ),
                     prefixIcon: const Icon(Icons.lock),
                   ),
-                  keyboardType: TextInputType.emailAddress,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Password is required.';
-                    }
-                    final passwordRegex = RegExp(
-                      r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$',
-                    );
-                    if (!passwordRegex.hasMatch(value)) {
-                      return 'Password must include:\n'
-                          '- At least 6 characters\n'
-                          '- Uppercase, lowercase, number, and special character.';
-                    }
-                    return null;
-                  },
+
+                  // validator: (value) {
+                  //   if (value == null || value.isEmpty) {
+                  //     return 'Password is required.';
+                  //   }
+                  //   final passwordRegex = RegExp(
+                  //     r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$',
+                  //   );
+                  //   if (!passwordRegex.hasMatch(value)) {
+                  //     return 'Password must include:\n'
+                  //         '- At least 6 characters\n'
+                  //         '- Uppercase, lowercase, number, and special character.';
+                  //   }
+                  //   return null;
+                  // },
                 ),
                 const SizedBox(height: 20),
                 TextFormField(
@@ -107,58 +108,69 @@ class ResetPasswordScreen extends ConsumerWidget {
                     prefixIcon: const Icon(Icons.lock),
                   ),
                   obscureText: true,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Password is required.';
-                    }
-                    final passwordRegex = RegExp(
-                      r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$',
-                    );
-                    if (!passwordRegex.hasMatch(value)) {
-                      return 'Password must include:\n'
-                          '- At least 6 characters\n'
-                          '- Uppercase, lowercase, number, and special character.';
-                    }
-                    return null;
-                  },
+                  // validator: (value) {
+                  //   if (value == null || value.isEmpty) {
+                  //     return 'Password is required.';
+                  //   }
+                  //   final passwordRegex = RegExp(
+                  //     r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$',
+                  //   );
+                  //   if (!passwordRegex.hasMatch(value)) {
+                  //     return 'Password must include:\n'
+                  //         '- At least 6 characters\n'
+                  //         '- Uppercase, lowercase, number, and special character.';
+                  //   }
+                  //   return null;
+                  // },
                 ),
                 const SizedBox(height: 20),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     SubmitButton(
-                      isEnabled: isFormValid,
-                      onSubmit: () async {
-                        if (_formKey.currentState!.validate()) {
-                          try {
-                            await ref.read(authViewModelProvider).login(
-                              _newPasswordController.text.trim(),
-                              _confirmPasswordController.text.trim(),
-                            );
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Sign Up Successful!'),
-                                backgroundColor: Colors.green,
-                              ),
-                            );
-                            Navigator.pushNamed(context, '/notes');
-                          } catch (e) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text('Error: ${e.toString()}'),
-                                backgroundColor: Colors.red,
-                              ),
-                            );
-                          }
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Please fix the errors in the form.'),
-                              backgroundColor: Colors.orange,
-                            ),
-                          );
-                        }
+                      isEnabled: true,
+                      onSubmit: (){
+                        Navigator.pushAndRemoveUntil(
+                                    context,
+                                    MaterialPageRoute(builder: (context) => Home()),
+                                        (route) => false, // Removes all previous routes
+                                  );
                       },
+                      // onSubmit: () async {
+                      //   if (_formKey.currentState!.validate()) {
+                      //     try {
+                      //       await ref.read(authViewModelProvider).login(
+                      //         _newPasswordController.text.trim(),
+                      //         _confirmPasswordController.text.trim(),
+                      //       );
+                      //       ScaffoldMessenger.of(context).showSnackBar(
+                      //         const SnackBar(
+                      //           content: Text('Sign Up Successful!'),
+                      //           backgroundColor: Colors.green,
+                      //         ),
+                      //       );
+                      //       Navigator.pushAndRemoveUntil(
+                      //         context,
+                      //         MaterialPageRoute(builder: (context) => Home()),
+                      //             (route) => false, // Removes all previous routes
+                      //       );
+                      //     } catch (e) {
+                      //       ScaffoldMessenger.of(context).showSnackBar(
+                      //         SnackBar(
+                      //           content: Text('Error: ${e.toString()}'),
+                      //           backgroundColor: Colors.red,
+                      //         ),
+                      //       );
+                      //     }
+                      //   } else {
+                      //     ScaffoldMessenger.of(context).showSnackBar(
+                      //       const SnackBar(
+                      //         content: Text('Please fix the errors in the form.'),
+                      //         backgroundColor: Colors.orange,
+                      //       ),
+                      //     );
+                      //   }
+                      // },
                     ),
 
                   ],
