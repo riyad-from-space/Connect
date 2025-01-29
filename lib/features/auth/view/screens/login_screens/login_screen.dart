@@ -1,14 +1,11 @@
 import 'package:connect/core/widgets/buttons/submit_button.dart';
-import 'package:connect/features/auth/view/screens/verification_code_screen.dart';
-import 'package:connect/features/home/view/home_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../../core/constants/text_style.dart';
-import '../../../../../core/widgets/buttons/back_button.dart';
 import '../../../view_model/auth_viewmodel.dart';
 import '../../../widgets/headline.dart';
-import '../sign_screens/signup_screen.dart';
 
 final isFormValidProvider = StateProvider<bool>((ref) => false);
 
@@ -155,6 +152,8 @@ class LoginScreen extends ConsumerWidget {
                 Column(
                   children: [
                     SubmitButton(
+                      message: 'Please provide both email and password!',
+
                       isEnabled: isFormValid,
                       onSubmit: () async {
                         if (_formKey.currentState!.validate()) {
@@ -170,8 +169,21 @@ class LoginScreen extends ConsumerWidget {
                               ),
                             );
 
-                            // Navigate to Sign Up page
+                            // Navigate to Home page
                             Navigator.pushReplacementNamed(context, '/home');
+                          } on FirebaseAuthException catch (e) {
+                            String errorMessage = 'An error occurred. Please try again.';
+
+                            if (e.code == 'user-not-found' || e.code == 'wrong-password') {
+                              errorMessage = 'Invalid credential';
+                            }
+
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(errorMessage),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
                           } catch (e) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(

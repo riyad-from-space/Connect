@@ -1,13 +1,7 @@
 import 'package:connect/core/widgets/buttons/submit_button.dart';
-import 'package:connect/features/auth/view/screens/sign_screens/signup_screen.dart';
-import 'package:connect/features/home/view/home_screen.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import '../../../../../core/widgets/buttons/back_button.dart';
-
-import '../../view_model/auth_viewmodel.dart';
 import '../../widgets/headline.dart';
 
 
@@ -38,7 +32,7 @@ class ResetPasswordScreen extends ConsumerWidget {
       appBar: AppBar(
         leading: InkWell(
           onTap: () {
-            Navigator.pop(context);
+            Navigator.pushReplacementNamed(context, '/login');
           },
           child: const CustomBackButton(),
         ),
@@ -51,7 +45,8 @@ class ResetPasswordScreen extends ConsumerWidget {
             key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+
               children: [
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -128,13 +123,15 @@ class ResetPasswordScreen extends ConsumerWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     SubmitButton(
+                      message: '',
                       isEnabled: true,
                       onSubmit: (){
-                        Navigator.pushAndRemoveUntil(
-                                    context,
-                                    MaterialPageRoute(builder: (context) => Home()),
-                                        (route) => false, // Removes all previous routes
-                                  );
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Under Development!'),
+                            backgroundColor: Colors.orange,
+                          ),
+                        );
                       },
                       // onSubmit: () async {
                       //   if (_formKey.currentState!.validate()) {

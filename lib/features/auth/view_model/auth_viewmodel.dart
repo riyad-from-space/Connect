@@ -1,35 +1,35 @@
-import 'package:connect/features/auth/data/repositories/auth_repository.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-final authRepositoryProvider = Provider((ref)=>AuthRepository());
+import '../data/repositories/auth_repository.dart';
 
-class AuthViewModel{
+final authRepositoryProvider = Provider((ref) => AuthRepository());
+
+class AuthViewModel {
   final AuthRepository _authRepository;
   AuthViewModel(this._authRepository);
 
-  //Signup method
-  Future<void> signUp(String email, String password) async {
-    await _authRepository.signUp(email, password);
+  // Signup method - return UserCredential
+  Future<UserCredential> signUp(String email, String password) async {
+    return await _authRepository.signUp(email, password);
   }
 
-  //Login method
-  Future <void> login(String email, String password)async {
-    await _authRepository.login(email,password);
+  // Login method
+  Future<void> login(String email, String password) async {
+    await _authRepository.login(email, password);
   }
 
-  //Signout method
-
+  // Signout method
   Future<void> logout() async {
     try {
-      // Call the repository's logout method
       await _authRepository.logout();
     } catch (e) {
-      // Handle errors if the logout process fails
       throw Exception('Logout failed: ${e.toString()}');
     }
-  }}
+  }
+}
 
-final authViewModelProvider = Provider((ref){
+final authViewModelProvider = Provider((ref) {
   final authRepository = ref.watch(authRepositoryProvider);
   return AuthViewModel(authRepository);
 });

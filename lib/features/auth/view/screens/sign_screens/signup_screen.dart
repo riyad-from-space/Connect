@@ -1,9 +1,8 @@
 import 'package:connect/core/widgets/buttons/submit_button.dart';
-import 'package:connect/features/auth/view/screens/login_screens/login_screen.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../../core/widgets/buttons/back_button.dart';
-import '../../../../home/view/home_screen.dart';
+
 import '../../../view_model/auth_viewmodel.dart';
 import '../../../widgets/headline.dart';
 
@@ -13,7 +12,6 @@ class SignupScreen extends ConsumerWidget {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -53,7 +51,6 @@ class SignupScreen extends ConsumerWidget {
                 children: [
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
-
                     children: [
                       Image.asset(
                         'assets/images/Ellipse 1.png',
@@ -61,15 +58,17 @@ class SignupScreen extends ConsumerWidget {
                         width: 60,
                         alignment: Alignment.center,
                       ),
-                      SizedBox(width: 10,),
+                      SizedBox(
+                        width: 10,
+                      ),
                       Column(
-
-
                         children: [
-                          SizedBox(height: 12,),
+                          SizedBox(
+                            height: 12,
+                          ),
                           Headline(
-                            headline: 'Signup', sub_headline: '',
-
+                            headline: 'Signup',
+                            sub_headline: '',
                           ),
                         ],
                       ),
@@ -131,43 +130,44 @@ class SignupScreen extends ConsumerWidget {
                     },
                   ),
                   const SizedBox(height: 20),
-                                    Column(
+                  Column(
                     children: [
                       SubmitButton(
-                        isEnabled:isFormValid,
-                        onSubmit: () async {
-                          if (_formKey.currentState!.validate()) {
-                            try {
-                              await ref.read(authViewModelProvider).signUp(
-                                _emailController.text.trim(),
-                                _passwordController.text.trim(),
-                              );
+                          message: 'Please provide both email and password!',
+                          isEnabled: isFormValid,
+                          onSubmit: () async {
+                            if (_formKey.currentState!.validate()) {
+                              try {
+                                await ref.read(authViewModelProvider).signUp(
+                                      _emailController.text.trim(),
+                                      _passwordController.text.trim(),
+                                    );
+
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Sign Up Successful! Verification email sent.'),
+                                    backgroundColor: Colors.green,
+                                  ),
+                                );
+
+                                Navigator.pushReplacementNamed(context, '/login');
+                              } catch (e) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(e.toString().replaceAll('Exception: ', '')),
+                                    backgroundColor: Colors.red,
+                                  ),
+                                );
+                              }
+                            } else {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
-                                  content: Text('Sign Up Successful!'),
-                                  backgroundColor: Colors.green,
-                                ),
-                              );
-                              Navigator.pushReplacementNamed(context, '/home');
-                            } catch (e) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text('Error: ${e.toString()}'),
-                                  backgroundColor: Colors.red,
+                                  content: Text('Please fix the errors in the form.'),
+                                  backgroundColor: Colors.orange,
                                 ),
                               );
                             }
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Please fix the errors in the form.'),
-                                backgroundColor: Colors.orange,
-                              ),
-                            );
-                          }
-                        },
-                      ),
-
+                          }),
                       const SizedBox(height: 20),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
@@ -192,11 +192,8 @@ class SignupScreen extends ConsumerWidget {
                           ),
                         ],
                       ),
-
-
                     ],
                   ),
-
                 ],
               ),
             ),

@@ -97,18 +97,12 @@ class TopicSelectionScreen extends ConsumerWidget {
 
               const SizedBox(height: 40),
               SubmitButton(
+                message: 'Please select at least one topic!',
                 isEnabled: isAnyTopicSelected,
           
                 // Ensures the button is enabled only when a topic is selected
                 onSubmit: () async {
-                  if (!isAnyTopicSelected) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Please select at least one topic!'),
-                        backgroundColor: Colors.orange,
-                      ),
-                    );
-                  }
+
           
                   SharedPreferences prefs = await SharedPreferences.getInstance();
                   prefs.setBool('seenOnboarding', true);

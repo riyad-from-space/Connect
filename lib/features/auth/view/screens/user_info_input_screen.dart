@@ -103,6 +103,7 @@ class _UserInfoInputScreenState extends State<UserInfoInputScreen> {
               const Spacer(),
               Center(
                 child: SubmitButton(
+                  message: 'Please select at least one topic!',
                   isEnabled: true,
                   onSubmit: (){
 

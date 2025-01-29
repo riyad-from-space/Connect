@@ -7,12 +7,15 @@ class SubmitButton extends StatefulWidget {
   final bool isEnabled;
   final Function? onSubmit;
   final String buttonText;
+  final String message;
+
 
   const SubmitButton({
     super.key,
     required this.isEnabled,
     this.onSubmit,
     this.buttonText = 'Continue',
+    required this.message
   });
 
   @override
@@ -27,6 +30,17 @@ class _SubmitButtonState extends State<SubmitButton> {
         if (widget.isEnabled && widget.onSubmit != null) {
           widget.onSubmit!();
         }
+
+        else{
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(widget.message),
+              backgroundColor: Colors.orange,
+            ),
+          );
+
+        }
+
       },
       child: Container(
         height: 46,

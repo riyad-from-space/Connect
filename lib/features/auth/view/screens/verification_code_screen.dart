@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:connect/features/auth/view/screens/reset_password_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
-import '../../../../core/widgets/buttons/back_button.dart';
+
 import '../../../../core/widgets/buttons/submit_button.dart';
 import '../../widgets/headline.dart';
 
@@ -101,11 +101,13 @@ class _VerificationCodeScreenState extends State<VerificationCodeScreen> {
               const SizedBox(height: 40),
               Center(
                 child: SubmitButton(
+                  message: '',
                   isEnabled: true,
                   onSubmit: () {
-                    Navigator.push(
+                    Navigator.pushAndRemoveUntil(
                       context,
-                      MaterialPageRoute(builder: (context) => ResetPasswordScreen())
+                      MaterialPageRoute(builder: (context) => ResetPasswordScreen()
+                      ),(route) => false,
 
                     );
                   },

@@ -33,6 +33,9 @@ class _MyProfileState extends State<MyProfile> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
     return Scaffold(
       appBar: AppBar(
         leading: InkWell(
@@ -51,7 +54,10 @@ class _MyProfileState extends State<MyProfile> {
         centerTitle: true,
       ),
       body: Padding(
-        padding: const EdgeInsets.only(right: 20, left: 20, top: 30),
+        padding: EdgeInsets.symmetric(
+          horizontal: screenWidth * 0.05,
+          vertical: screenHeight * 0.02,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -61,8 +67,8 @@ class _MyProfileState extends State<MyProfile> {
                 SizedBox(
                   child: Image.asset(
                     'assets/images/Profile.png',
-                    height: 70,
-                    width: 70,
+                    height: screenHeight * 0.09,
+                    width: screenHeight * 0.09,
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -194,8 +200,8 @@ class _MyProfileState extends State<MyProfile> {
                     );
                   },
                   child: Container(
-                    height: 34,
-                    width: 104,
+                    height: screenHeight * 0.04,
+                    width: screenWidth * 0.25,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(40),
                       color: const Color(0xffE1E1E1),
@@ -212,8 +218,7 @@ class _MyProfileState extends State<MyProfile> {
                     ),
                   ),
                 ),
-
-                SizedBox(width: 20,),
+                SizedBox(width: screenWidth * 0.02),
                 InkWell(
                   onTap: () async {
                     await FirebaseAuth.instance.signOut();
