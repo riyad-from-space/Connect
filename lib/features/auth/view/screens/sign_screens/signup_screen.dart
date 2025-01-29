@@ -163,7 +163,7 @@ class SignupScreen extends ConsumerWidget {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
                                   content: Text('Please fix the errors in the form.'),
-                                  backgroundColor: Colors.orange,
+                                  backgroundColor: Colors.red,
                                 ),
                               );
                             }

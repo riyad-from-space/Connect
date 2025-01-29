@@ -129,7 +129,7 @@ class ResetPasswordScreen extends ConsumerWidget {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
                             content: Text('Under Development!'),
-                            backgroundColor: Colors.orange,
+                            backgroundColor: Colors.red,
                           ),
                         );
                       },

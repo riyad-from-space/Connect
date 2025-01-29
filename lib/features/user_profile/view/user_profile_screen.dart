@@ -233,7 +233,7 @@ class _MyProfileState extends State<MyProfile> {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
                         content: Text('Logged Out!'),
-                        backgroundColor: Colors.orange,
+                        backgroundColor: Colors.red,
                       ),
                     );
                   },

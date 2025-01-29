@@ -275,7 +275,9 @@ class Home extends ConsumerWidget {
                                                                     .read(blogPostViewModelProvider.notifier)
                                                                     .deleteBlogPost(blogs[index].id);
                                                                 ScaffoldMessenger.of(context).showSnackBar(
-                                                                  SnackBar(content: Text('Blog deleted!')),
+                                                                  SnackBar(
+                                                                      backgroundColor: Colors.red,
+                                                                      content: Text('Blog deleted!')),
                                                                 );
                                                                 Navigator.pop(context);
                                                               },

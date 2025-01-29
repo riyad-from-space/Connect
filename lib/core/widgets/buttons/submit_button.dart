@@ -35,7 +35,7 @@ class _SubmitButtonState extends State<SubmitButton> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(widget.message),
-              backgroundColor: Colors.orange,
+              backgroundColor: Colors.red,
             ),
           );
 
