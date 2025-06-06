@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../../../core/constants/colours.dart';
 import '../../../core/constants/text_style.dart';
 
 import '../../blogs/view/blog_add_edit_screen.dart';
@@ -12,7 +11,13 @@ import '../../blogs/view/blog_details.dart';
 import '../../user_profile/view/user_profile_screen.dart';
 
 class Home extends ConsumerWidget {
-  List<String> itemList = ['UI Design', 'UX Design', 'Visual Design', 'Visual Design', 'Motion'];
+  List<String> itemList = [
+    'UI Design',
+    'UX Design',
+    'Visual Design',
+    'Visual Design',
+    'Motion'
+  ];
 
   @override
   List<int> selectedTopicsIndex = [];
@@ -139,250 +144,330 @@ class Home extends ConsumerWidget {
                       SizedBox(
                         height: screenHeight * 0.03,
                       ),
-                      blogs.isEmpty?
-                          Center(child: Text("No Blogs Available")):
-
-                      ListView.builder(
-                        scrollDirection: Axis.vertical,
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: blogs.length, // Use the list length from the contents
-                        itemBuilder: (context, index) {
-                          return InkWell(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const PostDetails(), // Navigate to PostDetails
-                                ),
-                              );
-                            },
-                            child: Container(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Image.asset('assets/images/Ellipse 4.png'),
-                                      SizedBox(width: screenWidth * .02),
-                                      Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            'Riyad Ahmed', // Replace with your desired name if available in the data
-                                            style: KTextStyle.subtitle1.copyWith(
-                                              fontWeight: FontWeight.w700,
-                                              color: const Color(0xff17131B),
-                                              fontSize: 14,
-                                            ),
-                                          ),
-                                          Text(
-                                            '30/01/2025', // You may want to replace this with dynamic data if available
-                                            style: KTextStyle.subtitle1.copyWith(
-                                              fontWeight: FontWeight.w600,
-                                              color: const Color(0xff000000),
-                                              fontSize: 12,
-                                            ),
-                                          ),
-                                          // Text(
-                                          //   'Topic: Blog Post',
-                                          //   style: KTextStyle.subtitle1.copyWith(
-                                          //     fontWeight: FontWeight.w700,
-                                          //     color: const Color(0xff5C5D67),
-                                          //     fontSize: 12,
-                                          //   ),
-                                          // ),
-                                        ],
+                      blogs.isEmpty
+                          ? Center(child: Text("No Blogs Available"))
+                          : ListView.builder(
+                              scrollDirection: Axis.vertical,
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemCount: blogs
+                                  .length, // Use the list length from the contents
+                              itemBuilder: (context, index) {
+                                return InkWell(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            const PostDetails(), // Navigate to PostDetails
                                       ),
-                                      SizedBox(
-                                        width: screenWidth * .5,
-                                      ),
-                                      InkWell(
-                                        onTap: () {
-                                          showModalBottomSheet(
-                                              context: context,
-                                              backgroundColor: Colors.transparent,
-                                              builder: (BuildContext context) {
-                                                return Column(
-                                                  children: [
-                                                    Container(
-                                                      width: 390,
-                                                      decoration: BoxDecoration(
-                                                        borderRadius: BorderRadius.circular(24),
-                                                      ),
-                                                    ),
-                                                    Container(
-                                                      margin: const EdgeInsets.fromLTRB(8, 100, 8, 10),
-                                                      height: 235,
-                                                      decoration: BoxDecoration(
-                                                          borderRadius: BorderRadius.circular(24),
-                                                          color: Colors.white),
-                                                      child: Padding(
-                                                        padding: const EdgeInsets.fromLTRB(0, 16, 0, 14),
-                                                        child: Center(
-                                                          child: Column(children: [
-                                                            GestureDetector(
-                                                              onTap: () {
-                                                                Navigator.pushReplacement(
-                                                                    context,
-                                                                    MaterialPageRoute(
-                                                                      builder: (context) =>
-                                                                          AddEditBlogPostScreen(
-                                                                              blogPost: blogs[index]),
-                                                                    ));
-                                                              },
-                                                              child: Text('Edit Blog',
-                                                                  style: KTextStyle.bottom_sheet1),
-                                                            ),
-                                                            const SizedBox(height: 14),
-                                                            Container(
-                                                              height: 1,
-                                                              color: const Color(0xffEFEFEF),
-                                                            ),
-                                                            const SizedBox(height: 14),
-                                                            Text('Follow This Author',
-                                                                style: KTextStyle.bottom_sheet1),
-                                                            const SizedBox(
-                                                              height: 14,
-                                                            ),
-                                                            Container(
-                                                              height: 1,
-                                                              color: const Color(0xffEFEFEF),
-                                                            ),
-                                                            // const SizedBox(height: 14),
-                                                            // Text('Block Author',
-                                                            //     style: KTextStyle.bottom_sheet2),
-                                                            // const SizedBox(
-                                                            //   height: 14,
-                                                            // ),
-
-                                                            const SizedBox(height: 14),
-                                                            Text('Report This Blog',
-                                                                style: KTextStyle.bottom_sheet2),
-                                                            const SizedBox(
-                                                              height: 14,
-                                                            ),
-
-                                                            Container(
-                                                              height: 1,
-                                                              color: const Color(0xffEFEFEF),
-                                                            ),
-                                                            const SizedBox(height: 14),
-                                                            GestureDetector(
-                                                              onTap: () {
-                                                                ref
-                                                                    .read(blogPostViewModelProvider.notifier)
-                                                                    .deleteBlogPost(blogs[index].id);
-                                                                ScaffoldMessenger.of(context).showSnackBar(
-                                                                  SnackBar(
-                                                                      backgroundColor: Colors.red,
-                                                                      content: Text('Blog deleted!')),
-                                                                );
-                                                                Navigator.pop(context);
-                                                              },
-                                                              child: Text('Delete Blog',
-                                                                  style: KTextStyle.bottom_sheet2),
-                                                            ),
-                                                          ]),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    const SizedBox(
-                                                      height: 18,
-                                                    ),
-                                                    InkWell(
-                                                      onTap: () {
-                                                        Navigator.pop(context);
-                                                      },
-                                                      child: Container(
-                                                        margin: const EdgeInsets.fromLTRB(8, 0, 8, 0),
-                                                        height: 58,
-                                                        decoration: BoxDecoration(
-                                                            borderRadius: BorderRadius.circular(16),
-                                                            color: Colors.white),
-                                                        child: Center(
-                                                            child: Text('Cancel',
-                                                                style: KTextStyle.bottom_sheet1)),
-                                                      ),
-                                                    ),
-                                                  ],
-                                                );
-                                              });
-                                        },
-                                        child: Container(
-                                            height: 44,
-                                            width: 44,
-                                            decoration: BoxDecoration(
-                                              shape: BoxShape.circle,
-                                              border: Border.all(color: const Color(0xffD6E5EA)),
-                                            ),
-                                            child: Padding(
-                                              padding: const EdgeInsets.all(12),
-                                              child: Row(
-                                                children: [
-                                                  Image.asset('assets/images/Ellipse 30.png'),
-                                                  const SizedBox(width: 3),
-                                                  Image.asset('assets/images/Ellipse 30.png'),
-                                                  const SizedBox(
-                                                    width: 3,
+                                    );
+                                  },
+                                  child: Container(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Image.asset(
+                                                'assets/images/Ellipse 4.png'),
+                                            SizedBox(width: screenWidth * .02),
+                                            Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  'Riyad Ahmed', // Replace with your desired name if available in the data
+                                                  style: KTextStyle.subtitle1
+                                                      .copyWith(
+                                                    fontWeight: FontWeight.w700,
+                                                    color:
+                                                        const Color(0xff17131B),
+                                                    fontSize: 14,
                                                   ),
-                                                  Image.asset('assets/images/Ellipse 30.png'),
-                                                ],
-                                              ),
-                                            )),
-                                      ),
-                                    ],
-                                  ),
-                                  SizedBox(height: screenHeight * 0.01),
-                                  Text(
-                                    blogs[index].title, // This is now heading from the content data
-                                    style: KTextStyle.subtitle1.copyWith(
-                                      fontWeight: FontWeight.w700,
-                                      color: const Color(0xff17131B),
-                                      fontSize: 22,
-                                    ),
-                                    maxLines: 1,
+                                                ),
+                                                Text(
+                                                  '30/01/2025', // You may want to replace this with dynamic data if available
+                                                  style: KTextStyle.subtitle1
+                                                      .copyWith(
+                                                    fontWeight: FontWeight.w600,
+                                                    color:
+                                                        const Color(0xff000000),
+                                                    fontSize: 12,
+                                                  ),
+                                                ),
+                                                // Text(
+                                                //   'Topic: Blog Post',
+                                                //   style: KTextStyle.subtitle1.copyWith(
+                                                //     fontWeight: FontWeight.w700,
+                                                //     color: const Color(0xff5C5D67),
+                                                //     fontSize: 12,
+                                                //   ),
+                                                // ),
+                                              ],
+                                            ),
+                                            SizedBox(
+                                              width: screenWidth * .5,
+                                            ),
+                                            InkWell(
+                                              onTap: () {
+                                                showModalBottomSheet(
+                                                    context: context,
+                                                    backgroundColor:
+                                                        Colors.transparent,
+                                                    builder:
+                                                        (BuildContext context) {
+                                                      return Column(
+                                                        children: [
+                                                          Container(
+                                                            width: 390,
+                                                            decoration:
+                                                                BoxDecoration(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          24),
+                                                            ),
+                                                          ),
+                                                          Container(
+                                                            margin:
+                                                                const EdgeInsets
+                                                                    .fromLTRB(8,
+                                                                    100, 8, 10),
+                                                            height: 235,
+                                                            decoration: BoxDecoration(
+                                                                borderRadius:
+                                                                    BorderRadius
+                                                                        .circular(
+                                                                            24),
+                                                                color: Colors
+                                                                    .white),
+                                                            child: Padding(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                      .fromLTRB(
+                                                                      0,
+                                                                      16,
+                                                                      0,
+                                                                      14),
+                                                              child: Center(
+                                                                child: Column(
+                                                                    children: [
+                                                                      GestureDetector(
+                                                                        onTap:
+                                                                            () {
+                                                                          Navigator.pushReplacement(
+                                                                              context,
+                                                                              MaterialPageRoute(
+                                                                                builder: (context) => BlogAddEditScreen(post: blogs[index]),
+                                                                              ));
+                                                                        },
+                                                                        child: Text(
+                                                                            'Edit Blog',
+                                                                            style:
+                                                                                KTextStyle.bottom_sheet1),
+                                                                      ),
+                                                                      const SizedBox(
+                                                                          height:
+                                                                              14),
+                                                                      Container(
+                                                                        height:
+                                                                            1,
+                                                                        color: const Color(
+                                                                            0xffEFEFEF),
+                                                                      ),
+                                                                      const SizedBox(
+                                                                          height:
+                                                                              14),
+                                                                      Text(
+                                                                          'Follow This Author',
+                                                                          style:
+                                                                              KTextStyle.bottom_sheet1),
+                                                                      const SizedBox(
+                                                                        height:
+                                                                            14,
+                                                                      ),
+                                                                      Container(
+                                                                        height:
+                                                                            1,
+                                                                        color: const Color(
+                                                                            0xffEFEFEF),
+                                                                      ),
+                                                                      // const SizedBox(height: 14),
+                                                                      // Text('Block Author',
+                                                                      //     style: KTextStyle.bottom_sheet2),
+                                                                      // const SizedBox(
+                                                                      //   height: 14,
+                                                                      // ),
 
-                                  ),
-                                  SizedBox(height: screenHeight * 0.01),
-                                  Text(
-                                    blogs[index].content, // This is now author/content from the content data
-                                    style: KTextStyle.subtitle1.copyWith(
-                                      fontWeight: FontWeight.w400,
-                                      color: const Color(0xff17131B),
-                                      fontSize: 14,
-                                    ),
-                                    maxLines: 3,
-                                    overflow: TextOverflow.fade,
-                                  ),
-                                  SizedBox(height: screenHeight * 0.02),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text(
-                                        'Read Time : 7 min',
-                                        style: KTextStyle.subtitle1.copyWith(
-                                          fontWeight: FontWeight.w500,
-                                          color: const Color(0xff00C922),
-                                          fontSize: 14,
+                                                                      const SizedBox(
+                                                                          height:
+                                                                              14),
+                                                                      Text(
+                                                                          'Report This Blog',
+                                                                          style:
+                                                                              KTextStyle.bottom_sheet2),
+                                                                      const SizedBox(
+                                                                        height:
+                                                                            14,
+                                                                      ),
+
+                                                                      Container(
+                                                                        height:
+                                                                            1,
+                                                                        color: const Color(
+                                                                            0xffEFEFEF),
+                                                                      ),
+                                                                      const SizedBox(
+                                                                          height:
+                                                                              14),
+                                                                      GestureDetector(
+                                                                        onTap:
+                                                                            () {
+                                                                          ref.read(blogPostViewModelProvider.notifier).deleteBlogPost(
+                                                                              blogs[index].id);
+                                                                          ScaffoldMessenger.of(context)
+                                                                              .showSnackBar(
+                                                                            SnackBar(
+                                                                                backgroundColor: Colors.red,
+                                                                                content: Text('Blog deleted!')),
+                                                                          );
+                                                                          Navigator.pop(
+                                                                              context);
+                                                                        },
+                                                                        child: Text(
+                                                                            'Delete Blog',
+                                                                            style:
+                                                                                KTextStyle.bottom_sheet2),
+                                                                      ),
+                                                                    ]),
+                                                              ),
+                                                            ),
+                                                          ),
+                                                          const SizedBox(
+                                                            height: 18,
+                                                          ),
+                                                          InkWell(
+                                                            onTap: () {
+                                                              Navigator.pop(
+                                                                  context);
+                                                            },
+                                                            child: Container(
+                                                              margin:
+                                                                  const EdgeInsets
+                                                                      .fromLTRB(
+                                                                      8,
+                                                                      0,
+                                                                      8,
+                                                                      0),
+                                                              height: 58,
+                                                              decoration: BoxDecoration(
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              16),
+                                                                  color: Colors
+                                                                      .white),
+                                                              child: Center(
+                                                                  child: Text(
+                                                                      'Cancel',
+                                                                      style: KTextStyle
+                                                                          .bottom_sheet1)),
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      );
+                                                    });
+                                              },
+                                              child: Container(
+                                                  height: 44,
+                                                  width: 44,
+                                                  decoration: BoxDecoration(
+                                                    shape: BoxShape.circle,
+                                                    border: Border.all(
+                                                        color: const Color(
+                                                            0xffD6E5EA)),
+                                                  ),
+                                                  child: Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            12),
+                                                    child: Row(
+                                                      children: [
+                                                        Image.asset(
+                                                            'assets/images/Ellipse 30.png'),
+                                                        const SizedBox(
+                                                            width: 3),
+                                                        Image.asset(
+                                                            'assets/images/Ellipse 30.png'),
+                                                        const SizedBox(
+                                                          width: 3,
+                                                        ),
+                                                        Image.asset(
+                                                            'assets/images/Ellipse 30.png'),
+                                                      ],
+                                                    ),
+                                                  )),
+                                            ),
+                                          ],
                                         ),
-                                      ),
-                                      Image.asset('assets/images/Bookmark.png'),
-                                    ],
+                                        SizedBox(height: screenHeight * 0.01),
+                                        Text(
+                                          blogs[index]
+                                              .title, // This is now heading from the content data
+                                          style: KTextStyle.subtitle1.copyWith(
+                                            fontWeight: FontWeight.w700,
+                                            color: const Color(0xff17131B),
+                                            fontSize: 22,
+                                          ),
+                                          maxLines: 1,
+                                        ),
+                                        SizedBox(height: screenHeight * 0.01),
+                                        Text(
+                                          blogs[index]
+                                              .content, // This is now author/content from the content data
+                                          style: KTextStyle.subtitle1.copyWith(
+                                            fontWeight: FontWeight.w400,
+                                            color: const Color(0xff17131B),
+                                            fontSize: 14,
+                                          ),
+                                          maxLines: 3,
+                                          overflow: TextOverflow.fade,
+                                        ),
+                                        SizedBox(height: screenHeight * 0.02),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(
+                                              'Read Time : 7 min',
+                                              style:
+                                                  KTextStyle.subtitle1.copyWith(
+                                                fontWeight: FontWeight.w500,
+                                                color: const Color(0xff00C922),
+                                                fontSize: 14,
+                                              ),
+                                            ),
+                                            Image.asset(
+                                                'assets/images/Bookmark.png'),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 20),
+                                        Container(
+                                          height: 1,
+                                          decoration: const BoxDecoration(
+                                              color: Color(0xffEAEAEA)),
+                                        ),
+                                        SizedBox(height: screenHeight * 0.02),
+                                      ],
+                                    ),
                                   ),
-                                  const SizedBox(height: 20),
-                                  Container(
-                                    height: 1,
-                                    decoration: const BoxDecoration(color: Color(0xffEAEAEA)),
-                                  ),
-                                  SizedBox(height: screenHeight * 0.02),
-                                ],
-                              ),
+                                );
+                              },
                             ),
-                          );
-                        },
-                      ),
                     ],
                   ),
                 ]),
@@ -432,7 +517,8 @@ class Home extends ConsumerWidget {
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => AddEditBlogPostScreen()),
+                      MaterialPageRoute(
+                          builder: (context) => BlogAddEditScreen()),
                     );
                   },
                   child: const CircleAvatar(
@@ -466,8 +552,10 @@ class Home extends ConsumerWidget {
           showUnselectedLabels: false,
           showSelectedLabels: false,
           type: BottomNavigationBarType.fixed,
-          selectedLabelStyle: KTextStyle.subtitle1.copyWith(fontWeight: FontWeight.bold),
-          unselectedLabelStyle: KTextStyle.subtitle1.copyWith(fontWeight: FontWeight.normal),
+          selectedLabelStyle:
+              KTextStyle.subtitle1.copyWith(fontWeight: FontWeight.bold),
+          unselectedLabelStyle:
+              KTextStyle.subtitle1.copyWith(fontWeight: FontWeight.normal),
         ),
       ),
     );

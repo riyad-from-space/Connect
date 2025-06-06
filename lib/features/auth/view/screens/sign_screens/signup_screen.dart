@@ -10,6 +10,7 @@ final isFormValidProvider = StateProvider<bool>((ref) => false);
 
 class SignupScreen extends ConsumerWidget {
   final _formKey = GlobalKey<FormState>();
+  final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
@@ -18,14 +19,17 @@ class SignupScreen extends ConsumerWidget {
     // Watch the isFormValidProvider
     final isFormValid = ref.watch(isFormValidProvider);
 
-    // Function to check if both fields are filled
+    // Function to check if all fields are filled
     void _updateFormValidity() {
+      final nameFilled = _nameController.text.isNotEmpty;
       final emailFilled = _emailController.text.isNotEmpty;
       final passwordFilled = _passwordController.text.isNotEmpty;
-      ref.read(isFormValidProvider.notifier).state = emailFilled && passwordFilled;
+      ref.read(isFormValidProvider.notifier).state =
+          nameFilled && emailFilled && passwordFilled;
     }
 
     // Add listeners to the controllers
+    _nameController.addListener(_updateFormValidity);
     _emailController.addListener(_updateFormValidity);
     _passwordController.addListener(_updateFormValidity);
 
@@ -79,7 +83,27 @@ class SignupScreen extends ConsumerWidget {
                   ),
                   Headline(
                     headline: 'Welcome To Connect',
-                    sub_headline: 'Enter your email address and password',
+                    sub_headline: 'Enter your details to create an account',
+                  ),
+                  const SizedBox(height: 20),
+                  TextFormField(
+                    controller: _nameController,
+                    decoration: InputDecoration(
+                      labelText: 'Full Name',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                      prefixIcon: const Icon(Icons.person),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Full name is required.';
+                      }
+                      if (value.length < 2) {
+                        return 'Name must be at least 2 characters.';
+                      }
+                      return null;
+                    },
                   ),
                   const SizedBox(height: 20),
                   TextFormField(
@@ -96,7 +120,8 @@ class SignupScreen extends ConsumerWidget {
                       if (value == null || value.isEmpty) {
                         return 'Email is required.';
                       }
-                      final emailRegex = RegExp(r'^[a-zA-Z0-9._%+-]+@gmail\.com$');
+                      final emailRegex =
+                          RegExp(r'^[a-zA-Z0-9._%+-]+@gmail\.com$');
                       if (!emailRegex.hasMatch(value)) {
                         return 'Please enter a valid Gmail address.';
                       }
@@ -133,41 +158,47 @@ class SignupScreen extends ConsumerWidget {
                   Column(
                     children: [
                       SubmitButton(
-                          message: 'Please provide both email and password!',
-                          isEnabled: isFormValid,
-                          onSubmit: () async {
-                            if (_formKey.currentState!.validate()) {
-                              try {
-                                await ref.read(authViewModelProvider).signUp(
-                                      _emailController.text.trim(),
-                                      _passwordController.text.trim(),
-                                    );
+                        message: 'Please fill in all fields!',
+                        isEnabled: isFormValid,
+                        onSubmit: () async {
+                          if (_formKey.currentState!.validate()) {
+                            try {
+                              await ref.read(authViewModelProvider).register(
+                                    email: _emailController.text.trim(),
+                                    password: _passwordController.text.trim(),
+                                    name: _nameController.text.trim(),
+                                  );
 
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('Sign Up Successful! Verification email sent.'),
-                                    backgroundColor: Colors.green,
-                                  ),
-                                );
-
-                                Navigator.pushReplacementNamed(context, '/login');
-                              } catch (e) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(e.toString().replaceAll('Exception: ', '')),
-                                    backgroundColor: Colors.red,
-                                  ),
-                                );
-                              }
-                            } else {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
-                                  content: Text('Please fix the errors in the form.'),
+                                  content: Text(
+                                      'Sign Up Successful! Verification email sent.'),
+                                  backgroundColor: Colors.green,
+                                ),
+                              );
+
+                              Navigator.pushReplacementNamed(context, '/login');
+                            } catch (e) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(e
+                                      .toString()
+                                      .replaceAll('Exception: ', '')),
                                   backgroundColor: Colors.red,
                                 ),
                               );
                             }
-                          }),
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content:
+                                    Text('Please fix the errors in the form.'),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                          }
+                        },
+                      ),
                       const SizedBox(height: 20),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,

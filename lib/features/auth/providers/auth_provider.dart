@@ -1,19 +1,23 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import '../data/repositories/auth_repository.dart';
 import '../data/models/user_model.dart';
 
-final authRepositoryProvider = Provider((ref) => AuthRepository());
-
-final authViewModelProvider = Provider((ref) {
-  return AuthViewModel(ref.watch(authRepositoryProvider));
+final authRepositoryProvider = Provider<AuthRepository>((ref) {
+  return AuthRepository();
 });
 
-class AuthViewModel {
+final authStateProvider = StreamProvider<UserModel?>((ref) {
+  return ref.watch(authRepositoryProvider).currentUser;
+});
+
+final authControllerProvider = Provider((ref) {
+  return AuthController(ref.watch(authRepositoryProvider));
+});
+
+class AuthController {
   final AuthRepository _authRepository;
 
-  AuthViewModel(this._authRepository);
+  AuthController(this._authRepository);
 
   Future<UserModel> register({
     required String name,
@@ -44,6 +48,4 @@ class AuthViewModel {
   Future<void> updateCategories(String userId, List<String> categories) async {
     await _authRepository.updateUserCategories(userId, categories);
   }
-
-  Stream<UserModel?> get currentUser => _authRepository.currentUser;
 }

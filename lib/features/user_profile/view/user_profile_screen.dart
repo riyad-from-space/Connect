@@ -168,51 +168,58 @@ class _MyProfileState extends State<MyProfile> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Riyad Ahmed',
-                      style: KTextStyle.subtitle1.copyWith(
-                        fontWeight: FontWeight.w700,
-                        color: const Color(0xff17131B),
-                        fontSize: 18,
-                      ),
-                    ),
-                    Text(
-                      'App Designer at UI Hut',
-                      style: KTextStyle.subtitle1.copyWith(
-                        fontWeight: FontWeight.w400,
-                        color: const Color(0xff5C5D67),
-                        fontSize: 14,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(width: 20),
-                InkWell(
-                  onTap: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Under Development!'),
-                        backgroundColor: Colors.orange,
-                      ),
-                    );
-                  },
-                  child: Container(
-                    height: screenHeight * 0.04,
-                    width: screenWidth * 0.25,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(40),
-                      color: const Color(0xffE1E1E1),
-                    ),
-                    child: Center(
-                      child: Text(
-                        'Edit',
+                Expanded(
+                  flex: 2,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Riyad Ahmed',
                         style: KTextStyle.subtitle1.copyWith(
-                          fontWeight: FontWeight.w600,
+                          fontWeight: FontWeight.w700,
                           color: const Color(0xff17131B),
+                          fontSize: 18,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      Text(
+                        'App Designer at UI Hut',
+                        style: KTextStyle.subtitle1.copyWith(
+                          fontWeight: FontWeight.w400,
+                          color: const Color(0xff5C5D67),
                           fontSize: 14,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: InkWell(
+                    onTap: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Under Development!'),
+                          backgroundColor: Colors.orange,
+                        ),
+                      );
+                    },
+                    child: Container(
+                      height: screenHeight * 0.04,
+                      width: screenWidth * 0.25,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(40),
+                        color: const Color(0xffE1E1E1),
+                      ),
+                      child: Center(
+                        child: Text(
+                          'Edit',
+                          style: KTextStyle.subtitle1.copyWith(
+                            fontWeight: FontWeight.w600,
+                            color: const Color(0xff17131B),
+                            fontSize: 14,
+                          ),
                         ),
                       ),
                     ),
@@ -227,7 +234,7 @@ class _MyProfileState extends State<MyProfile> {
                     Navigator.pushAndRemoveUntil(
                       context,
                       MaterialPageRoute(builder: (context) => LoginScreen()),
-                          (route) => false, // Removes all previous routes
+                      (route) => false, // Removes all previous routes
                     );
 
                     ScaffoldMessenger.of(context).showSnackBar(

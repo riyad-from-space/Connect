@@ -1,45 +1,89 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
-
-
 import '../model/blog_model.dart';
+import '../model/category_model.dart';
 
-class BlogPostRepository {
+class BlogRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  Future<void> addBlogPost(BlogPost blogPost) async {
-    try {
-      await _firestore.collection('blog_posts').doc(blogPost.id).set(blogPost.toMap());
-      print("Blog post saved: ${blogPost.toMap()}");
-    } catch (e) {
-      print("Error adding blog post: $e");
-    }
+  // Posts
+  Future<void> createPost(BlogPost post) async {
+    await _firestore.collection('posts').doc(post.id).set(post.toMap());
   }
 
-  Future<void> updateBlogPost(BlogPost blogPost) async {
-    try {
-      await _firestore.collection('blog_posts').doc(blogPost.id).update(blogPost.toMap());
-      print("Blog post updated: ${blogPost.title}");
-    } catch (e) {
-      print("Error updating blog post: $e");
-    }
-  }
+  Stream<List<BlogPost>> getPostsByCategories(List<String> categories) {
+    final query = _firestore.collection('posts');
 
-  Future<void> deleteBlogPost(String id) async {
-    try {
-      await _firestore.collection('blog_posts').doc(id).delete();
-      print("Blog post deleted: $id");
-    } catch (e) {
-      print("Error deleting blog post: $e");
+    if (categories.isEmpty) {
+      return query
+          .orderBy('createdAt', descending: true)
+          .snapshots()
+          .map((snapshot) {
+        return snapshot.docs
+            .map((doc) => BlogPost.fromMap({
+                  'id': doc.id,
+                  ...doc.data(),
+                }))
+            .toList();
+      });
     }
-  }
 
-  Stream<List<BlogPost>> getBlogPosts() {
-    return _firestore.collection('blog_posts').snapshots().map((snapshot) {
-      return snapshot.docs.map((doc) {
-        final data = doc.data();
-        return BlogPost.fromMap({...data, 'id': doc.id});
-      }).toList();
+    return query
+        .where('categories', arrayContainsAny: categories)
+        .orderBy('createdAt', descending: true)
+        .snapshots()
+        .map((snapshot) {
+      return snapshot.docs
+          .map((doc) => BlogPost.fromMap({
+                'id': doc.id,
+                ...doc.data(),
+              }))
+          .toList();
     });
+  }
+
+  Future<BlogPost> getPostById(String postId) async {
+    final doc = await _firestore.collection('posts').doc(postId).get();
+    return BlogPost.fromMap({
+      'id': doc.id,
+      ...doc.data() ?? {},
+    });
+  }
+
+  // Categories
+  Future<void> createCategory(Category category) async {
+    await _firestore
+        .collection('categories')
+        .doc(category.id)
+        .set(category.toMap());
+  }
+
+  Stream<List<Category>> getAllCategories() {
+    return _firestore.collection('categories').snapshots().map((snapshot) {
+      return snapshot.docs
+          .map((doc) => Category.fromMap({
+                'id': doc.id,
+                ...doc.data(),
+              }))
+          .toList();
+    });
+  }
+
+  Future<List<Category>> getCategoriesByIds(List<String> categoryIds) async {
+    final snapshots = await Future.wait(
+      categoryIds
+          .map((id) => _firestore.collection('categories').doc(id).get()),
+    );
+
+    return snapshots
+        .where((doc) => doc.exists)
+        .map((doc) => Category.fromMap({
+              'id': doc.id,
+              ...doc.data() ?? {},
+            }))
+        .toList();
+  }
+
+  Future<void> deletePost(String id) async {
+    await _firestore.collection('posts').doc(id).delete();
   }
 }

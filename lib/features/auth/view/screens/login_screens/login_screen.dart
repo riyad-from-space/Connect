@@ -23,7 +23,8 @@ class LoginScreen extends ConsumerWidget {
     void _updateFormValidity() {
       final emailFilled = _emailController.text.isNotEmpty;
       final passwordFilled = _passwordController.text.isNotEmpty;
-      ref.read(isFormValidProvider.notifier).state = emailFilled && passwordFilled;
+      ref.read(isFormValidProvider.notifier).state =
+          emailFilled && passwordFilled;
     }
 
     // Add listeners to the controllers
@@ -115,7 +116,8 @@ class LoginScreen extends ConsumerWidget {
                     if (value == null || value.isEmpty) {
                       return 'Email is required.';
                     }
-                    final emailRegex = RegExp(r'^[a-zA-Z0-9._%+-]+@gmail\.com$');
+                    final emailRegex =
+                        RegExp(r'^[a-zA-Z0-9._%+-]+@gmail\.com$');
                     if (!emailRegex.hasMatch(value)) {
                       return 'Please enter a valid Gmail address.';
                     }
@@ -138,7 +140,7 @@ class LoginScreen extends ConsumerWidget {
                       return 'Password is required.';
                     }
                     final passwordRegex = RegExp(
-                      r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$',
+                      r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*#?&]{6,}$',
                     );
                     if (!passwordRegex.hasMatch(value)) {
                       return 'Password must include:\n'
@@ -153,14 +155,13 @@ class LoginScreen extends ConsumerWidget {
                   children: [
                     SubmitButton(
                       message: 'Please provide both email and password!',
-
                       isEnabled: isFormValid,
                       onSubmit: () async {
                         if (_formKey.currentState!.validate()) {
                           try {
                             await ref.read(authViewModelProvider).login(
-                                  _emailController.text.trim(),
-                                  _passwordController.text.trim(),
+                                  email: _emailController.text.trim(),
+                                  password: _passwordController.text.trim(),
                                 );
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
@@ -172,9 +173,11 @@ class LoginScreen extends ConsumerWidget {
                             // Navigate to Home page
                             Navigator.pushReplacementNamed(context, '/home');
                           } on FirebaseAuthException catch (e) {
-                            String errorMessage = 'An error occurred. Please try again.';
+                            String errorMessage =
+                                'An error occurred. Please try again.';
 
-                            if (e.code == 'user-not-found' || e.code == 'wrong-password') {
+                            if (e.code == 'user-not-found' ||
+                                e.code == 'wrong-password') {
                               errorMessage = 'Invalid credential';
                             }
 
@@ -195,7 +198,8 @@ class LoginScreen extends ConsumerWidget {
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
-                              content: Text('Please fix the errors in the form.'),
+                              content:
+                                  Text('Please fix the errors in the form.'),
                               backgroundColor: Colors.orange,
                             ),
                           );

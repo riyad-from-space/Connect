@@ -1,112 +1,150 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:uuid/uuid.dart';
+import '../../../widgets/custom_button.dart';
 import '../data/model/blog_model.dart';
-import '../view_model/blog_viewmodel.dart';
+import '../providers/blog_provider.dart';
+import '../../auth/providers/auth_provider.dart';
 
-class AddEditBlogPostScreen extends ConsumerStatefulWidget {
-  final BlogPost? blogPost;
+class BlogAddEditScreen extends ConsumerStatefulWidget {
+  final BlogPost? post;
 
-  const AddEditBlogPostScreen({Key? key, this.blogPost}) : super(key: key);
+  const BlogAddEditScreen({Key? key, this.post}) : super(key: key);
 
   @override
-  ConsumerState<AddEditBlogPostScreen> createState() => _AddEditBlogPostScreenState();
+  ConsumerState<BlogAddEditScreen> createState() => _BlogAddEditScreenState();
 }
 
-class _AddEditBlogPostScreenState extends ConsumerState<AddEditBlogPostScreen> {
-  late TextEditingController _titleController;
-  late TextEditingController _contentController;
-  final Color primaryColor = Color(0xffA76FFF).withOpacity(.8);
+class _BlogAddEditScreenState extends ConsumerState<BlogAddEditScreen> {
+  final _titleController = TextEditingController();
+  final _contentController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+  List<String> selectedCategories = [];
+  bool _isLoading = false;
 
   @override
   void initState() {
     super.initState();
-    _titleController = TextEditingController(text: widget.blogPost?.title ?? '');
-    _contentController = TextEditingController(text: widget.blogPost?.content ?? '');
+    if (widget.post != null) {
+      _titleController.text = widget.post!.title;
+      _contentController.text = widget.post!.content;
+      selectedCategories = List.from(widget.post!.categories);
+    }
   }
 
-  @override
-  void dispose() {
-    _titleController.dispose();
-    _contentController.dispose();
-    super.dispose();
-  }
+  Future<void> _savePost() async {
+    if (!_formKey.currentState!.validate()) return;
 
-  void _saveBlogPost() {
-    if (_titleController.text.trim().isEmpty || _contentController.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Title or Content cannot be empty!'),
-          backgroundColor: Colors.redAccent,
-        ),
+    setState(() => _isLoading = true);
+
+    try {
+      final user = ref.read(authStateProvider).value;
+      if (user == null) {
+        throw Exception('User not authenticated');
+      }
+
+      final post = BlogPost(
+        id: widget.post?.id ?? const Uuid().v4(),
+        title: _titleController.text.trim(),
+        content: _contentController.text.trim(),
+        authorId: user.id,
+        authorName: user.name,
+        categories: selectedCategories,
+        createdAt: widget.post?.createdAt ?? DateTime.now(),
       );
-      return; // Stop execution
+
+      await ref.read(blogControllerProvider).createPost(post);
+      if (mounted) {
+        Navigator.pop(context);
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error saving post: $e')),
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
     }
-
-    final newBlogPost = BlogPost(
-      id: widget.blogPost?.id ?? DateTime.now().toString(),
-      title: _titleController.text.trim(),
-      content: _contentController.text.trim(),
-      createdAt: widget.blogPost?.createdAt ?? DateTime.now(),
-    );
-
-    if (widget.blogPost == null) {
-      ref.read(blogPostViewModelProvider.notifier).addBlogPost(newBlogPost);
-    } else {
-      ref.read(blogPostViewModelProvider.notifier).updateBlogPost(newBlogPost);
-    }
-
-    Navigator.pop(context);
   }
-
 
   @override
   Widget build(BuildContext context) {
+    final categories = ref.watch(categoriesProvider);
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Connect',
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, letterSpacing: 1.2),
-        ),
-        centerTitle: true,
-        elevation: 5,
-        backgroundColor: primaryColor,
-
+        title: Text(widget.post == null ? 'Create Post' : 'Edit Post'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+      body: categories.when(
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, stack) => Center(child: Text('Error: $error')),
+        data: (availableCategories) => Form(
+          key: _formKey,
+          child: ListView(
+            padding: const EdgeInsets.all(16),
             children: [
-              const SizedBox(height: 20),
-              Text(
-                widget.blogPost == null ? 'Create a New Blog Post' : 'Edit Your Blog Post',
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                  color: primaryColor,
+              TextFormField(
+                controller: _titleController,
+                decoration: const InputDecoration(
+                  labelText: 'Title',
+                  border: OutlineInputBorder(),
                 ),
-                textAlign: TextAlign.center,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter a title';
+                  }
+                  return null;
+                },
               ),
-              const SizedBox(height: 20),
-              _buildTextField(_titleController, 'Title'),
-              const SizedBox(height: 20),
-              _buildTextField(_contentController, 'Content', maxLines: 10),
-              const SizedBox(height: 30),
-              ElevatedButton(
-                onPressed: _saveBlogPost,
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  backgroundColor: primaryColor,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12.0),
-                  ),
-                  elevation: 5,
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _contentController,
+                decoration: const InputDecoration(
+                  labelText: 'Content',
+                  border: OutlineInputBorder(),
                 ),
-                child: Text(
-                  widget.blogPost == null ? 'Add Blog Post' : 'Update Blog Post',
-                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+                maxLines: 10,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter content';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                'Categories',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
                 ),
+              ),
+              const SizedBox(height: 8),
+              Wrap(
+                spacing: 8,
+                children: availableCategories.map((category) {
+                  final isSelected = selectedCategories.contains(category.id);
+                  return FilterChip(
+                    label: Text(category.name),
+                    selected: isSelected,
+                    onSelected: (selected) {
+                      setState(() {
+                        if (selected) {
+                          selectedCategories.add(category.id);
+                        } else {
+                          selectedCategories.remove(category.id);
+                        }
+                      });
+                    },
+                  );
+                }).toList(),
+              ),
+              const SizedBox(height: 24),
+              CustomButton(
+                text: widget.post == null ? 'Create Post' : 'Update Post',
+                onPressed: _savePost,
+                isLoading: _isLoading,
               ),
             ],
           ),
@@ -115,24 +153,10 @@ class _AddEditBlogPostScreenState extends ConsumerState<AddEditBlogPostScreen> {
     );
   }
 
-  Widget _buildTextField(TextEditingController controller, String label,  {int maxLines = 1}) {
-    return TextField(
-      controller: controller,
-      maxLines: maxLines,
-      decoration: InputDecoration(
-        labelText: label,
-        labelStyle: TextStyle(color: primaryColor),
-
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12.0),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: primaryColor, width: 2.0),
-          borderRadius: BorderRadius.circular(12.0),
-        ),
-        filled: true,
-        fillColor: Colors.grey.shade100,
-      ),
-    );
+  @override
+  void dispose() {
+    _titleController.dispose();
+    _contentController.dispose();
+    super.dispose();
   }
 }
