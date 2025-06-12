@@ -7,7 +7,9 @@ class AuthRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   Future<UserModel> registerUser({
-    required String name,
+    required String firstName,
+    required String lastName,
+    required String username,
     required String email,
     required String password,
   }) async {
@@ -19,38 +21,32 @@ class AuthRepository {
       );
 
       if (userCredential.user == null) {
-        throw Exception('Failed to create user account');
+        throw Exception('User creation failed');
       }
 
       // Create the user data
-      final userData = {
-        'id': userCredential.user!.uid,
-        'name': name,
-        'email': email,
-        'selectedCategories': <String>[],
-        'createdAt': DateTime.now().toIso8601String(),
-      };
+      final user = UserModel(
+        uid: userCredential.user!.uid,
+        firstName: firstName,
+        lastName: lastName,
+        username: username,
+        email: email,
+        selectedTopics: [],
+        createdAt: DateTime.now(),
+      );
 
       // Save to Firestore
       await _firestore
           .collection('users')
-          .doc(userCredential.user!.uid)
-          .set(userData);
+          .doc(user.uid)
+          .set(user.toMap());
 
       // Return user model
-      return UserModel(
-        id: userCredential.user!.uid,
-        name: name,
-        email: email,
-        selectedCategories: [],
-        createdAt: DateTime.now(),
-      );
+      return user;
     } on FirebaseAuthException catch (e) {
-      print('FirebaseAuthException in registerUser: ${e.code} - ${e.message}');
       throw Exception(e.message ?? 'Failed to register user');
     } catch (e) {
-      print('Error in registerUser: $e');
-      throw Exception('Failed to register user: $e');
+      throw Exception('Failed to register user');
     }
   }
 
@@ -63,42 +59,13 @@ class AuthRepository {
         email: email,
         password: password,
       );
-
-      if (userCredential.user == null) {
-        throw Exception('Failed to sign in');
-      }
-
-      final userDoc = await _firestore
-          .collection('users')
-          .doc(userCredential.user!.uid)
-          .get();
-
-      if (!userDoc.exists) {
-        // If user document doesn't exist, create it
-        final userData = {
-          'id': userCredential.user!.uid,
-          'name': email.split('@')[0], // Fallback name
-          'email': email,
-          'selectedCategories': <String>[],
-          'createdAt': DateTime.now().toIso8601String(),
-        };
-        await _firestore
-            .collection('users')
-            .doc(userCredential.user!.uid)
-            .set(userData);
-        return UserModel.fromMap(userData);
-      }
-
-      final data = userDoc.data() ?? {};
-      data['id'] = userCredential.user!.uid; // Ensure ID is set
-
-      return UserModel.fromMap(data);
+      final doc = await _firestore.collection('users').doc(userCredential.user!.uid).get();
+      if (!doc.exists) throw Exception('User not found');
+      return UserModel.fromMap(doc.data()!);
     } on FirebaseAuthException catch (e) {
-      print('FirebaseAuthException in loginUser: ${e.code} - ${e.message}');
       throw Exception(e.message ?? 'Failed to login');
     } catch (e) {
-      print('Error in loginUser: $e');
-      throw Exception('Failed to login: $e');
+      throw Exception('Failed to login');
     }
   }
 
@@ -106,8 +73,7 @@ class AuthRepository {
     try {
       await _auth.signOut();
     } catch (e) {
-      print('Error in logout: $e');
-      throw Exception('Failed to logout: $e');
+      throw Exception('Failed to logout');
     }
   }
 
@@ -115,42 +81,19 @@ class AuthRepository {
       String userId, List<String> categories) async {
     try {
       await _firestore.collection('users').doc(userId).update({
-        'selectedCategories': categories,
+        'selectedTopics': categories,
       });
     } catch (e) {
-      print('Error in updateUserCategories: $e');
-      throw Exception('Failed to update categories: $e');
+      throw Exception('Failed to update categories');
     }
   }
 
   Stream<UserModel?> get currentUser {
     return _auth.authStateChanges().asyncMap((user) async {
       if (user == null) return null;
-
-      try {
-        final userDoc =
-            await _firestore.collection('users').doc(user.uid).get();
-
-        if (!userDoc.exists) {
-          // Create user document if it doesn't exist
-          final userData = {
-            'id': user.uid,
-            'name': user.email?.split('@')[0] ?? 'User',
-            'email': user.email ?? '',
-            'selectedCategories': <String>[],
-            'createdAt': DateTime.now().toIso8601String(),
-          };
-          await _firestore.collection('users').doc(user.uid).set(userData);
-          return UserModel.fromMap(userData);
-        }
-
-        final data = userDoc.data() ?? {};
-        data['id'] = user.uid; // Ensure ID is set
-        return UserModel.fromMap(data);
-      } catch (e) {
-        print('Error in currentUser stream: $e');
-        return null;
-      }
+      final doc = await _firestore.collection('users').doc(user.uid).get();
+      if (!doc.exists) return null;
+      return UserModel.fromMap(doc.data()!);
     });
   }
 }

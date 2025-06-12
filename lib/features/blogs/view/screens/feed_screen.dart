@@ -1,10 +1,10 @@
+import 'package:connect/features/auth/data/repositories/auth_viewmodel_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../widgets/post_card.dart';
 import '../../../../widgets/category_chip.dart';
 import '../../providers/blog_provider.dart';
-import '../../../auth/providers/auth_provider.dart';
 
 class FeedScreen extends ConsumerWidget {
   const FeedScreen({Key? key}) : super(key: key);
@@ -34,9 +34,17 @@ class FeedScreen extends ConsumerWidget {
           IconButton(
             icon: const Icon(Icons.logout),
             onPressed: () async {
-              await ref.read(authControllerProvider).logout();
-              if (context.mounted) {
-                Navigator.pushReplacementNamed(context, '/login');
+              try {
+                await ref.read(authControllerProvider.notifier).logout(); // Updated to use notifier
+                if (context.mounted) {
+                  Navigator.pushReplacementNamed(context, '/login');
+                }
+              } catch (e) {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Logout failed: $e')),
+                  );
+                }
               }
             },
           ),
@@ -44,6 +52,7 @@ class FeedScreen extends ConsumerWidget {
       ),
       body: Column(
         children: [
+          // Categories list
           categories.when(
             loading: () => const SizedBox(
                 height: 50, child: Center(child: CircularProgressIndicator())),
@@ -79,6 +88,7 @@ class FeedScreen extends ConsumerWidget {
               ),
             ),
           ),
+          // Posts list
           Expanded(
             child: posts.when(
               loading: () => const Center(child: CircularProgressIndicator()),

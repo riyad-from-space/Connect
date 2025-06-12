@@ -1,10 +1,11 @@
+import 'package:connect/features/auth/data/repositories/auth_viewmodel_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
 import '../../../widgets/custom_button.dart';
 import '../data/model/blog_model.dart';
 import '../providers/blog_provider.dart';
-import '../../auth/providers/auth_provider.dart';
+
 
 class BlogAddEditScreen extends ConsumerStatefulWidget {
   final BlogPost? post;
@@ -47,20 +48,38 @@ class _BlogAddEditScreenState extends ConsumerState<BlogAddEditScreen> {
         id: widget.post?.id ?? const Uuid().v4(),
         title: _titleController.text.trim(),
         content: _contentController.text.trim(),
-        authorId: user.id,
-        authorName: user.name,
+        authorId: user.uid, // Changed from id to uid to match UserModel
+        authorName: '${user.firstName} ${user.lastName}', // Use full name from UserModel
         categories: selectedCategories,
         createdAt: widget.post?.createdAt ?? DateTime.now(),
       );
 
-      await ref.read(blogControllerProvider).createPost(post);
+      // if (widget.post == null) {
+      //   // Create new post
+      //   await ref.read(blogControllerProvider.notifier).createPost(post);
+      // } else {
+      //   // Update existing post
+      //   await ref.read(blogControllerProvider.notifier).updatePost(post);
+      // }
+
       if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(widget.post == null ? 'Post created!' : 'Post updated!'),
+            backgroundColor: Colors.green,
+          ),
+        );
         Navigator.pop(context);
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error saving post: $e')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error saving post: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     } finally {
       if (mounted) {
         setState(() => _isLoading = false);

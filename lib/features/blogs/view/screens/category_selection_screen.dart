@@ -1,10 +1,11 @@
+import 'package:connect/features/auth/data/repositories/auth_viewmodel_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../widgets/custom_button.dart';
 import '../../../../widgets/category_chip.dart';
 import '../../providers/blog_provider.dart';
-import '../../../auth/providers/auth_provider.dart';
+
 
 class CategorySelectionScreen extends ConsumerStatefulWidget {
   const CategorySelectionScreen({Key? key}) : super(key: key);
@@ -33,11 +34,13 @@ class _CategorySelectionScreenState
       final user = ref.read(authStateProvider).value;
       if (user == null) throw Exception('User not authenticated');
 
-      await ref.read(authControllerProvider).updateCategories(
-            user.id,
+      // Update to use your AuthController's updateUserCategories method
+      await ref.read(authControllerProvider.notifier).updateUserCategories(
+            user.uid, // Changed from id to uid to match your UserModel
             _selectedCategories.toList(),
           );
 
+      // Update the selected categories in your blog provider
       ref.read(selectedCategoriesProvider.notifier).state =
           _selectedCategories.toList();
 
@@ -55,6 +58,20 @@ class _CategorySelectionScreenState
         setState(() => _isLoading = false);
       }
     }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    // Initialize selected categories from user's existing selections
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final user = ref.read(authStateProvider).value;
+      if (user != null) {
+        setState(() {
+          _selectedCategories.addAll(user.selectedTopics);
+        });
+      }
+    });
   }
 
   @override

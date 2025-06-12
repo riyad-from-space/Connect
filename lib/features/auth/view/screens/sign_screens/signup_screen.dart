@@ -1,57 +1,51 @@
 import 'package:connect/core/widgets/buttons/submit_button.dart';
-
+import 'package:connect/features/auth/data/repositories/auth_viewmodel_provider.dart';
+import 'package:connect/features/auth/widgets/headline.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../view_model/auth_viewmodel.dart';
-import '../../../widgets/headline.dart';
+
 
 final isFormValidProvider = StateProvider<bool>((ref) => false);
 
 class SignupScreen extends ConsumerWidget {
   final _formKey = GlobalKey<FormState>();
-  final _nameController = TextEditingController();
+  final _firstNameController = TextEditingController();
+  final _lastNameController = TextEditingController();
+  final _usernameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // Watch the isFormValidProvider
     final isFormValid = ref.watch(isFormValidProvider);
 
-    // Function to check if all fields are filled
     void _updateFormValidity() {
-      final nameFilled = _nameController.text.isNotEmpty;
+      final firstNameFilled = _firstNameController.text.isNotEmpty;
+      final lastNameFilled = _lastNameController.text.isNotEmpty;
+      final usernameFilled = _usernameController.text.isNotEmpty;
       final emailFilled = _emailController.text.isNotEmpty;
       final passwordFilled = _passwordController.text.isNotEmpty;
       ref.read(isFormValidProvider.notifier).state =
-          nameFilled && emailFilled && passwordFilled;
+          firstNameFilled && lastNameFilled && usernameFilled && emailFilled && passwordFilled;
     }
 
-    // Add listeners to the controllers
-    _nameController.addListener(_updateFormValidity);
+    _firstNameController.addListener(_updateFormValidity);
+    _lastNameController.addListener(_updateFormValidity);
+    _usernameController.addListener(_updateFormValidity);
     _emailController.addListener(_updateFormValidity);
     _passwordController.addListener(_updateFormValidity);
 
     return Scaffold(
-      // appBar: AppBar(
-      //   leading: InkWell(
-      //     onTap: () {
-      //       Navigator.pop(context);
-      //     },
-      //     child: const CustomBackButton(),
-      //   ),
-      // ),
-
       body: Center(
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(16),
           child: SingleChildScrollView(
             child: Form(
               key: _formKey,
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -86,8 +80,49 @@ class SignupScreen extends ConsumerWidget {
                     sub_headline: 'Enter your details to create an account',
                   ),
                   const SizedBox(height: 20),
+                  // Add your text fields here
                   TextFormField(
-                    controller: _nameController,
+                    controller: _firstNameController,
+                    decoration: InputDecoration(
+                      labelText: 'Full Name',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                      prefixIcon: const Icon(Icons.person),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Full name is required.';
+                      }
+                      if (value.length < 2) {
+                        return 'Name must be at least 2 characters.';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 20),
+                  TextFormField(
+                    controller: _lastNameController,
+                    decoration: InputDecoration(
+                      labelText: 'Full Name',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                      prefixIcon: const Icon(Icons.person),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Full name is required.';
+                      }
+                      if (value.length < 2) {
+                        return 'Name must be at least 2 characters.';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 20),
+                  TextFormField(
+                    controller: _usernameController,
                     decoration: InputDecoration(
                       labelText: 'Full Name',
                       border: OutlineInputBorder(
@@ -121,14 +156,13 @@ class SignupScreen extends ConsumerWidget {
                         return 'Email is required.';
                       }
                       final emailRegex =
-                          RegExp(r'^[a-zA-Z0-9._%+-]+@gmail\.com$');
+                      RegExp(r'^[a-zA-Z0-9._%+-]+@gmail\.com$');
                       if (!emailRegex.hasMatch(value)) {
                         return 'Please enter a valid Gmail address.';
                       }
                       return null;
                     },
                   ),
-                  const SizedBox(height: 20),
                   TextFormField(
                     controller: _passwordController,
                     decoration: InputDecoration(
@@ -163,11 +197,13 @@ class SignupScreen extends ConsumerWidget {
                         onSubmit: () async {
                           if (_formKey.currentState!.validate()) {
                             try {
-                              await ref.read(authViewModelProvider).register(
-                                    email: _emailController.text.trim(),
-                                    password: _passwordController.text.trim(),
-                                    name: _nameController.text.trim(),
-                                  );
+                              await ref.read(authControllerProvider.notifier).register(
+                                firstName: _firstNameController.text.trim(),
+                                lastName: _lastNameController.text.trim(),
+                                username: _usernameController.text.trim(),
+                                email: _emailController.text.trim(),
+                                password: _passwordController.text.trim(),
+                              );
 
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
@@ -192,7 +228,7 @@ class SignupScreen extends ConsumerWidget {
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
                                 content:
-                                    Text('Please fix the errors in the form.'),
+                                Text('Please fix the errors in the form.'),
                                 backgroundColor: Colors.red,
                               ),
                             );
@@ -234,3 +270,4 @@ class SignupScreen extends ConsumerWidget {
     );
   }
 }
+

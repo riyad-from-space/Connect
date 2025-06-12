@@ -1,68 +1,45 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-
 class UserModel {
-  final String id;
-  final String name;
+  final String uid;
+  final String firstName;
+  final String lastName;
+  final String username;
   final String email;
-  final List<String> selectedCategories;
+  final List<String> selectedTopics;
   final DateTime createdAt;
 
   UserModel({
-    required this.id,
-    required this.name,
+    required this.uid,
+    required this.firstName,
+    required this.lastName,
+    required this.username,
     required this.email,
-    this.selectedCategories = const [],
+    this.selectedTopics = const [],
     required this.createdAt,
   });
 
+  // Convert UserModel to JSON
   Map<String, dynamic> toMap() {
     return {
-      'id': id,
-      'name': name,
+      'uid': uid,
+      'firstName': firstName,
+      'lastName': lastName,
+      'username': username,
       'email': email,
-      'selectedCategories': selectedCategories,
+      'selectedTopics': selectedTopics,
       'createdAt': createdAt.toIso8601String(),
     };
   }
 
+  // Convert JSON to UserModel
   factory UserModel.fromMap(Map<String, dynamic> map) {
-    try {
-      // Handle selectedCategories
-      List<String> categories = [];
-      if (map['selectedCategories'] != null) {
-        if (map['selectedCategories'] is List) {
-          categories = (map['selectedCategories'] as List)
-              .map((item) => item.toString())
-              .toList();
-        }
-      }
-
-      // Handle createdAt
-      DateTime dateTime = DateTime.now();
-      if (map['createdAt'] != null) {
-        if (map['createdAt'] is Timestamp) {
-          dateTime = (map['createdAt'] as Timestamp).toDate();
-        } else if (map['createdAt'] is String) {
-          dateTime = DateTime.parse(map['createdAt']);
-        }
-      }
-
-      return UserModel(
-        id: map['id']?.toString() ?? '',
-        name: map['name']?.toString() ?? '',
-        email: map['email']?.toString() ?? '',
-        selectedCategories: categories,
-        createdAt: dateTime,
-      );
-    } catch (e) {
-      print('Error creating UserModel from map: $e');
-      print('Map data: $map');
-      rethrow;
-    }
-  }
-
-  @override
-  String toString() {
-    return 'UserModel(id: $id, name: $name, email: $email, selectedCategories: $selectedCategories, createdAt: $createdAt)';
+    return UserModel(
+      uid: map['uid'],
+      firstName: map['firstName'],
+      lastName: map['lastName'],
+      username: map['username'],
+      email: map['email'],
+      selectedTopics: List<String>.from(map['selectedTopics']),
+      createdAt: DateTime.parse(map['createdAt']),
+    );
   }
 }

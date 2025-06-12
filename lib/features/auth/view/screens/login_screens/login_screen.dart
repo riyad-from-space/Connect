@@ -1,4 +1,5 @@
 import 'package:connect/core/widgets/buttons/submit_button.dart';
+import 'package:connect/features/auth/data/repositories/auth_viewmodel_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -159,10 +160,11 @@ class LoginScreen extends ConsumerWidget {
                       onSubmit: () async {
                         if (_formKey.currentState!.validate()) {
                           try {
-                            await ref.read(authViewModelProvider).login(
-                                  email: _emailController.text.trim(),
-                                  password: _passwordController.text.trim(),
-                                );
+                            // Inside your onSubmit or similar function
+await ref.read(authControllerProvider.notifier).login(
+  email: _emailController.text.trim(),
+  password: _passwordController.text.trim(),
+);
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
                                 content: Text('Login Successful!'),
