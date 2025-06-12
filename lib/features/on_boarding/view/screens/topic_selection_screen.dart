@@ -1,12 +1,14 @@
-import 'package:connect/features/auth/view/screens/signup_type_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../../../auth/view/screens/signup_type_screen.dart';
+import '../../view_model/topic_viewmodel.dart';
 import '../../../../core/constants/text_style.dart';
 import '../../../../core/widgets/buttons/submit_button.dart';
 import '../../../auth/view/screens/login_screens/login_screen.dart';
-import '../../view_model/topic_viewmodel.dart';
+
 
 class TopicSelectionScreen extends ConsumerWidget {
   const TopicSelectionScreen({Key? key}) : super(key: key);
@@ -14,6 +16,14 @@ class TopicSelectionScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final topics = ref.watch(topicViewModelProvider);
+
+    if (topics.isEmpty) {
+
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
     final isAnyTopicSelected = topics.any((topic) => topic.isSelected);
 
     return Scaffold(
@@ -32,11 +42,9 @@ class TopicSelectionScreen extends ConsumerWidget {
                   ),
                   InkWell(
                     onTap: () {
-          
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => LoginScreen()),
-
+                        MaterialPageRoute(builder: (context) =>  LoginScreen()),
                       );
                     },
                     child: Text(
@@ -49,7 +57,6 @@ class TopicSelectionScreen extends ConsumerWidget {
                       ),
                     ),
                   ),
-          
                 ],
               ),
               const SizedBox(height: 30),
@@ -67,21 +74,20 @@ class TopicSelectionScreen extends ConsumerWidget {
                 spacing: 10,
                 runSpacing: 20,
                 children: [
-                  ...List.generate(topics.length, (index) {
-                    final topic = topics[index];
-                    return Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
-                      decoration: BoxDecoration(
-                        color: topic.isSelected ? const Color(0xffF4E300) : const Color(0xffF2F9FB),
-                        border: Border.all(width: 1, color: const Color(0xffD6E5EA)),
-                        borderRadius: BorderRadius.circular(40),
-                      ),
-                      child: InkWell(
-                        onTap: () {
-                          ref.read(topicViewModelProvider.notifier).toggleTopicSelection(index);
-                        },
+                  for (int index = 0; index < topics.length; index++)
+                    InkWell(
+                      onTap: () {
+                        ref.read(topicViewModelProvider.notifier).toggleTopicSelection(index);
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
+                        decoration: BoxDecoration(
+                          color: topics[index].isSelected ? const Color(0xffF4E300) : const Color(0xffF2F9FB),
+                          border: Border.all(width: 1, color: const Color(0xffD6E5EA)),
+                          borderRadius: BorderRadius.circular(40),
+                        ),
                         child: Text(
-                          topic.name,
+                          topics[index].name,
                           style: KTextStyle.subtitle1.copyWith(
                             fontFamily: GoogleFonts.openSans().fontFamily,
                             fontWeight: FontWeight.w600,
@@ -90,26 +96,19 @@ class TopicSelectionScreen extends ConsumerWidget {
                           ),
                         ),
                       ),
-                    );
-                  }),
+                    ),
                 ],
               ),
-
               const SizedBox(height: 40),
               SubmitButton(
                 message: 'Please select at least one topic!',
                 isEnabled: isAnyTopicSelected,
-          
-                // Ensures the button is enabled only when a topic is selected
                 onSubmit: () async {
-
-          
                   SharedPreferences prefs = await SharedPreferences.getInstance();
-                  prefs.setBool('seenOnboarding', true);
+                  await prefs.setBool('seenOnboarding', true);
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => SignupTypeScreen()),
-
+                    MaterialPageRoute(builder: (context) => const SignupTypeScreen()),
                   );
                 },
                 buttonText: 'Continue',

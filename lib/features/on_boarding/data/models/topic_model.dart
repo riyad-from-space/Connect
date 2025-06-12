@@ -1,10 +1,19 @@
 class Topic {
+  final String id;
   final String name;
   bool isSelected;
 
-  Topic({required this.name, this.isSelected = false});
+  Topic({
+    required this.id,
+    required this.name,
+    this.isSelected = false,
+  });
 
-  factory Topic.fromJson(String name) {
-    return Topic(name: name);
+  factory Topic.fromMap(Map<String, dynamic> data, String documentId) {
+    return Topic(
+      id: documentId,
+      name: data['name'] ?? '',
+      isSelected: false,
+    );
   }
 }

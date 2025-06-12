@@ -1,28 +1,29 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+
 import '../data/models/topic_model.dart';
-import '../data/repositories/topic_repository.dart';
 
 final topicViewModelProvider = StateNotifierProvider<TopicViewModel, List<Topic>>((ref) {
-  return TopicViewModel(TopicRepository());
+  return TopicViewModel();
 });
 
 class TopicViewModel extends StateNotifier<List<Topic>> {
-  final TopicRepository repository;
-
-  TopicViewModel(this.repository) : super([]) {
+  TopicViewModel() : super([]) {
     loadTopics();
   }
 
   Future<void> loadTopics() async {
-    final topics = await repository.fetchTopics();
+    final snapshot = await FirebaseFirestore.instance.collection('topics').get();
+    final topics = snapshot.docs
+        .map((doc) => Topic.fromMap(doc.data(), doc.id))
+        .toList();
     state = topics;
   }
 
   void toggleTopicSelection(int index) {
-    state = [
-      for (int i = 0; i < state.length; i++)
-        if (i == index) Topic(name: state[i].name, isSelected: !state[i].isSelected) else state[i]
-    ];
+    final updatedList = [...state];
+    updatedList[index].isSelected = !updatedList[index].isSelected;
+    state = updatedList;
   }
 }
