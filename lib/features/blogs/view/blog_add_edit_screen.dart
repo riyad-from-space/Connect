@@ -1,14 +1,16 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connect/features/auth/data/repositories/auth_viewmodel_provider.dart';
+import 'package:connect/features/blogs/view_model/blog_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
 import '../../../widgets/custom_button.dart';
 import '../data/model/blog_model.dart';
-import '../providers/blog_provider.dart';
+
 
 
 class BlogAddEditScreen extends ConsumerStatefulWidget {
-  final BlogPost? post;
+  final Blog? post;
 
   const BlogAddEditScreen({Key? key, this.post}) : super(key: key);
 
@@ -16,11 +18,13 @@ class BlogAddEditScreen extends ConsumerStatefulWidget {
   ConsumerState<BlogAddEditScreen> createState() => _BlogAddEditScreenState();
 }
 
+// ...existing imports...
+
 class _BlogAddEditScreenState extends ConsumerState<BlogAddEditScreen> {
   final _titleController = TextEditingController();
   final _contentController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  List<String> selectedCategories = [];
+  String? selectedCategory;  // Changed from List to single String
   bool _isLoading = false;
 
   @override
@@ -29,12 +33,22 @@ class _BlogAddEditScreenState extends ConsumerState<BlogAddEditScreen> {
     if (widget.post != null) {
       _titleController.text = widget.post!.title;
       _contentController.text = widget.post!.content;
-      selectedCategories = List.from(widget.post!.categories);
+      selectedCategory = widget.post!.category;  // Updated to single category
     }
   }
 
   Future<void> _savePost() async {
     if (!_formKey.currentState!.validate()) return;
+    
+    if (selectedCategory == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please select a category'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
 
     setState(() => _isLoading = true);
 
@@ -44,23 +58,21 @@ class _BlogAddEditScreenState extends ConsumerState<BlogAddEditScreen> {
         throw Exception('User not authenticated');
       }
 
-      final post = BlogPost(
+      final post = Blog(
         id: widget.post?.id ?? const Uuid().v4(),
         title: _titleController.text.trim(),
         content: _contentController.text.trim(),
-        authorId: user.uid, // Changed from id to uid to match UserModel
-        authorName: '${user.firstName} ${user.lastName}', // Use full name from UserModel
-        categories: selectedCategories,
-        createdAt: widget.post?.createdAt ?? DateTime.now(),
+        category: selectedCategory!,  // Using selected category
+        authorId: user.uid,
+        authorName: '${user.firstName} ${user.lastName}',
+        createdAt: widget.post?.createdAt ?? Timestamp.now(),
       );
 
-      // if (widget.post == null) {
-      //   // Create new post
-      //   await ref.read(blogControllerProvider.notifier).createPost(post);
-      // } else {
-      //   // Update existing post
-      //   await ref.read(blogControllerProvider.notifier).updatePost(post);
-      // }
+      if (widget.post == null) {
+        await ref.read(blogControllerProvider).createBlog(post);
+      } else {
+        await ref.read(blogControllerProvider).updateBlog(post);
+      }
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -89,16 +101,16 @@ class _BlogAddEditScreenState extends ConsumerState<BlogAddEditScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final categories = ref.watch(categoriesProvider);
+    final categoriesAsync = ref.watch(categoriesProvider);
 
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.post == null ? 'Create Post' : 'Edit Post'),
       ),
-      body: categories.when(
+      body: categoriesAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stack) => Center(child: Text('Error: $error')),
-        data: (availableCategories) => Form(
+        data: (categories) => Form(
           key: _formKey,
           child: ListView(
             padding: const EdgeInsets.all(16),
@@ -133,7 +145,7 @@ class _BlogAddEditScreenState extends ConsumerState<BlogAddEditScreen> {
               ),
               const SizedBox(height: 16),
               const Text(
-                'Categories',
+                'Select Category',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -142,18 +154,13 @@ class _BlogAddEditScreenState extends ConsumerState<BlogAddEditScreen> {
               const SizedBox(height: 8),
               Wrap(
                 spacing: 8,
-                children: availableCategories.map((category) {
-                  final isSelected = selectedCategories.contains(category.id);
-                  return FilterChip(
-                    label: Text(category.name),
-                    selected: isSelected,
+                children: categories.map((category) {
+                  return ChoiceChip(
+                    label: Text(category),
+                    selected: category == selectedCategory,
                     onSelected: (selected) {
                       setState(() {
-                        if (selected) {
-                          selectedCategories.add(category.id);
-                        } else {
-                          selectedCategories.remove(category.id);
-                        }
+                        selectedCategory = selected ? category : null;
                       });
                     },
                   );

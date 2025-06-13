@@ -4,7 +4,7 @@ import '../features/blogs/data/model/blog_model.dart';
 import 'category_chip.dart';
 
 class PostCard extends StatelessWidget {
-  final BlogPost post;
+  final Blog post;
   final VoidCallback onTap;
 
   const PostCard({
@@ -53,13 +53,13 @@ class PostCard extends StatelessWidget {
                             fontSize: 16,
                           ),
                         ),
-                        Text(
-                          _formatDate(post.createdAt),
-                          style: TextStyle(
-                            color: Colors.grey[600],
-                            fontSize: 14,
-                          ),
-                        ),
+                        // Text(
+                        //   _formatDate(post.createdAt),
+                        //   style: TextStyle(
+                        //     color: Colors.grey[600],
+                        //     fontSize: 14,
+                        //   ),
+                        // ),
                       ],
                     ),
                   ),
@@ -75,7 +75,7 @@ class PostCard extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               Text(
-                post.previewContent,
+                post.content,
                 style: const TextStyle(
                   fontSize: 14,
                   color: Colors.black87,
@@ -87,18 +87,14 @@ class PostCard extends StatelessWidget {
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(
-                  children: post.categories.map((category) {
-                    return Padding(
-                      padding: const EdgeInsets.only(right: 8),
-                      child: CategoryChip(
-                        label: category,
-                        isSelected: true,
-                        onTap: () {},
-                        selectedColor:
-                            Theme.of(context).primaryColor.withOpacity(0.8),
-                      ),
-                    );
-                  }).toList(),
+                  children: [
+                    CategoryChip(
+                      label: post.category,
+                      isSelected: true,
+                      onTap: () {},
+                      selectedColor: Theme.of(context).primaryColor.withOpacity(0.8),
+                    ),
+                  ],
                 ),
               ),
             ],

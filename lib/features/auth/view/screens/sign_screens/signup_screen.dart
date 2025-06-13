@@ -213,7 +213,7 @@ class SignupScreen extends ConsumerWidget {
                                 ),
                               );
 
-                              Navigator.pushReplacementNamed(context, '/login');
+                              Navigator.pushReplacementNamed(context, '/category-selection');
                             } catch (e) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(

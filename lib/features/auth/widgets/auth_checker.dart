@@ -1,5 +1,6 @@
+import 'package:connect/features/auth/view/screens/sign_screens/signup_screen.dart';
 import 'package:connect/features/home/view/home_screen.dart';
-import 'package:connect/features/on_boarding/view/screens/topic_selection_screen.dart';
+
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -22,7 +23,7 @@ class AuthChecker extends ConsumerWidget {
 
         if (snapshot.hasData && snapshot.data == false) {
           // Show onboarding screens
-          return TopicSelectionScreen();
+          return SignupScreen();
         } else {
           // Check login state
           return StreamBuilder<User?>(
@@ -41,7 +42,7 @@ class AuthChecker extends ConsumerWidget {
 
                   Navigator.pushAndRemoveUntil(
                     context,
-                    MaterialPageRoute(builder: (_) => Home()),
+                    MaterialPageRoute(builder: (_) => HomeScreen()),
                         (route) => false,
                   );
                 } else {

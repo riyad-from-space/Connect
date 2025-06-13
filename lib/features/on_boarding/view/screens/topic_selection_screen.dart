@@ -1,13 +1,12 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../../auth/view/screens/signup_type_screen.dart';
 import '../../view_model/topic_viewmodel.dart';
 import '../../../../core/constants/text_style.dart';
 import '../../../../core/widgets/buttons/submit_button.dart';
-import '../../../auth/view/screens/login_screens/login_screen.dart';
 
 
 class TopicSelectionScreen extends ConsumerWidget {
@@ -15,7 +14,7 @@ class TopicSelectionScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final topics = ref.watch(topicViewModelProvider);
+    final topics = ref.watch(onboardingProvider);
 
     if (topics.isEmpty) {
 
@@ -32,33 +31,7 @@ class TopicSelectionScreen extends ConsumerWidget {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Image.asset(
-                    'assets/images/Ellipse 1.png',
-                    height: 40,
-                    width: 40,
-                  ),
-                  InkWell(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) =>  LoginScreen()),
-                      );
-                    },
-                    child: Text(
-                      'Log In',
-                      style: KTextStyle.subtitle1.copyWith(
-                        fontFamily: GoogleFonts.openSans().fontFamily,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 16,
-                        color: const Color(0xffA76FFF),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+              
               const SizedBox(height: 30),
               Text(
                 'Pick Topic to Start Reading.....',
@@ -71,46 +44,57 @@ class TopicSelectionScreen extends ConsumerWidget {
               ),
               const SizedBox(height: 30),
               Wrap(
-                spacing: 10,
-                runSpacing: 20,
-                children: [
-                  for (int index = 0; index < topics.length; index++)
-                    InkWell(
-                      onTap: () {
-                        ref.read(topicViewModelProvider.notifier).toggleTopicSelection(index);
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
-                        decoration: BoxDecoration(
-                          color: topics[index].isSelected ? const Color(0xffF4E300) : const Color(0xffF2F9FB),
-                          border: Border.all(width: 1, color: const Color(0xffD6E5EA)),
-                          borderRadius: BorderRadius.circular(40),
-                        ),
-                        child: Text(
-                          topics[index].name,
-                          style: KTextStyle.subtitle1.copyWith(
-                            fontFamily: GoogleFonts.openSans().fontFamily,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 14,
-                            color: const Color(0xff17131B),
-                          ),
-                        ),
-                      ),
-                    ),
-                ],
-              ),
+  spacing: 10,
+  runSpacing: 20,
+  children: [
+    for (int index = 0; index < topics.length; index++)
+      InkWell(
+        onTap: () {
+          ref.read(onboardingProvider.notifier).toggleTopic(topics[index].name); 
+        },
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
+          decoration: BoxDecoration(
+            color: topics[index].isSelected ? const Color(0xffF4E300) : const Color(0xffF2F9FB),
+            border: Border.all(width: 1, color: const Color(0xffD6E5EA)),
+            borderRadius: BorderRadius.circular(40),
+          ),
+          child: Text(
+            topics[index].name,
+            style: KTextStyle.subtitle1.copyWith(
+              fontFamily: GoogleFonts.openSans().fontFamily,
+              fontWeight: FontWeight.w600,
+              fontSize: 14,
+              color: const Color(0xff17131B),
+            ),
+          ),
+        ),
+      ),
+  ],
+),
+
               const SizedBox(height: 40),
               SubmitButton(
                 message: 'Please select at least one topic!',
                 isEnabled: isAnyTopicSelected,
                 onSubmit: () async {
-                  SharedPreferences prefs = await SharedPreferences.getInstance();
-                  await prefs.setBool('seenOnboarding', true);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const SignupTypeScreen()),
-                  );
-                },
+              final selected = ref.read(onboardingProvider.notifier).getSelectedTopics();
+
+              if (selected.isEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text("Select at least one topic")),
+                );
+                return;
+              }
+
+              final uid = FirebaseAuth.instance.currentUser!.uid;
+
+              await FirebaseFirestore.instance.collection('users').doc(uid).update({
+                'selectedTopics': selected,
+              });
+
+              Navigator.pushReplacementNamed(context, '/home'); 
+            },
                 buttonText: 'Continue',
               ),
             ],
@@ -120,3 +104,6 @@ class TopicSelectionScreen extends ConsumerWidget {
     );
   }
 }
+
+
+

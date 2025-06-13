@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import '../../data/model/blog_model.dart';
 import '../../../../widgets/category_chip.dart';
 
 class PostDetailScreen extends StatelessWidget {
-  final BlogPost post;
+  final Blog post;
 
   const PostDetailScreen({
     Key? key,
@@ -12,21 +13,7 @@ class PostDetailScreen extends StatelessWidget {
   }) : super(key: key);
 
   String _formatDate(DateTime date) {
-    final months = [
-      'January',
-      'February',
-      'March',
-      'April',
-      'May',
-      'June',
-      'July',
-      'August',
-      'September',
-      'October',
-      'November',
-      'December'
-    ];
-    return '${months[date.month - 1]} ${date.day}, ${date.year}';
+    return DateFormat('MMMM dd, yyyy').format(date);
   }
 
   @override
@@ -90,7 +77,7 @@ class PostDetailScreen extends StatelessWidget {
                               ),
                             ),
                             Text(
-                              _formatDate(post.createdAt),
+                              _formatDate(post.createdAt.toDate()),
                               style: TextStyle(
                                 color: Colors.grey[600],
                                 fontSize: 14,
@@ -111,25 +98,18 @@ class PostDetailScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 24),
                   const Text(
-                    'Categories',
+                    'Category',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   const SizedBox(height: 8),
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: post.categories.map((category) {
-                      return CategoryChip(
-                        label: category,
-                        isSelected: true,
-                        onTap: () {},
-                        selectedColor:
-                            Theme.of(context).primaryColor.withOpacity(0.8),
-                      );
-                    }).toList(),
+                  CategoryChip(
+                    label: post.category,
+                    isSelected: true,
+                    onTap: () {},
+                    selectedColor: Theme.of(context).primaryColor.withOpacity(0.8),
                   ),
                 ],
               ),
