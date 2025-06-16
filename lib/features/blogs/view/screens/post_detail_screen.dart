@@ -28,7 +28,6 @@ class PostDetailScreen extends StatelessWidget {
               title: Text(
                 post.title,
                 style: GoogleFonts.poppins(
-                  fontWeight: FontWeight.bold,
                   color: Colors.white,
                 ),
               ),
@@ -57,7 +56,9 @@ class PostDetailScreen extends StatelessWidget {
                       CircleAvatar(
                         backgroundColor: Theme.of(context).primaryColor,
                         child: Text(
-                          post.authorName[0].toUpperCase(),
+                          post.authorName.isNotEmpty
+                              ? post.authorName[0].toUpperCase()
+                              : '?',
                           style: const TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
@@ -97,20 +98,22 @@ class PostDetailScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 24),
-                  const Text(
-                    'Category',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
+                  if (post.category.isNotEmpty) ...[
+                    const Text(
+                      'Category',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 8),
-                  CategoryChip(
-                    label: post.category,
-                    isSelected: true,
-                    onTap: () {},
-                    selectedColor: Theme.of(context).primaryColor.withOpacity(0.8),
-                  ),
+                    const SizedBox(height: 8),
+                    CategoryChip(
+                      label: post.category,
+                      isSelected: true,
+                      onTap: () {},
+                      selectedColor: Theme.of(context).primaryColor.withOpacity(0.8),
+                    ),
+                  ],
                 ],
               ),
             ),

@@ -1,8 +1,10 @@
 import 'package:connect/features/blogs/view_model/blog_viewmodel.dart';
 import 'package:connect/features/blogs/view_model/category_viewmodel.dart';
+import 'package:connect/features/blogs/view_model/category_viewmodel_impl.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import '../../../../widgets/post_card.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -12,6 +14,8 @@ class HomeScreen extends ConsumerWidget {
     final blogAsyncValue = ref.watch(filteredBlogsProvider);
     final selectedCategory = ref.watch(selectedCategoryProvider);
     final categoriesAsync = ref.watch(categoriesProvider);
+    // Watch the category initializer to ensure categories are set up
+    ref.watch(categoryInitializerProvider);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Home')),
@@ -25,25 +29,44 @@ class HomeScreen extends ConsumerWidget {
             height: 40,
             child: categoriesAsync.when(
               loading: () => const Center(child: CircularProgressIndicator()),
-              error: (e, _) => Center(child: Text('Error: $e')),
-              data: (categories) => ListView.separated(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                scrollDirection: Axis.horizontal,
-                itemCount: categories.length,
-                separatorBuilder: (_, __) => const SizedBox(width: 10),
-                itemBuilder: (context, index) {
-                  final cat = categories[index];
-                  final isSelected = cat == selectedCategory;
-                  return ChoiceChip(
-                    label: Text(cat),
-                    selected: isSelected,
-                    onSelected: (_) {
-                      ref.read(selectedCategoryProvider.notifier).state =
-                          isSelected ? null : cat;
-                    },
-                  );
-                },
+              error: (e, _) => Center(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Text(
+                    'Error loading categories: $e',
+                    style: TextStyle(color: Theme.of(context).colorScheme.error),
+                  ),
+                ),
               ),
+              data: (categories) {
+                if (categories.isEmpty) {
+                  return const Center(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Text('No categories available'),
+                    ),
+                  );
+                }
+
+                return ListView.separated(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  scrollDirection: Axis.horizontal,
+                  itemCount: categories.length,
+                  separatorBuilder: (_, __) => const SizedBox(width: 10),
+                  itemBuilder: (context, index) {
+                    final cat = categories[index];
+                    final isSelected = cat == selectedCategory;
+                    return ChoiceChip(
+                      label: Text(cat),
+                      selected: isSelected,
+                      onSelected: (_) {
+                        ref.read(selectedCategoryProvider.notifier).state =
+                            isSelected ? null : cat;
+                      },
+                    );
+                  },
+                );
+              },
             ),
           ),
 
@@ -53,7 +76,15 @@ class HomeScreen extends ConsumerWidget {
           Expanded(
             child: blogAsyncValue.when(
               loading: () => const Center(child: CircularProgressIndicator()),
-              error: (e, _) => Center(child: Text('Error: $e')),
+              error: (e, _) => Center(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Text(
+                    'Error loading posts: $e',
+                    style: TextStyle(color: Theme.of(context).colorScheme.error),
+                  ),
+                ),
+              ),
               data: (blogs) {
                 if (blogs.isEmpty) {
                   return Center(
@@ -62,47 +93,33 @@ class HomeScreen extends ConsumerWidget {
                       children: [
                         Icon(Icons.article_outlined, size: 64, color: Colors.grey[400]),
                         const SizedBox(height: 16),
-                        const Text('No blogs found in this category'),
+                        Text(
+                          selectedCategory == null
+                              ? 'No posts available'
+                              : 'No posts in this category',
+                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                color: Colors.grey[600],
+                              ),
+                        ),
                       ],
                     ),
                   );
                 }
+
                 return ListView.builder(
                   padding: const EdgeInsets.all(16),
                   itemCount: blogs.length,
                   itemBuilder: (context, index) {
-                    final blog = blogs[index];
-                    return Card(
-                      margin: const EdgeInsets.only(bottom: 16),
-                      child: ListTile(
-                        title: Text(blog.title),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const SizedBox(height: 4),
-                            Text('By ${blog.authorName}'),
-                            const SizedBox(height: 2),
-                            Text(
-                              DateFormat('yyyy-MM-dd – kk:mm')
-                                  .format(blog.createdAt.toDate()),
-                              style: const TextStyle(fontSize: 12),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              blog.content.length > 100
-                                  ? '${blog.content.substring(0, 100)}...'
-                                  : blog.content,
-                            ),
-                          ],
-                        ),
-                        onTap: () {
-                          Navigator.pushNamed(
-                            context, 
-                            '/blog-detail',
-                            arguments: blog,
-                          );
-                        },
-                      ),
+                    final post = blogs[index];
+                    return PostCard(
+                      post: post,
+                      onTap: () {
+                        Navigator.pushNamed(
+                          context,
+                          '/post-detail',
+                          arguments: post,
+                        );
+                      },
                     );
                   },
                 );

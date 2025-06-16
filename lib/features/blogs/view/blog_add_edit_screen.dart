@@ -7,8 +7,6 @@ import 'package:uuid/uuid.dart';
 import '../../../widgets/custom_button.dart';
 import '../data/model/blog_model.dart';
 
-
-
 class BlogAddEditScreen extends ConsumerStatefulWidget {
   final Blog? post;
 
@@ -18,13 +16,11 @@ class BlogAddEditScreen extends ConsumerStatefulWidget {
   ConsumerState<BlogAddEditScreen> createState() => _BlogAddEditScreenState();
 }
 
-// ...existing imports...
-
 class _BlogAddEditScreenState extends ConsumerState<BlogAddEditScreen> {
   final _titleController = TextEditingController();
   final _contentController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  String? selectedCategory;  // Changed from List to single String
+  String? selectedCategory;
   bool _isLoading = false;
 
   @override
@@ -33,7 +29,7 @@ class _BlogAddEditScreenState extends ConsumerState<BlogAddEditScreen> {
     if (widget.post != null) {
       _titleController.text = widget.post!.title;
       _contentController.text = widget.post!.content;
-      selectedCategory = widget.post!.category;  // Updated to single category
+      selectedCategory = widget.post!.category;
     }
   }
 
@@ -62,7 +58,7 @@ class _BlogAddEditScreenState extends ConsumerState<BlogAddEditScreen> {
         id: widget.post?.id ?? const Uuid().v4(),
         title: _titleController.text.trim(),
         content: _contentController.text.trim(),
-        category: selectedCategory!,  // Using selected category
+        category: selectedCategory!,
         authorId: user.uid,
         authorName: '${user.firstName} ${user.lastName}',
         createdAt: widget.post?.createdAt ?? Timestamp.now(),

@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:connect/features/blogs/view_model/category_viewmodel_impl.dart';
 
 import 'app_router.dart';
 
@@ -15,11 +16,20 @@ void main() async {
   runApp(ProviderScope(child: MyApp()));
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends ConsumerWidget {
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    // Initialize categories when app starts
+    ref.watch(categoryInitializerProvider);
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        useMaterial3: true,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xffA76FFF),
+        ),
+      ),
       initialRoute: '/splash',
       onGenerateRoute: AppRouter.generateRoute,
     );
