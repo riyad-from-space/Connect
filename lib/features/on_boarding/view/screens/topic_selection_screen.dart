@@ -4,25 +4,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../../view_model/topic_viewmodel.dart';
 import '../../../../core/constants/text_style.dart';
 import '../../../../core/widgets/buttons/submit_button.dart';
-import '../../provider/onboarding_provider.dart';
+import '../../provider/selected_categories_provider.dart';
+import '../../../blogs/view_model/blog_viewmodel.dart';
 
 class TopicSelectionScreen extends ConsumerWidget {
   const TopicSelectionScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final topics = ref.watch(onboardingProvider);
-
-    if (topics.isEmpty) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
-    }
-
-    final isAnyTopicSelected = topics.any((topic) => topic.isSelected);
+    final selectedCategories = ref.watch(selectedCategoriesProvider);
 
     return Scaffold(
       body: Padding(
@@ -41,43 +33,70 @@ class TopicSelectionScreen extends ConsumerWidget {
                 ),
               ),
               const SizedBox(height: 30),
-              Wrap(
-                spacing: 10,
-                runSpacing: 20,
-                children: [
-                  for (int index = 0; index < topics.length; index++)
-                    InkWell(
-                      onTap: () {
-                        ref.read(onboardingProvider.notifier).toggleTopic(topics[index].name); 
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
-                        decoration: BoxDecoration(
-                          color: topics[index].isSelected ? const Color(0xffF4E300) : const Color(0xffF2F9FB),
-                          border: Border.all(width: 1, color: const Color(0xffD6E5EA)),
-                          borderRadius: BorderRadius.circular(40),
-                        ),
+              Builder(
+                builder: (context) {
+                  final categoriesAsync = ref.watch(categoriesProvider);
+                  return categoriesAsync.when(
+                    loading: () => const Center(child: CircularProgressIndicator()),
+                    error: (e, _) => Center(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
                         child: Text(
-                          topics[index].name,
-                          style: KTextStyle.subtitle1.copyWith(
-                            fontFamily: GoogleFonts.openSans().fontFamily,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 14,
-                            color: const Color(0xff17131B),
-                          ),
+                          'Error loading categories: $e',
+                          style: TextStyle(color: Theme.of(context).colorScheme.error),
                         ),
                       ),
                     ),
-                ],
+                    data: (categories) {
+                      if (categories.isEmpty) {
+                        return const Center(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 16.0),
+                            child: Text('No categories available'),
+                          ),
+                        );
+                      }
+                      return Wrap(
+                        spacing: 10,
+                        runSpacing: 20,
+                        children: [
+                          for (final cat in categories)
+                            InkWell(
+                              onTap: () {
+                                ref.read(selectedCategoriesProvider.notifier).toggleCategory(cat);
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
+                                decoration: BoxDecoration(
+                                  color: selectedCategories.contains(cat)
+                                      ? const Color(0xffF4E300)
+                                      : const Color(0xffF2F9FB),
+                                  border: Border.all(width: 1, color: const Color(0xffD6E5EA)),
+                                  borderRadius: BorderRadius.circular(40),
+                                ),
+                                child: Text(
+                                  cat,
+                                  style: KTextStyle.subtitle1.copyWith(
+                                    fontFamily: GoogleFonts.openSans().fontFamily,
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 14,
+                                    color: const Color(0xff17131B),
+                                  ),
+                                ),
+                              ),
+                            ),
+                        ],
+                      );
+                    },
+                  );
+                },
               ),
               const SizedBox(height: 40),
               SubmitButton(
                 message: 'Please select at least one topic!',
-                isEnabled: isAnyTopicSelected,
+                isEnabled: selectedCategories.isNotEmpty,
                 onSubmit: () async {
-                  final selected = ref.read(onboardingProvider.notifier).getSelectedTopics();
-
-                  if (selected.isEmpty) {
+                  if (selectedCategories.isEmpty) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text("Select at least one topic")),
                     );
@@ -87,13 +106,12 @@ class TopicSelectionScreen extends ConsumerWidget {
                   final uid = FirebaseAuth.instance.currentUser!.uid;
 
                   await FirebaseFirestore.instance.collection('users').doc(uid).update({
-                    'selectedTopics': selected,
+                    'selectedTopics': selectedCategories,
                   });
 
-                  // Mark onboarding as complete using the provider
-                  await ref.read(onboardingStatusProvider.notifier).setComplete();
-
-                  Navigator.pushReplacementNamed(context, '/home'); 
+                  if (context.mounted) {
+                    Navigator.pushReplacementNamed(context, '/home');
+                  }
                 },
                 buttonText: 'Continue',
               ),

@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../../core/constants/text_style.dart';
-import '../../../view_model/auth_viewmodel.dart';
+
 import '../../../widgets/headline.dart';
 
 final isFormValidProvider = StateProvider<bool>((ref) => false);

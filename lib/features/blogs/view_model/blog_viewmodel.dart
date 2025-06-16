@@ -5,13 +5,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../data/model/blog_model.dart';
 
 
-final blogsProvider = StreamProvider<List<Blog>>((ref) {
-  final user = ref.watch(authStateProvider).value;
-  if (user == null) return Stream.value([]);
 
+final blogsProvider = StreamProvider<List<Blog>>((ref) {
+  // Fetch all blogs, filtering is handled by filteredBlogsProvider
   return FirebaseFirestore.instance
       .collection('blogs')
-      .where('category', whereIn: user.selectedTopics)
       .orderBy('createdAt', descending: true)
       .snapshots()
       .map((snap) => snap.docs.map((doc) => Blog.fromMap(doc.data(), doc.id)).toList());
@@ -50,14 +48,17 @@ class BlogController {
   }
 }
 
-final filteredBlogsProvider = StreamProvider<List<Blog>>((ref) {
+final filteredBlogsProvider = Provider<List<Blog>>((ref) {
   final selectedCategory = ref.watch(selectedCategoryProvider);
-  final blogsStream = ref.watch(blogsProvider.stream);
+  final blogsAsync = ref.watch(blogsProvider);
 
-  return blogsStream.map((blogs) {
-    if (selectedCategory == null) return blogs;
-    return blogs.where((blog) => blog.category == selectedCategory).toList();
-  });
+  return blogsAsync.maybeWhen(
+    data: (blogs) {
+      if (selectedCategory == null) return blogs;
+      return blogs.where((blog) => blog.category == selectedCategory).toList();
+    },
+    orElse: () => [],
+  );
 });
 
 // Categories provider

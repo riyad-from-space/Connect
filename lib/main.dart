@@ -19,8 +19,8 @@ void main() async {
 class MyApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // Initialize categories when app starts
-    ref.watch(categoryInitializerProvider);
+    // Initialize categories without watching
+    ref.read(categoryInitializerProvider);
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
