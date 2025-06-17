@@ -2,6 +2,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:connect/features/blogs/view_model/category_viewmodel_impl.dart';
+import 'package:connect/core/theme/theme_provider.dart';
+import 'package:connect/core/theme/app_theme.dart';
 
 import 'app_router.dart';
 
@@ -19,17 +21,14 @@ void main() async {
 class MyApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // Initialize categories without watching
+    final themeMode = ref.watch(themeProvider);
     ref.read(categoryInitializerProvider);
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xffA76FFF),
-        ),
-      ),
+      themeMode: themeMode,
+      theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
       initialRoute: '/splash',
       onGenerateRoute: AppRouter.generateRoute,
     );

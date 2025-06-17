@@ -52,7 +52,7 @@ class _SplashScreenState extends State<SplashScreen> {
             child: Padding(
               padding: const EdgeInsets.only(bottom: 20),
               child: Text(
-                'Powered by Riyad',
+                'Powered by Connect',
                 style: KTextStyle.subtitle1.copyWith(
                   fontFamily: GoogleFonts.openSans().fontFamily,
                   fontWeight: FontWeight.w400,

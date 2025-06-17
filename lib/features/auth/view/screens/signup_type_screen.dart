@@ -39,32 +39,32 @@ class _SignupTypeScreenState extends State<SignupTypeScreen> {
               ),
             ),
             const SizedBox(height: 30),
-            InkWell(
-                onTap: () {
-                  Navigator.pushNamed(context, '/signup');
-                },
-                child: SignupTypeButton(
-                  background_color: KColor.black,
-                  provider_name: "Apple",
-                  icon: const Icon(
-                    Icons.apple,
-                    color: Colors.white,
-                    size: 30,
-                  ),
-                )),
-            const SizedBox(height: 30),
-            InkWell(
-              onTap: () {
-                Navigator.pushNamed(context, '/signup');
-              },
-              child: SignupTypeButton(
-                background_color: KColor.backgrounforGoogle,
-                provider_name: "Google",
-                icon: const Icon(Icons.apple),
-                isGoogle: true,
-                image: Image.asset("assets/images/Logo (3).png"),
-              ),
-            ),
+            // InkWell(
+            //     onTap: () {
+            //       Navigator.pushNamed(context, '/signup');
+            //     },
+            //     child: SignupTypeButton(
+            //       background_color: KColor.black,
+            //       provider_name: "Apple",
+            //       icon: const Icon(
+            //         Icons.apple,
+            //         color: Colors.white,
+            //         size: 30,
+            //       ),
+            //     )),
+            // const SizedBox(height: 30),
+            // InkWell(
+            //   onTap: () {
+            //     Navigator.pushNamed(context, '/signup');
+            //   },
+            //   child: SignupTypeButton(
+            //     background_color: KColor.backgrounforGoogle,
+            //     provider_name: "Google",
+            //     icon: const Icon(Icons.apple),
+            //     isGoogle: true,
+            //     image: Image.asset("assets/images/Logo (3).png"),
+            //   ),
+            // ),
             const SizedBox(height: 30),
             InkWell(
               onTap: () {

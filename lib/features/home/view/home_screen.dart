@@ -22,6 +22,8 @@ class HomeScreen extends ConsumerWidget {
     final userAsync = ref.watch(authStateProvider);
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
 
     // Set initial selected category to onboarding topic if not set
     userAsync.whenData((user) {
@@ -37,7 +39,7 @@ class HomeScreen extends ConsumerWidget {
         slivers: [
           SliverAppBar(
             automaticallyImplyLeading: false,
-            backgroundColor: Colors.white,
+            backgroundColor: theme.scaffoldBackgroundColor,
             pinned: true,
             floating: true,
             stretch: true,
@@ -64,20 +66,23 @@ class HomeScreen extends ConsumerWidget {
                   width: screenWidth * 0.10,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    border: Border.all(color: const Color(0xffD6E5EA)),
+                    border: Border.all(color: colorScheme.outline.withOpacity(0.2)),
                   ),
                   child: InkWell(
                     onTap: () {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Under Development!'),
-                          backgroundColor: Colors.orange,
+                        SnackBar(
+                          content: Text(
+                            'Under Development!',
+                            style: theme.textTheme.bodyMedium?.copyWith(color: colorScheme.onPrimary),
+                          ),
+                          backgroundColor: colorScheme.secondary,
                         ),
                       );
                     },
-                    child: const Icon(
+                    child: Icon(
                       Icons.notifications_none_rounded,
-                      color: Color(0xff7E7F88),
+                      color: colorScheme.onSurface,
                     ),
                   ),
                 ),
@@ -90,26 +95,25 @@ class HomeScreen extends ConsumerWidget {
               child: SizedBox(
                 height: 40,
                 child: categoriesAsync.when(
-                  loading: () => const Center(child: CircularProgressIndicator()),
+                  loading: () => Center(child: CircularProgressIndicator(color: colorScheme.primary)),
                   error: (e, _) => Center(
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
                       child: Text(
                         'Error loading categories: $e',
-                        style: TextStyle(color: Theme.of(context).colorScheme.error),
+                        style: theme.textTheme.bodyMedium?.copyWith(color: colorScheme.error),
                       ),
                     ),
                   ),
                   data: (categories) {
                     if (categories.isEmpty) {
-                      return const Center(
+                      return Center(
                         child: Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 16.0),
-                          child: Text('No categories available'),
+                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                          child: Text('No categories available', style: theme.textTheme.bodyMedium),
                         ),
                       );
                     }
-
                     return ListView.separated(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       scrollDirection: Axis.horizontal,
@@ -121,11 +125,14 @@ class HomeScreen extends ConsumerWidget {
                         return ChoiceChip(
                           label: Text(cat),
                           selected: isSelected,
+                          selectedColor: colorScheme.primary.withOpacity(0.2),
+                          backgroundColor: colorScheme.surfaceVariant,
                           onSelected: (_) {
-                            ref.read(selectedCategoryProvider.notifier).state =
-                                isSelected ? null : cat;
-                                
+                            ref.read(selectedCategoryProvider.notifier).state = isSelected ? null : cat;
                           },
+                          labelStyle: theme.textTheme.bodyMedium?.copyWith(
+                            color: isSelected ? colorScheme.primary : colorScheme.onSurface,
+                          ),
                         );
                       },
                     );
@@ -137,14 +144,12 @@ class HomeScreen extends ConsumerWidget {
           SliverPadding(
             padding: const EdgeInsets.all(16.0),
             sliver: blogsAsync.when(
-              loading: () => const SliverFillRemaining(
-                child: Center(child: CircularProgressIndicator()),
-              ),
+              loading: () => const SliverFillRemaining(child: Center(child: CircularProgressIndicator())),
               error: (e, _) => SliverFillRemaining(
                 child: Center(
                   child: Text(
                     'Error loading posts: $e',
-                    style: TextStyle(color: Theme.of(context).colorScheme.error),
+                    style: theme.textTheme.bodyMedium?.copyWith(color: colorScheme.error),
                   ),
                 ),
               ),
@@ -155,15 +160,11 @@ class HomeScreen extends ConsumerWidget {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.article_outlined, size: 64, color: Colors.grey[400]),
+                          Icon(Icons.article_outlined, size: 64, color: colorScheme.outline.withOpacity(0.3)),
                           const SizedBox(height: 16),
                           Text(
-                            selectedCategory == null
-                                ? 'No posts available'
-                                : 'No posts in this category',
-                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                  color: Colors.grey[600],
-                                ),
+                            selectedCategory == null ? 'No posts available' : 'No posts in this category',
+                            style: theme.textTheme.titleMedium?.copyWith(color: colorScheme.onSurface.withOpacity(0.7)),
                           ),
                         ],
                       ),
@@ -177,11 +178,7 @@ class HomeScreen extends ConsumerWidget {
                       return PostCard(
                         post: post,
                         onTap: () {
-                          Navigator.pushNamed(
-                            context,
-                            '/post-detail',
-                            arguments: post,
-                          );
+                          Navigator.pushNamed(context, '/post-detail', arguments: post);
                         },
                       );
                     },
@@ -193,90 +190,57 @@ class HomeScreen extends ConsumerWidget {
           ),
         ],
       ),
-      bottomNavigationBar: BottomNavigationBar(
-          backgroundColor: const Color(0xffF2F9FB),
-          items: [
-            BottomNavigationBarItem(
-              icon: Image.asset('assets/images/Home.png'),
-              label: 'Home',
-            ),
-            BottomNavigationBarItem(
-              icon: InkWell(
-                onTap: () {
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => Navigator.pushNamed(context, '/create-post'),
+        backgroundColor: colorScheme.primary,
+        child: const Icon(Icons.add, color: Colors.white),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      bottomNavigationBar: BottomAppBar(
+        color: theme.scaffoldBackgroundColor,
+        shape: const CircularNotchedRectangle(),
+        notchMargin: 8,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              IconButton(
+                icon: Icon(Icons.home, color: colorScheme.primary),
+                onPressed: () {},
+              ),
+              IconButton(
+                icon: Icon(Icons.search, color: colorScheme.onSurfaceVariant),
+                onPressed: () {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Under Development!'),
-                      backgroundColor: Colors.orange,
+                    SnackBar(
+                      content: Text('Search coming soon!', style: theme.textTheme.bodyMedium?.copyWith(color: colorScheme.onPrimary)),
+                      backgroundColor: colorScheme.secondary,
                     ),
                   );
                 },
-                child: Ink(
-                  child: Image.asset(
-                    'assets/images/8666693_search_icon.png',
-                    width: screenWidth * 0.06,
-                    height: screenHeight * 0.03,
-                    color: const Color(0xff5C5D67),
-                  ),
-                ),
               ),
-              label: 'Search',
-            ),
-            BottomNavigationBarItem(
-              icon: InkWell(
-                onTap: () {
+              const SizedBox(width: 40), // Space for FAB
+              IconButton(
+                icon: Icon(Icons.bookmark_outline, color: colorScheme.onSurfaceVariant),
+                onPressed: () {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Under Development!'),
-                      backgroundColor: Colors.orange,
+                    SnackBar(
+                      content: Text('Bookmarks coming soon!', style: theme.textTheme.bodyMedium?.copyWith(color: colorScheme.onPrimary)),
+                      backgroundColor: colorScheme.secondary,
                     ),
                   );
                 },
-                child: InkWell(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => BlogAddEditScreen()),
-                    );
-                  },
-                  child: const CircleAvatar(
-                    backgroundColor: Color(0xffA76FFF),
-                    radius: 30,
-                    child: Icon(Icons.add, size: 40, color: Colors.white),
-                  ),
-                ),
               ),
-              label: 'Floating',
-            ),
-            BottomNavigationBarItem(
-              icon: InkWell(
-                  onTap: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Under Development!'),
-                        backgroundColor: Colors.orange,
-                      ),
-                    );
-                  },
-                  child: Image.asset('assets/images/Bookmark.png')),
-              label: 'Save',
-            ),
-            BottomNavigationBarItem(
-              icon: Image.asset('assets/images/Path_33946.png'),
-              label: 'Settings',
-            ),
-          ],
-          unselectedItemColor: Colors.grey,
-          showUnselectedLabels: false,
-          showSelectedLabels: false,
-          type: BottomNavigationBarType.fixed,
-          selectedLabelStyle:
-              KTextStyle.subtitle1.copyWith(fontWeight: FontWeight.bold),
-          unselectedLabelStyle:
-              KTextStyle.subtitle1.copyWith(fontWeight: FontWeight.normal),
+              IconButton(
+                icon: Icon(Icons.settings_outlined, color: colorScheme.onSurfaceVariant),
+                onPressed: () => Navigator.pushNamed(context, '/settings'),
+              ),
+            ],
+          ),
         ),
-      );
-    
+      ),
+    );
   }
 }
 

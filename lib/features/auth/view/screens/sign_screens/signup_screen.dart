@@ -84,7 +84,7 @@ class SignupScreen extends ConsumerWidget {
                   TextFormField(
                     controller: _firstNameController,
                     decoration: InputDecoration(
-                      labelText: 'Full Name',
+                      labelText: 'First Name',
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8.0),
                       ),
@@ -104,7 +104,7 @@ class SignupScreen extends ConsumerWidget {
                   TextFormField(
                     controller: _lastNameController,
                     decoration: InputDecoration(
-                      labelText: 'Full Name',
+                      labelText: 'Last Name',
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8.0),
                       ),
@@ -124,7 +124,7 @@ class SignupScreen extends ConsumerWidget {
                   TextFormField(
                     controller: _usernameController,
                     decoration: InputDecoration(
-                      labelText: 'Full Name',
+                      labelText: 'User Name',
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8.0),
                       ),
@@ -163,6 +163,7 @@ class SignupScreen extends ConsumerWidget {
                       return null;
                     },
                   ),
+                  const SizedBox(height: 20),
                   TextFormField(
                     controller: _passwordController,
                     decoration: InputDecoration(

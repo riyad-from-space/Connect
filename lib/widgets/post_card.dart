@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../features/auth/data/repositories/auth_viewmodel_provider.dart';
 import '../features/blogs/data/model/blog_model.dart';
+import '../features/blogs/view/widgets/reaction_button.dart';
+import '../features/blogs/view/widgets/comment_button.dart';
 import 'category_chip.dart';
 
-class PostCard extends StatelessWidget {
+class PostCard extends ConsumerWidget {
   final Blog post;
   final VoidCallback onTap;
 
@@ -14,7 +18,13 @@ class PostCard extends StatelessWidget {
   }) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final user = ref.watch(authStateProvider).value;
+
+    if (user == null) {
+      return const SizedBox.shrink();
+    }
+
     return Card(
       elevation: 2,
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -53,13 +63,6 @@ class PostCard extends StatelessWidget {
                             fontSize: 16,
                           ),
                         ),
-                        // Text(
-                        //   _formatDate(post.createdAt),
-                        //   style: TextStyle(
-                        //     color: Colors.grey[600],
-                        //     fontSize: 14,
-                        //   ),
-                        // ),
                       ],
                     ),
                   ),
@@ -97,14 +100,25 @@ class PostCard extends StatelessWidget {
                   ],
                 ),
               ),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  ReactionButton(
+                    blogId: post.id,
+                    userId: user.uid,
+                  ),
+                  const SizedBox(width: 16),
+                  CommentButton(
+                    blogId: post.id,
+                    userId: user.uid,
+                    userName: user.firstName,
+                  ),
+                ],
+              ),
             ],
           ),
         ),
       ),
     );
-  }
-
-  String _formatDate(DateTime date) {
-    return '${date.day}/${date.month}/${date.year}';
   }
 }

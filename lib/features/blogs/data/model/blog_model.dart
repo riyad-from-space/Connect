@@ -8,6 +8,7 @@ class Blog {
   final String authorId;
   final String authorName;
   final int commentCount;
+  final int reactionCount;
   final Timestamp createdAt;
 
   Blog({
@@ -18,6 +19,7 @@ class Blog {
     required this.authorId,
     required this.authorName,
     this.commentCount = 0,
+    this.reactionCount = 0,
     required this.createdAt,
   });
 
@@ -30,6 +32,7 @@ class Blog {
       authorId: data['authorId'] ?? '',
       authorName: data['authorName'] ?? '',
       commentCount: data['commentCount'] ?? 0,
+      reactionCount: data['reactionCount'] ?? 0,
       createdAt: data['createdAt'] ?? Timestamp.now(),
     );
   }
@@ -42,6 +45,7 @@ class Blog {
       'authorId': authorId,
       'authorName': authorName,
       'commentCount': commentCount,
+      'reactionCount': reactionCount,
       'createdAt': createdAt,
     };
   }

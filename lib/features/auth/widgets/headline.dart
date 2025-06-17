@@ -15,7 +15,7 @@ class Headline extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(headline, style: KTextStyle.headline),
+        Text(headline, style: KTextStyle.headline1),
         Text(sub_headline!,style:KTextStyle.sub_headline ,)
 
       ],

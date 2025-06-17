@@ -1,17 +1,16 @@
 import 'package:connect/features/auth/view/screens/sign_screens/signup_screen.dart';
 import 'package:connect/features/auth/view/screens/signup_type_screen.dart';
-import 'package:connect/features/auth/view/screens/user_info_input_screen.dart';
 import 'package:connect/features/auth/view/screens/verification_code_screen.dart';
+import 'package:connect/features/auth/view/screens/login_screens/login_screen.dart';
+import 'package:connect/features/auth/widgets/auth_checker.dart';
+import 'package:connect/features/blogs/data/model/blog_model.dart';
+import 'package:connect/features/blogs/view/blog_add_edit_screen.dart';
+import 'package:connect/features/blogs/view/screens/post_detail_screen.dart';
 import 'package:connect/features/home/view/home_screen.dart';
-import 'package:connect/features/on_boarding/view/screens/topic_selection_screen.dart';
+import 'package:connect/features/settings/view/settings_screen.dart';
 import 'package:connect/features/splash_screen/splash_screen.dart';
 import 'package:connect/features/user_profile/view/user_profile_screen.dart';
-import 'package:connect/features/blogs/view/blog_add_edit_screen.dart'; // Add blog screen
 import 'package:flutter/material.dart';
-import 'features/auth/view/screens/login_screens/login_screen.dart';
-import 'features/auth/widgets/auth_checker.dart';
-import 'features/blogs/view/screens/post_detail_screen.dart';
-import 'features/blogs/data/model/blog_model.dart';
 
 class AppRouter {
   static Route<dynamic> generateRoute(RouteSettings settings) {
@@ -31,12 +30,10 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => SignupTypeScreen());
       case '/verification-code':
         return MaterialPageRoute(builder: (_) => VerificationCodeScreen());
-      case '/user-info':
-        return MaterialPageRoute(builder: (_) => UserInfoInputScreen());
-      case '/category-selection':
-        return MaterialPageRoute(builder: (_) => const TopicSelectionScreen());
       case '/home':
         return MaterialPageRoute(builder: (_) => HomeScreen());
+      case '/settings':
+        return MaterialPageRoute(builder: (_) => const SettingsScreen());
       case '/user-profile':
         return MaterialPageRoute(builder: (_) => const ProfileScreen());
       // Blog Routes

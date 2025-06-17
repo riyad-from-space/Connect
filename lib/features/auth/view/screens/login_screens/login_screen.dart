@@ -33,36 +33,36 @@ class LoginScreen extends ConsumerWidget {
     _passwordController.addListener(_updateFormValidity);
 
     return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        // leading: InkWell(
-        //   onTap: () {
-        //     Navigator.pop(context);
-        //   },
-        //   child: const CustomBackButton(),
-        // ),
-        actions: [
-          InkWell(
-            onTap: () {
-              Navigator.pushNamed(context, '/verification-code');
-            },
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Text(
-                'Forgotten Password?',
-                style: KTextStyle.subtitle1.copyWith(
-                  fontFamily: GoogleFonts.openSans().fontFamily,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 16,
-                  color: const Color(0xffA76FFF),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
+      // appBar: AppBar(
+      //   automaticallyImplyLeading: false,
+      //   // leading: InkWell(
+      //   //   onTap: () {
+      //   //     Navigator.pop(context);
+      //   //   },
+      //   //   child: const CustomBackButton(),
+      //   // ),
+      //   actions: [
+      //     InkWell(
+      //       onTap: () {
+      //         Navigator.pushNamed(context, '/verification-code');
+      //       },
+      //       child: Padding(
+      //         padding: const EdgeInsets.all(16),
+      //         child: Text(
+      //           'Forgotten Password?',
+      //           style: KTextStyle.subtitle1.copyWith(
+      //             fontFamily: GoogleFonts.openSans().fontFamily,
+      //             fontWeight: FontWeight.w600,
+      //             fontSize: 16,
+      //             color: const Color(0xffA76FFF),
+      //           ),
+      //         ),
+      //       ),
+      //     ),
+      //   ],
+      // ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.only(left: 16, right: 16, top: 100),
         child: SingleChildScrollView(
           child: Form(
             key: _formKey,

@@ -7,6 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/constants/text_style.dart';
 import '../../../../core/widgets/buttons/submit_button.dart';
 import '../../provider/selected_categories_provider.dart';
+import '../../provider/onboarding_status_provider.dart';
 import '../../../blogs/view_model/blog_viewmodel.dart';
 
 class TopicSelectionScreen extends ConsumerWidget {
@@ -108,6 +109,9 @@ class TopicSelectionScreen extends ConsumerWidget {
                   await FirebaseFirestore.instance.collection('users').doc(uid).update({
                     'selectedTopics': selectedCategories,
                   });
+
+                  // Mark onboarding as complete
+                  await ref.read(onboardingStatusProvider.notifier).completeOnboarding();
 
                   if (context.mounted) {
                     Navigator.pushReplacementNamed(context, '/home');
