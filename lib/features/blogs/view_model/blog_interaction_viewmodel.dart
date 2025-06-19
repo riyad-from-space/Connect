@@ -39,6 +39,29 @@ final commentsProvider = StreamProvider.family<List<Comment>, String>((ref, blog
           snapshot.docs.map((doc) => Comment.fromMap(doc.data(), doc.id)).toList());
 });
 
+// Provider for saved posts
+final savedPostsProvider = StreamProvider.family<List<String>, String>((ref, userId) {
+  return FirebaseFirestore.instance
+      .collection('users')
+      .doc(userId)
+      .collection('savedPosts')
+      .snapshots()
+      .map((snapshot) => snapshot.docs.map((doc) => doc.id).toList());
+});
+
+// Provider to check if a post is saved by the user
+final isPostSavedProvider = StreamProvider.family<bool, Map<String, String>>((ref, params) {
+  final userId = params['userId']!;
+  final blogId = params['blogId']!;
+  return FirebaseFirestore.instance
+      .collection('users')
+      .doc(userId)
+      .collection('savedPosts')
+      .doc(blogId)
+      .snapshots()
+      .map((doc) => doc.exists);
+});
+
 // Provider for reactions and comments controller
 final blogInteractionController = Provider((ref) => BlogInteractionController());
 
@@ -110,5 +133,44 @@ class BlogInteractionController {
     batch.update(blogRef, {'commentCount': FieldValue.increment(-1)});
     
     await batch.commit();
+  }
+
+  Future<void> toggleSave(String blogId, String userId) async {
+    try {
+      final batch = _firestore.batch();
+      final saveRef = _firestore
+          .collection('users')
+          .doc(userId)
+          .collection('savedPosts')
+          .doc(blogId);
+
+      final blogRef = _firestore.collection('blogs').doc(blogId);
+      
+      // Check current state
+      final doc = await saveRef.get();
+      
+      if (doc.exists) {
+        // Unsave: Remove from saved posts
+        batch.delete(saveRef);
+        batch.update(blogRef, {
+          'saveCount': FieldValue.increment(-1),
+        });
+      } else {
+        // Save: Add to saved posts
+        batch.set(saveRef, {
+          'savedAt': FieldValue.serverTimestamp(),
+          'blogId': blogId,
+          'userId': userId,
+        });
+        batch.update(blogRef, {
+          'saveCount': FieldValue.increment(1),
+        });
+      }
+      
+      await batch.commit();
+    } catch (e) {
+      print('Error toggling save: $e');
+      rethrow;
+    }
   }
 }

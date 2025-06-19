@@ -224,12 +224,7 @@ class HomeScreen extends ConsumerWidget {
               IconButton(
                 icon: Icon(Icons.bookmark_outline, color: colorScheme.onSurfaceVariant),
                 onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Bookmarks coming soon!', style: theme.textTheme.bodyMedium?.copyWith(color: colorScheme.onPrimary)),
-                      backgroundColor: colorScheme.secondary,
-                    ),
-                  );
+                  Navigator.pushNamed(context, '/saved-posts');
                 },
               ),
               IconButton(

@@ -9,6 +9,7 @@ class Blog {
   final String authorName;
   final int commentCount;
   final int reactionCount;
+  final int saveCount;      // Added saveCount
   final Timestamp createdAt;
 
   Blog({
@@ -20,6 +21,7 @@ class Blog {
     required this.authorName,
     this.commentCount = 0,
     this.reactionCount = 0,
+    this.saveCount = 0,     // Initialize saveCount
     required this.createdAt,
   });
 
@@ -33,6 +35,7 @@ class Blog {
       authorName: data['authorName'] ?? '',
       commentCount: data['commentCount'] ?? 0,
       reactionCount: data['reactionCount'] ?? 0,
+      saveCount: data['saveCount'] ?? 0,    // Add saveCount from data
       createdAt: data['createdAt'] ?? Timestamp.now(),
     );
   }
@@ -46,6 +49,7 @@ class Blog {
       'authorName': authorName,
       'commentCount': commentCount,
       'reactionCount': reactionCount,
+      'saveCount': saveCount,           // Add saveCount to map
       'createdAt': createdAt,
     };
   }
