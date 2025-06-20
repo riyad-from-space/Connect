@@ -24,10 +24,28 @@ class SavedPostsScreen extends ConsumerWidget {
       ),
       body: savedPostsAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text('Error: $e')),
+        error: (e, s) => Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.error_outline, color: Colors.red, size: 48),
+              const SizedBox(height: 16),
+              Text(
+                'Error loading saved posts: $e',
+                textAlign: TextAlign.center,
+                style: const TextStyle(color: Colors.red),
+              ),
+            ],
+          ),
+        ),
         data: (savedIds) {
           if (savedIds.isEmpty) {
-            return const Center(child: Text('No saved posts yet.'));
+            return const Center(
+              child: Text(
+                'No saved posts yet.',
+                style: TextStyle(fontSize: 16),
+              ),
+            );
           }
           return StreamBuilder<QuerySnapshot>(
             stream: FirebaseFirestore.instance
@@ -35,26 +53,120 @@ class SavedPostsScreen extends ConsumerWidget {
                 .where(FieldPath.documentId, whereIn: savedIds)
                 .snapshots(),
             builder: (context, snapshot) {
+              if (snapshot.hasError) {
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.error_outline, color: Colors.red, size: 48),
+                      const SizedBox(height: 16),
+                      Text(
+                        'Error loading saved posts: ${snapshot.error}',
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(color: Colors.red),
+                      ),
+                    ],
+                  ),
+                );
+              }
+
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());
               }
+
               if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                return const Center(child: Text('No saved posts found.'));
+                return const Center(
+                  child: Text(
+                    'No saved posts found.',
+                    style: TextStyle(fontSize: 16),
+                  ),
+                );
               }
-              final blogs = snapshot.data!.docs
-                  .map((doc) => Blog.fromMap(doc.data() as Map<String, dynamic>, doc.id))
-                  .toList();
-              return ListView.builder(
-                itemCount: blogs.length,
-                itemBuilder: (context, index) {
-                  return PostCard(
-                    post: blogs[index],
-                    onTap: () {
-                      Navigator.pushNamed(context, '/post-detail', arguments: blogs[index]);
-                    },
+
+              try {
+                final blogs = snapshot.data!.docs.map((doc) {
+                  try {
+                    final data = doc.data() as Map<String, dynamic>;
+                    
+                    // Validate required fields with detailed error reporting
+                    final requiredFields = {
+                      'title': data['title'],
+                      'content': data['content'],
+                      'authorId': data['authorId'],
+                      'authorName': data['authorName'],
+                      'category': data['category'],
+                      'createdAt': data['createdAt'],
+                    };
+
+                    final missingFields = requiredFields.entries
+                        .where((entry) => entry.value == null)
+                        .map((entry) => entry.key)
+                        .toList();
+
+                    if (missingFields.isNotEmpty) {
+                      debugPrint('Skipping invalid blog document ${doc.id}. Missing fields: ${missingFields.join(", ")}');
+                      return null;
+                    }
+
+                    // Additional type validation
+                    if (data['createdAt'] is! Timestamp) {
+                      debugPrint('Invalid createdAt field type in blog ${doc.id}');
+                      return null;
+                    }
+
+                    return Blog.fromMap(data, doc.id);
+                  } catch (e, stackTrace) {
+                    debugPrint('Error parsing blog document ${doc.id}: $e');
+                    debugPrint(stackTrace.toString());
+                    return null;
+                  }
+                })
+                .where((blog) => blog != null)
+                .cast<Blog>()
+                .toList();
+
+                if (blogs.isEmpty) {
+                  return const Center(
+                    child: Text(
+                      'No valid saved posts found.',
+                      style: TextStyle(fontSize: 16),
+                    ),
                   );
-                },
-              );
+                }
+
+                return ListView.builder(
+                  itemCount: blogs.length,
+                  itemBuilder: (context, index) {
+                    return PostCard(
+                      post: blogs[index],
+                      onTap: () {
+                        Navigator.pushNamed(
+                          context,
+                          '/post-detail',
+                          arguments: blogs[index],
+                        );
+                      },
+                    );
+                  },
+                );
+              } catch (error, stackTrace) {
+                debugPrint('Error processing saved posts: $error');
+                debugPrint(stackTrace.toString());
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.error_outline, color: Colors.red, size: 48),
+                      const SizedBox(height: 16),
+                      Text(
+                        'Error loading saved posts: $error',
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(color: Colors.red),
+                      ),
+                    ],
+                  ),
+                );
+              }
             },
           );
         },

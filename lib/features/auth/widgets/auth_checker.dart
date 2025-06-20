@@ -1,4 +1,3 @@
-import 'package:connect/features/auth/view/screens/sign_screens/signup_screen.dart';
 import 'package:connect/features/auth/view/screens/signup_type_screen.dart';
 import 'package:connect/features/home/view/home_screen.dart';
 import 'package:flutter/material.dart';

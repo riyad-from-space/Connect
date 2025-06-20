@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:connect/core/constants/colours.dart';
 import 'package:connect/features/auth/widgets/auth_checker.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -53,12 +54,7 @@ class _SplashScreenState extends State<SplashScreen> {
               padding: const EdgeInsets.only(bottom: 20),
               child: Text(
                 'Powered by Connect',
-                style: KTextStyle.subtitle1.copyWith(
-                  fontFamily: GoogleFonts.openSans().fontFamily,
-                  fontWeight: FontWeight.w400,
-                  fontSize: 14,
-                  color: const Color(0xff7E7F88),
-                ),
+                
               ),
             ),
           ),

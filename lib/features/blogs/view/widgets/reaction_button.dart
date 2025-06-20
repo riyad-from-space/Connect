@@ -1,3 +1,4 @@
+import 'package:connect/core/constants/colours.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../view_model/blog_interaction_viewmodel.dart';
@@ -42,7 +43,7 @@ class ReactionButton extends ConsumerWidget {
                 error: (_, __) => Icons.favorite_border,
               ),
               color: hasUserReacted.when(
-                data: (hasReacted) => hasReacted ? Colors.red : Colors.grey,
+                data: (hasReacted) => hasReacted ? KColor.primary : Colors.grey,
                 loading: () => Colors.grey,
                 error: (_, __) => Colors.grey,
               ),

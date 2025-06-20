@@ -1,3 +1,4 @@
+import 'package:connect/core/constants/colours.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -20,6 +21,8 @@ class SignupTypeButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     return Container(
       padding: const EdgeInsets.only(left: 30),
       height: 58,
@@ -30,25 +33,20 @@ class SignupTypeButton extends StatelessWidget {
       child: Row(
         children: [
           isGoogle ? image! : icon!,
-          const SizedBox(width: 50),
+          const SizedBox(width: 20),
           Text(
             'Continue with ',
-            style: KTextStyle.subtitle1.copyWith(
-              fontFamily: GoogleFonts.openSans().fontFamily,
-              fontWeight: FontWeight.w600,
-              fontSize: 15,
-              color: const Color(0xffA6A6A6),
-            ),
+            style:theme.textTheme.headlineLarge!.copyWith(
+              fontSize: 22,
+            )
           ),
           const SizedBox(width: 2),
           Text(
             provider_name,
-            style: KTextStyle.subtitle1.copyWith(
-              fontFamily: GoogleFonts.openSans().fontFamily,
-              fontWeight: FontWeight.w600,
-              fontSize: 15,
-              color: Colors.white,
-            ),
+              style:theme.textTheme.headlineLarge!.copyWith(
+              fontSize: 22,
+              color: KColor.white
+            )
           ),
         ],
       ),

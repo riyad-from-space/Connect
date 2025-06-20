@@ -1,7 +1,6 @@
+import 'package:connect/core/constants/colours.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
-import '../../constants/text_style.dart';
 
 class SubmitButton extends StatefulWidget {
   final bool isEnabled;
@@ -25,6 +24,8 @@ class SubmitButton extends StatefulWidget {
 class _SubmitButtonState extends State<SubmitButton> {
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     return InkWell(
       onTap: () {
         if (widget.isEnabled && widget.onSubmit != null) {
@@ -47,16 +48,18 @@ class _SubmitButtonState extends State<SubmitButton> {
         width: 290,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(36),
-          color: widget.isEnabled ? const Color(0xffA76FFF) : const Color.fromARGB(255, 201, 176, 240),
+          gradient: widget.isEnabled
+              ? KColor.purpleGradient
+              : null,
+          color: widget.isEnabled
+              ? null
+              : const Color.fromARGB(255, 201, 176, 240),
         ),
         child: Center(
           child: Text(
             widget.buttonText,
-            style: KTextStyle.subtitle1.copyWith(
-              fontFamily: GoogleFonts.openSans().fontFamily,
-              fontWeight: FontWeight.w600,
-              fontSize: 14,
-              color: const Color(0xff17131B),
+            style: theme.textTheme.headlineSmall!.copyWith(
+              color: widget.isEnabled ? KColor.white : KColor.black,
             ),
           ),
         ),

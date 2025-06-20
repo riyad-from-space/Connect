@@ -87,27 +87,19 @@ class _CommentBottomSheetState extends ConsumerState<CommentBottomSheet> {
                                             children: [
                                               Text(
                                                 comment.userName,
-                                                style: KTextStyle.subtitle1.copyWith(
-                                                  fontWeight: FontWeight.w600,
-                                                  color: KColor.black,
-                                                  fontSize: 16,
-                                                ),
+                                               
                                               ),
                                               const SizedBox(width: 8),
                                               Text(
                                                 _getTimeAgo(comment.timestamp.toDate()),
-                                                style: KTextStyle.subtitle1.copyWith(
-                                                  fontWeight: FontWeight.w700,
-                                                  color: Colors.grey,
-                                                  fontSize: 12,
-                                                ),
+
                                               ),
                                             ],
                                           ),
                                           const SizedBox(height: 4),
                                           Text(
                                             comment.content,
-                                            style: KTextStyle.for_description,
+                                           
                                           ),
                                         ],
                                       ),

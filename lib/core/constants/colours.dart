@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class KColor {
   // Primary Colors
-  static const Color primary = Color(0xffA76FFF);
+  static const Color primary = Color(0xff9C27B0);
   static const Color secondary = Color(0xFF00C922);
   static const Color accent = Color(0xFF246BFD);
   
@@ -17,11 +17,11 @@ class KColor {
   static const Color darkTextTertiary = Color(0xFF999999);
   
   // Neutral Colors
-  static const Color black = Color(0xff17131B);
+  static const Color black = Color(0xff212121);
   static const Color darkGrey = Color(0xff5C5D67);
   static const Color grey = Color(0xff7E7F88);
   static const Color lightGrey = Color(0xffC0C0C9);
-  static const Color white = Colors.white;
+  static const Color white = Color(0XFFDEFFFFFF);
   
   // Background Colors - Light Theme
   static const Color background = Color(0xffF2F9FB);
@@ -47,6 +47,14 @@ class KColor {
     Color(0xffA76FFF),
     Color(0xFF8A4FD8),
   ];
+  static const Color purple = Color(0xFF9C27B0);
+  static const Color purpleAccent = Color(0xFF7E57C2);
+
+  static const LinearGradient purpleGradient = LinearGradient(
+    colors: [purple, purpleAccent],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
   
   // Opacity Colors
   static Color blackOpacity5 = black.withOpacity(0.05);

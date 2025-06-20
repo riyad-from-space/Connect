@@ -1,19 +1,15 @@
+import 'package:connect/core/constants/colours.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../core/theme/text_styles.dart';
 import '../features/auth/data/repositories/auth_viewmodel_provider.dart';
 import '../features/blogs/data/model/blog_model.dart';
 import 'post_options_bottom_sheet.dart';
 
 import '../features/blogs/view/widgets/reaction_button.dart';
 import '../features/blogs/view/widgets/comment_button.dart';
-import '../features/blogs/view/widgets/save_button.dart';
-import '../features/blogs/view_model/blog_viewmodel.dart';
-import '../features/blogs/view_model/blog_interaction_viewmodel.dart';
 
-import 'category_chip.dart';
 
 class PostCard extends ConsumerWidget {
   final Blog post;
@@ -29,22 +25,23 @@ class PostCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(authStateProvider).value;
     final colorScheme = Theme.of(context).colorScheme;
-
+    final theme = Theme.of(context);
     if (user == null) {
       return const SizedBox.shrink();
     }    final dateStr = DateFormat('MMM d, yyyy').format(post.createdAt.toDate());
     final isAuthor = user.uid == post.authorId;
     
     return Card(
-      elevation: 4,
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      elevation: 6,
+      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(24),
       ),
+      shadowColor: colorScheme.primary.withOpacity(0.10),
       child: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.fromLTRB(18, 18, 18, 10),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -52,28 +49,28 @@ class PostCard extends ConsumerWidget {
                 Row(
                   children: [
                     CircleAvatar(
-                      backgroundColor: colorScheme.primary.withOpacity(0.15),
+                      radius: 22,
+                      backgroundColor: colorScheme.primary.withOpacity(0.13),
                       child: Text(
                         post.authorName[0].toUpperCase(),
                         style: TextStyle(
                           fontFamily: 'Poppins',
-                          color: colorScheme.onSurface,
+                          color: colorScheme.primary,
                           fontWeight: FontWeight.bold,
-                          fontSize: 18,
+                          fontSize: 20,
                         ),
                       ),
                     ),
-                    const SizedBox(width: 12),
+                    const SizedBox(width: 14),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             post.authorName,
-                            style: TextStyle(
-                              fontFamily: 'Poppins',
-                              fontWeight: FontWeight.w600,
+                            style: theme.textTheme.headlineLarge!.copyWith(
                               fontSize: 16,
+                              fontWeight: FontWeight.w600,
                               color: colorScheme.onSurface,
                             ),
                           ),
@@ -90,6 +87,7 @@ class PostCard extends ConsumerWidget {
                     ),
                     IconButton(
                       icon: const Icon(Icons.more_vert),
+                      splashRadius: 22,
                       onPressed: () async {
                         // Get initial save state without continuous watching
                         final saveState = await FirebaseFirestore.instance
@@ -120,28 +118,27 @@ class PostCard extends ConsumerWidget {
                 ),
                 // Content area (tappable)
                 InkWell(
+                  borderRadius: BorderRadius.circular(16),
                   onTap: onTap,
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 2),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           post.title,
-                          style: TextStyle(
-                            fontFamily: 'Poppins',
-                            fontSize: 20,
-                            fontWeight: FontWeight.w700,
+                          style: theme.textTheme.headlineLarge!.copyWith(
+                            fontSize: 21,
+                            fontWeight: FontWeight.bold,
                             color: colorScheme.onSurface,
                           ),
                         ),
                         const SizedBox(height: 8),
                         Text(
                           post.content,
-                          style: TextStyle(
-                            fontFamily: 'Poppins',
-                            fontSize: 15,
-                            color: colorScheme.onSurface.withOpacity(0.85),
+                          style: theme.textTheme.labelMedium?.copyWith(
+                            color: colorScheme.onSurfaceVariant,
+                            fontSize: 14.5,
                           ),
                           maxLines: 3,
                           overflow: TextOverflow.ellipsis,
@@ -150,18 +147,13 @@ class PostCard extends ConsumerWidget {
                     ),
                   ),
                 ),
-                // Category chip
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: CategoryChip(
-                    label: post.category,
-                    isSelected: true,
-                    onTap: () {},
-                    selectedColor: colorScheme.primary.withOpacity(0.15),
-                  ),
+                const SizedBox(height: 10),
+                Divider(
+                  color: colorScheme.primary.withOpacity(0.10),
+                  thickness: 1,
+                  height: 18,
                 ),
-                const SizedBox(height: 16),
-                // Interaction buttons
+                // Interaction buttons + category chip in one row
                 Row(
                   children: [
                     ReactionButton(
@@ -176,13 +168,44 @@ class PostCard extends ConsumerWidget {
                     ),
                     const SizedBox(width: 16),
                     IconButton(
-                      icon: Icon(Icons.auto_awesome,
+                      icon: Icon(
+                        Icons.auto_awesome,
                         color: colorScheme.primary,
                       ),
+                      splashRadius: 20,
                       onPressed: () {
                         Navigator.pushNamed(context, '/blog-ai', arguments: post);
                       },
                       tooltip: 'AI Features',
+                    ),
+                    const Spacer(),
+                    Container(
+                      height: 28,
+                      constraints: const BoxConstraints(minWidth: 60, maxWidth: 90),
+                      decoration: BoxDecoration(
+                        color: KColor.primary.withOpacity(0.08),
+                        border: Border.all(color: KColor.primary.withOpacity(0.3)),
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.label_rounded, size: 14, color: KColor.primary.withOpacity(0.7)),
+                          const SizedBox(width: 4),
+                          Flexible(
+                            child: Text(
+                              post.category,
+                              style: theme.textTheme.labelSmall?.copyWith(
+                                color: KColor.primary,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 12,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),

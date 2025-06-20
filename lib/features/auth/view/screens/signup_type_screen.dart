@@ -17,10 +17,13 @@ class SignupTypeScreen extends StatefulWidget {
 class _SignupTypeScreenState extends State<SignupTypeScreen> {
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.only(top: 154, left: 20, right: 20),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Image.asset(
@@ -31,12 +34,7 @@ class _SignupTypeScreenState extends State<SignupTypeScreen> {
             const SizedBox(height: 30),
             Text(
               'We Are Preparing Something Great For You!',
-              style: KTextStyle.subtitle1.copyWith(
-                fontFamily: GoogleFonts.openSans().fontFamily,
-                fontWeight: FontWeight.w700,
-                fontSize: 30,
-                color: const Color(0xff17131B),
-              ),
+              style: theme.textTheme.headlineLarge
             ),
             const SizedBox(height: 30),
             // InkWell(
@@ -82,16 +80,11 @@ class _SignupTypeScreenState extends State<SignupTypeScreen> {
             ),
             const SizedBox(height: 30),
             Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Text(
                   'Already have an account?',
-                  style: KTextStyle.subtitle1.copyWith(
-                    fontFamily: GoogleFonts.openSans().fontFamily,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 16,
-                    color: const Color(0xff5C5D67),
-                  ),
+                  style: theme.textTheme.headlineSmall
                 ),
                 const SizedBox(width: 2),
                 InkWell(
@@ -107,12 +100,9 @@ class _SignupTypeScreenState extends State<SignupTypeScreen> {
                     },
                     child: Text(
                       ' Log In',
-                      style: KTextStyle.subtitle1.copyWith(
-                        fontFamily: GoogleFonts.openSans().fontFamily,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 16,
-                        color: const Color(0xffA76FFF),
-                      ),
+                       style: theme.textTheme.headlineSmall!.copyWith(
+                        color: KColor.primary,
+                        fontWeight: FontWeight.w700,)
                     ),
                   ),
                 ),
@@ -121,13 +111,8 @@ class _SignupTypeScreenState extends State<SignupTypeScreen> {
             const SizedBox(height: 30),
             Text(
               'By continuing, you accept the Terms Of Use and Privacy Policy.',
-              style: KTextStyle.subtitle1.copyWith(
-                fontFamily: GoogleFonts.openSans().fontFamily,
-                fontWeight: FontWeight.w400,
-                fontSize: 12,
-                color: const Color(0xff5C5D67),
-              ),
-              textAlign: TextAlign.center,
+               style: theme.textTheme.headlineSmall,
+              
             ),
           ],
         ),

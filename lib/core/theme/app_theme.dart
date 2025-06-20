@@ -20,46 +20,23 @@ class AppTheme {
     ),
     scaffoldBackgroundColor: KColor.background,
     textTheme: GoogleFonts.poppinsTextTheme().copyWith(
-      displayLarge: TextStyle(
+        labelMedium: TextStyle(
+        fontSize: 14,
+        fontWeight: FontWeight.w400,
+        color: KColor.black,
+      ),
+      headlineLarge: TextStyle(
         fontSize: 32,
         fontWeight: FontWeight.bold,
-        color: KColor.textPrimary,
+        color: KColor.black,
+        height: 1.2,
       ),
-      displayMedium: TextStyle(
-        fontSize: 24,
-        fontWeight: FontWeight.bold,
-        color: KColor.textPrimary,
-      ),
-      titleLarge: TextStyle(
-        fontSize: 20,
-        fontWeight: FontWeight.w600,
-        color: KColor.textPrimary,
-      ),
-      titleMedium: TextStyle(
-        fontSize: 16,
-        fontWeight: FontWeight.w600,
-        color: KColor.textPrimary,
-      ),
-      bodyLarge: TextStyle(
-        fontSize: 16,
-        height: 1.5,
-        color: KColor.textSecondary,
-      ),
-      bodyMedium: TextStyle(
+      headlineSmall: TextStyle(
         fontSize: 14,
-        height: 1.5,
-        color: KColor.textSecondary,
-      ),
-      labelLarge: TextStyle(
-        fontSize: 16,
-        fontWeight: FontWeight.w500,
-        color: KColor.textPrimary,
-      ),
-      labelMedium: TextStyle(
-        fontSize: 14,
-        fontWeight: FontWeight.w500,
-        color: KColor.textSecondary,
-      ),
+        fontWeight: FontWeight.w400,
+
+        color: const Color(0xff5C5D67),
+      )
     ),
     appBarTheme: AppBarTheme(
       backgroundColor: KColor.white,
@@ -140,46 +117,24 @@ class AppTheme {
     ),
     scaffoldBackgroundColor: KColor.darkBackground,
     textTheme: GoogleFonts.poppinsTextTheme(ThemeData.dark().textTheme).copyWith(
-      displayLarge: TextStyle(
-        fontSize: 32,
-        fontWeight: FontWeight.bold,
-        color: KColor.darkTextPrimary,
-      ),
-      displayMedium: TextStyle(
-        fontSize: 24,
-        fontWeight: FontWeight.bold,
-        color: KColor.darkTextPrimary,
-      ),
-      titleLarge: TextStyle(
-        fontSize: 20,
-        fontWeight: FontWeight.w600,
-        color: KColor.darkTextPrimary,
-      ),
-      titleMedium: TextStyle(
-        fontSize: 16,
-        fontWeight: FontWeight.w600,
-        color: KColor.darkTextPrimary,
-      ),
-      bodyLarge: TextStyle(
-        fontSize: 16,
-        height: 1.5,
-        color: KColor.darkTextSecondary,
-      ),
-      bodyMedium: TextStyle(
-        fontSize: 14,
-        height: 1.5,
-        color: KColor.darkTextSecondary,
-      ),
-      labelLarge: TextStyle(
-        fontSize: 16,
-        fontWeight: FontWeight.w500,
-        color: KColor.darkTextPrimary,
-      ),
+
       labelMedium: TextStyle(
         fontSize: 14,
         fontWeight: FontWeight.w500,
         color: KColor.darkTextSecondary,
       ),
+      headlineLarge: TextStyle(
+        fontSize: 32,
+        fontWeight: FontWeight.bold,
+        color: KColor.white,
+        height: 1.2,
+      ),
+      headlineSmall: TextStyle(
+        fontSize: 14,
+        fontWeight: FontWeight.w600,
+        fontFamily: GoogleFonts.openSans().fontFamily,
+        color: const Color(0xff5C5D67),
+      )
     ),
     appBarTheme: AppBarTheme(
       backgroundColor: KColor.darkSurface,

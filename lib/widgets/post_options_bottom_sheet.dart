@@ -4,6 +4,8 @@ import '../core/theme/text_styles.dart';
 import '../features/blogs/data/model/blog_model.dart';
 import '../features/blogs/view_model/blog_viewmodel.dart';
 import '../features/blogs/view_model/blog_interaction_viewmodel.dart';
+import 'package:connect/features/chat/data/services/chat_service.dart';
+import 'package:connect/features/chat/view/chat_screen.dart';
 
 class PostOptionsBottomSheet extends ConsumerWidget {
   final Blog post;
@@ -76,6 +78,31 @@ class PostOptionsBottomSheet extends ConsumerWidget {
                       );
                     },
                   ),
+                  // Chat option (if not author)
+                  if (!isAuthor) ...[
+                    const SizedBox(height: 14),
+                    Container(height: 1, color: Color(0xffEFEFEF)),
+                    const SizedBox(height: 14),
+                    GestureDetector(
+                      onTap: () async {
+                        final chatService = ChatService();
+                        final chatId = await chatService.getOrCreateChatId(userId, post.authorId);
+                        if (context.mounted) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => ChatScreen(
+                                chatId: chatId,
+                                otherUserName: post.authorName,
+                                currentUserId: userId,
+                              ),
+                            ),
+                          );
+                        }
+                      },
+                      child: Text('Chat with Author', style: KTextStyle.bottom_sheet1),
+                    ),
+                  ],
 
                   if (isAuthor) ...[
                     const SizedBox(height: 14),

@@ -2,9 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
-
-import '../../../../core/constants/text_style.dart';
+import 'package:connect/core/constants/colours.dart';
 import '../../../../core/widgets/buttons/submit_button.dart';
 import '../../provider/selected_categories_provider.dart';
 import '../../provider/onboarding_status_provider.dart';
@@ -16,6 +14,7 @@ class TopicSelectionScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final selectedCategories = ref.watch(selectedCategoriesProvider);
+    final theme = Theme.of(context);
 
     return Scaffold(
       body: Padding(
@@ -26,12 +25,7 @@ class TopicSelectionScreen extends ConsumerWidget {
               const SizedBox(height: 30),
               Text(
                 'Pick Topic to Start Reading.....',
-                style: KTextStyle.subtitle1.copyWith(
-                  fontFamily: GoogleFonts.openSans().fontFamily,
-                  fontWeight: FontWeight.w700,
-                  fontSize: 30,
-                  color: const Color(0xff17131B),
-                ),
+                style: theme.textTheme.headlineLarge
               ),
               const SizedBox(height: 30),
               Builder(
@@ -69,19 +63,22 @@ class TopicSelectionScreen extends ConsumerWidget {
                               child: Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
                                 decoration: BoxDecoration(
+                                  gradient: selectedCategories.contains(cat)
+                                      ? KColor.purpleGradient
+                                      : null,
                                   color: selectedCategories.contains(cat)
-                                      ? const Color(0xffF4E300)
+                                      ? null
                                       : const Color(0xffF2F9FB),
                                   border: Border.all(width: 1, color: const Color(0xffD6E5EA)),
                                   borderRadius: BorderRadius.circular(40),
                                 ),
                                 child: Text(
                                   cat,
-                                  style: KTextStyle.subtitle1.copyWith(
-                                    fontFamily: GoogleFonts.openSans().fontFamily,
+                                  style: TextStyle(
+                                    color: selectedCategories.contains(cat)
+                                        ? Colors.white
+                                        : Colors.black,
                                     fontWeight: FontWeight.w600,
-                                    fontSize: 14,
-                                    color: const Color(0xff17131B),
                                   ),
                                 ),
                               ),
@@ -114,7 +111,11 @@ class TopicSelectionScreen extends ConsumerWidget {
                   await ref.read(onboardingStatusProvider.notifier).completeOnboarding();
 
                   if (context.mounted) {
-                    Navigator.pushReplacementNamed(context, '/home');
+                    Navigator.pushNamedAndRemoveUntil(
+                      context,
+                      '/home',
+                      (route) => false,
+                    );
                   }
                 },
                 buttonText: 'Continue',

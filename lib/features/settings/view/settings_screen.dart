@@ -1,8 +1,11 @@
+import 'package:connect/core/constants/colours.dart';
 import 'package:connect/core/theme/theme_provider.dart';
 import 'package:connect/features/auth/data/repositories/auth_viewmodel_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import 'package:connect/core/widgets/buttons/submit_button.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({Key? key}) : super(key: key);
@@ -36,15 +39,20 @@ class SettingsScreen extends ConsumerWidget {
             padding: const EdgeInsets.all(16),
             child: Row(
               children: [
-                CircleAvatar(
-                  radius: 30,
-                  backgroundColor: Theme.of(context).colorScheme.primary,
+                Container(
+                  width: 60,
+                  height: 60,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: KColor.purpleGradient,
+                  ),
+                  alignment: Alignment.center,
                   child: Text(
                     user.firstName[0].toUpperCase(),
                     style: const TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
+                      fontSize: 32,
                       color: Colors.white,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
@@ -164,8 +172,9 @@ class SettingsScreen extends ConsumerWidget {
           // Logout Section
           Padding(
             padding: const EdgeInsets.all(16),
-            child: ElevatedButton(
-              onPressed: () async {
+            child: SubmitButton(
+              isEnabled: true,
+              onSubmit: () async {
                 await FirebaseAuth.instance.signOut();
                 if (context.mounted) {
                   Navigator.pushNamedAndRemoveUntil(
@@ -175,14 +184,8 @@ class SettingsScreen extends ConsumerWidget {
                   );
                 }
               },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Theme.of(context).colorScheme.error,
-                foregroundColor: Colors.white,
-              ),
-              child: Text(
-                'Logout',
-                style: textTheme.labelLarge?.copyWith(color: Colors.white),
-              ),
+              buttonText: 'Logout',
+              message: '',
             ),
           ),
           

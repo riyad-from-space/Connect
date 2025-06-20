@@ -1,5 +1,7 @@
+import 'package:connect/core/constants/colours.dart';
 import 'package:connect/core/widgets/buttons/submit_button.dart';
 import 'package:connect/features/auth/data/repositories/auth_viewmodel_provider.dart';
+import 'package:connect/features/auth/view/screens/login_screens/login_screen.dart';
 import 'package:connect/features/auth/widgets/headline.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -16,9 +18,12 @@ class SignupScreen extends ConsumerWidget {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isFormValid = ref.watch(isFormValidProvider);
+        final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
 
     void _updateFormValidity() {
       final firstNameFilled = _firstNameController.text.isNotEmpty;
@@ -39,10 +44,10 @@ class SignupScreen extends ConsumerWidget {
     return Scaffold(
       body: Center(
         child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: SingleChildScrollView(
-            child: Form(
-              key: _formKey,
+          padding: const EdgeInsets.only(top: 30, left:16, right: 16),
+          child: Form(
+            key: _formKey,
+            child: SingleChildScrollView(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -73,7 +78,7 @@ class SignupScreen extends ConsumerWidget {
                     ],
                   ),
                   SizedBox(
-                    height: 100,
+                    height: 70,
                   ),
                   Headline(
                     headline: 'Welcome To Connect',
@@ -205,7 +210,7 @@ class SignupScreen extends ConsumerWidget {
                                 email: _emailController.text.trim(),
                                 password: _passwordController.text.trim(),
                               );
-
+              
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
                                   content: Text(
@@ -213,7 +218,7 @@ class SignupScreen extends ConsumerWidget {
                                   backgroundColor: Colors.green,
                                 ),
                               );
-
+              
                               Navigator.pushReplacementNamed(context, '/category-selection');
                             } catch (e) {
                               ScaffoldMessenger.of(context).showSnackBar(
@@ -238,28 +243,26 @@ class SignupScreen extends ConsumerWidget {
                       ),
                       const SizedBox(height: 20),
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'Already have an account? ',
-                            style: TextStyle(fontSize: 16),
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Text(
+                  'Already have an account?',
+                  style: theme.textTheme.headlineSmall
+                ),
+                const SizedBox(width: 2),
+                InkWell(
+                  onTap: () {
+                    Navigator.pushNamed(context, '/login');
+                  },
+                  child: Text(
+                    ' Log In',
+                     style: theme.textTheme.headlineSmall!.copyWith(
+                      color: KColor.primary,
+                      fontWeight: FontWeight.w700,)
+                  ),
+                ),
+              ],
                           ),
-                          TextButton(
-                            onPressed: () {
-                              // Navigate to Sign Up page
-                              Navigator.pushReplacementNamed(context, '/login');
-                            },
-                            child: const Text(
-                              'Log In',
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Color(0xffA76FFF),
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
                     ],
                   ),
                 ],

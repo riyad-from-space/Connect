@@ -12,11 +12,13 @@ class Headline extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(headline, style: KTextStyle.headline1),
-        Text(sub_headline!,style:KTextStyle.sub_headline ,)
+        Text(headline, style: theme.textTheme.headlineLarge),
+        Text(sub_headline!,style:theme.textTheme.headlineSmall,)
 
       ],
     );

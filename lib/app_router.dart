@@ -26,17 +26,35 @@ class AppRouter {
       case '/auth-checker':
         return MaterialPageRoute(builder: (_) => AuthChecker());
       case '/login':
-        return MaterialPageRoute(builder: (_) => LoginScreen());
+        return MaterialPageRoute(
+          builder: (context) => LoginScreen(),
+          settings: RouteSettings(name: '/login'),
+        );
       case '/signup':
-        return MaterialPageRoute(builder: (_) => SignupScreen());
+        return MaterialPageRoute(
+          builder: (context) => SignupScreen(),
+          settings: RouteSettings(name: '/signup'),
+        );
       case '/signup-type':
-        return MaterialPageRoute(builder: (_) => SignupTypeScreen());
-      case'/category-selection':
-        return MaterialPageRoute(builder: (_) => TopicSelectionScreen());
+        return MaterialPageRoute(
+          builder: (context) => SignupTypeScreen(),
+          settings: RouteSettings(name: '/signup-type'),
+        );
+      case '/category-selection':
+        return MaterialPageRoute(
+          builder: (context) => TopicSelectionScreen(),
+          settings: RouteSettings(name: '/category-selection'),
+        );
       case '/verification-code':
-        return MaterialPageRoute(builder: (_) => VerificationCodeScreen());
+        return MaterialPageRoute(
+          builder: (context) => VerificationCodeScreen(),
+          settings: RouteSettings(name: '/verification-code'),
+        );
       case '/home':
-        return MaterialPageRoute(builder: (_) => HomeScreen());
+        return MaterialPageRoute(
+          builder: (context) => HomeScreen(),
+          settings: RouteSettings(name: '/home'),
+        );
       case '/settings':
         return MaterialPageRoute(builder: (_) => const SettingsScreen());
       case '/user-profile':
@@ -44,26 +62,22 @@ class AppRouter {
       // Blog Routes
       case '/create-post':
         return MaterialPageRoute(builder: (_) => const BlogAddEditScreen());
-      
       case '/edit-post':
         final post = settings.arguments as Blog;
         return MaterialPageRoute(builder: (_) => BlogAddEditScreen(post: post));
-
       case '/post-detail':
         final post = settings.arguments as Blog;
         return MaterialPageRoute(builder: (_) => PostDetailScreen(post: post));
       case '/saved-posts':
         return MaterialPageRoute(builder: (_) => const SavedPostsScreen());
-        
       case '/blog-ai':
         final post = settings.arguments as Blog;
         return MaterialPageRoute(builder: (_) => BlogAiScreen(blog: post));
-
       default:
         return MaterialPageRoute(
           builder: (_) => Scaffold(
             body: Center(
-              child: Text('No route defined for ${settings.name}'),
+              child: Text('No route defined for {settings.name}'),
             ),
           ),
         );
