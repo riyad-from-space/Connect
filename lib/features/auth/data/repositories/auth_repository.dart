@@ -24,6 +24,11 @@ class AuthRepository {
         throw Exception('User creation failed');
       }
 
+      // Send email verification
+      if (!userCredential.user!.emailVerified) {
+        await userCredential.user!.sendEmailVerification();
+      }
+
       // Create the user data
       final user = UserModel(
         uid: userCredential.user!.uid,
@@ -59,6 +64,10 @@ class AuthRepository {
         email: email,
         password: password,
       );
+      if (!userCredential.user!.emailVerified) {
+        await _auth.signOut();
+        throw Exception('Please verify your email address before logging in. Check your inbox for the verification link.');
+      }
       final doc = await _firestore.collection('users').doc(userCredential.user!.uid).get();
       if (!doc.exists) throw Exception('User not found');
       return UserModel.fromMap(doc.data()!);

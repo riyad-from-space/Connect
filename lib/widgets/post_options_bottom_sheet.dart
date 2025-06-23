@@ -1,3 +1,4 @@
+import 'package:connect/core/constants/colours.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../core/theme/text_styles.dart';
@@ -36,7 +37,7 @@ class PostOptionsBottomSheet extends ConsumerWidget {
           margin: const EdgeInsets.fromLTRB(8, 100, 8, 10),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(24),
-            color: Colors.white
+            color: Theme.of(context).brightness == Brightness.light ? KColor.white : KColor.darkSurface,
           ),
           child: Padding(
             padding: const EdgeInsets.fromLTRB(0, 16, 0, 14),
@@ -73,7 +74,10 @@ class PostOptionsBottomSheet extends ConsumerWidget {
                         },
                         child: Text(
                           initialSaveState ? 'Unsave Post' : 'Save Post',
-                          style: KTextStyle.bottom_sheet1,
+                           style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                            color: Theme.of(context).colorScheme.onSurfaceVariant,
+                            fontSize: 15,
+                          ),
                         ),
                       );
                     },
@@ -100,7 +104,10 @@ class PostOptionsBottomSheet extends ConsumerWidget {
                           );
                         }
                       },
-                      child: Text('Chat with Author', style: KTextStyle.bottom_sheet1),
+                      child: Text('Chat with Author',  style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                            color: Theme.of(context).colorScheme.onSurfaceVariant,
+                            fontSize: 15,
+                          ),),
                     ),
                   ],
 
@@ -117,7 +124,10 @@ class PostOptionsBottomSheet extends ConsumerWidget {
                           arguments: post
                         );
                       },
-                      child: Text('Edit Blog', style: KTextStyle.bottom_sheet1),
+                      child: Text('Edit Blog',  style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                            color: Theme.of(context).colorScheme.onSurfaceVariant,
+                            fontSize: 15,
+                          ),),
                     ),
                     const SizedBox(height: 14),
                     Container(height: 1, color: const Color(0xffEFEFEF)),
@@ -134,7 +144,10 @@ class PostOptionsBottomSheet extends ConsumerWidget {
                         );
                         Navigator.pop(context);
                       },
-                      child: Text('Delete Blog', style: KTextStyle.bottom_sheet2),
+                      child: Text('Delete Blog', style:Theme.of(context).textTheme.labelMedium?.copyWith(
+                            color: Theme.of(context).colorScheme.onSurfaceVariant,
+                            fontSize: 15,
+                          ),),
                     ),
                   ],
                 ],
@@ -150,10 +163,13 @@ class PostOptionsBottomSheet extends ConsumerWidget {
             height: 58,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16),
-              color: Colors.white
+              color:Theme.of(context).brightness == Brightness.light ? KColor.white : KColor.darkSurface,
             ),
             child: Center(
-              child: Text('Cancel', style: KTextStyle.bottom_sheet1)
+              child: Text('Cancel',  style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                            color: Theme.of(context).colorScheme.onSurfaceVariant,
+                            fontSize: 15,
+                          ),)
             ),
           ),
         ),

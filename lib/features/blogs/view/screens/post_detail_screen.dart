@@ -93,7 +93,7 @@ class PostDetailScreen extends StatelessWidget {
                   Text(
                     post.content,
                     style: GoogleFonts.poppins(
-                      fontSize: 16,
+                      fontSize: 15,
                       height: 1.6,
                     ),
                   ),

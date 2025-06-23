@@ -138,7 +138,7 @@ class PostCard extends ConsumerWidget {
                           post.content,
                           style: theme.textTheme.labelMedium?.copyWith(
                             color: colorScheme.onSurfaceVariant,
-                            fontSize: 14.5,
+                            fontSize: 15,
                           ),
                           maxLines: 3,
                           overflow: TextOverflow.ellipsis,

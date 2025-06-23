@@ -71,31 +71,16 @@ class HomeScreen extends ConsumerWidget {
                     ),
                   ),
                   ),
-                  // Container(
-                  //   height: screenHeight * 0.05,
-                  //   width: screenWidth * 0.10,
-                  //   decoration: BoxDecoration(
-                  //     shape: BoxShape.circle,
-                  //     border: Border.all(color: colorScheme.outline.withOpacity(0.2)),
-                  //   ),
-                  //   child: InkWell(
-                  //     onTap: () {
-                  //       ScaffoldMessenger.of(context).showSnackBar(
-                  //         SnackBar(
-                  //           content: Text(
-                  //             'Under Development!',
-                  //             style: theme.textTheme.bodyMedium?.copyWith(color: colorScheme.onPrimary),
-                  //           ),
-                  //           backgroundColor: colorScheme.secondary,
-                  //         ),
-                  //       );
-                  //     },
-                  //     child: Icon(
-                  //       Icons.notifications_none_rounded,
-                  //       color: colorScheme.onSurface,
-                  //     ),
-                  //   ),
-                  // ),
+                  TextButton(
+                    onPressed: () => Navigator.pushNamed(context, '/create-post'),
+                    child: Text(
+                      'Create Post',
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        color: colorScheme.primary,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -204,12 +189,6 @@ class HomeScreen extends ConsumerWidget {
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => Navigator.pushNamed(context, '/create-post'),
-        backgroundColor: colorScheme.primary,
-        child: const Icon(Icons.add, color: Colors.white),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: BottomAppBar(
         color: theme.scaffoldBackgroundColor,
         shape: const CircularNotchedRectangle(),

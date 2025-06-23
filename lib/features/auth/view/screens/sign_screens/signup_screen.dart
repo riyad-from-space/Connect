@@ -160,10 +160,12 @@ class SignupScreen extends ConsumerWidget {
                       if (value == null || value.isEmpty) {
                         return 'Email is required.';
                       }
-                      final emailRegex =
-                      RegExp(r'^[a-zA-Z0-9._%+-]+@gmail\.com$');
+                      // Debug print for diagnosis
+                      print('Validating email: ' + value);
+                      // More robust email regex
+                      final emailRegex = RegExp(r"^[\w-.]+@([\w-]+\.)+[\w-]{2,4}");
                       if (!emailRegex.hasMatch(value)) {
-                        return 'Please enter a valid Gmail address.';
+                        return 'Please enter a valid email address.';
                       }
                       return null;
                     },
@@ -214,7 +216,7 @@ class SignupScreen extends ConsumerWidget {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
                                   content: Text(
-                                      'Sign Up Successful! Verification email sent.'),
+                                      'Sign Up Successful! Please check your email for a verification link.'),
                                   backgroundColor: Colors.green,
                                 ),
                               );

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/constants/colours.dart';
-import '../../../core/constants/text_style.dart';
 import '../view_model/blog_interaction_viewmodel.dart';
 
 class CommentBottomSheet extends ConsumerStatefulWidget {
@@ -38,7 +37,7 @@ class _CommentBottomSheetState extends ConsumerState<CommentBottomSheet> {
     return SizedBox(
       height: 680,
       child: Scaffold(
-        backgroundColor: Colors.transparent,
+        backgroundColor:Theme.of(context).brightness == Brightness.light ? KColor.white : KColor.darkSurface,
         body: Stack(
           children: [
             SingleChildScrollView(
@@ -134,7 +133,7 @@ class _CommentBottomSheetState extends ConsumerState<CommentBottomSheet> {
               alignment: Alignment.bottomCenter,
               child: Container(
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: Theme.of(context).brightness == Brightness.light ? KColor.white : KColor.darkSurface,
                   border: Border(
                     top: BorderSide(color: KColor.grey.withOpacity(0.2)),
                   ),

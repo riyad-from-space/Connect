@@ -1,3 +1,5 @@
+import 'package:connect/core/constants/colours.dart';
+import 'package:connect/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/model/blog_model.dart';
@@ -5,6 +7,7 @@ import '../../view_model/ai_viewmodel.dart';
 
 class BlogAiScreen extends ConsumerStatefulWidget {
   final Blog blog;
+  
 
   const BlogAiScreen({Key? key, required this.blog}) : super(key: key);
 
@@ -14,10 +17,14 @@ class BlogAiScreen extends ConsumerStatefulWidget {
 
 class _BlogAiScreenState extends ConsumerState<BlogAiScreen> {
   bool isSpeaking = false;
+  
 
   @override
   Widget build(BuildContext context) {
+
     final colorScheme = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
+
     
     return Scaffold(
       appBar: AppBar(
@@ -43,12 +50,7 @@ class _BlogAiScreenState extends ConsumerState<BlogAiScreen> {
             // AI Features
             Text(
               'AI Features',
-              style: TextStyle(
-                fontFamily: 'Poppins',
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-                color: colorScheme.onSurface,
-              ),
+              style: theme.textTheme.headlineLarge,
             ),
             const SizedBox(height: 16),
             
@@ -92,21 +94,17 @@ class _BlogAiScreenState extends ConsumerState<BlogAiScreen> {
         minChildSize: 0.5,
         maxChildSize: 0.95,
         builder: (_, controller) => Container(
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+          decoration: BoxDecoration(
+            color: Theme.of(context).brightness == Brightness.light ? KColor.white : KColor.darkSurface,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
           ),
           padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
+              Text(
                 'AI Summary',
-                style: TextStyle(
-                  fontFamily: 'Poppins',
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: Theme.of(context).textTheme.headlineLarge,
               ),
               const SizedBox(height: 16),
               Expanded(
@@ -127,11 +125,10 @@ class _BlogAiScreenState extends ConsumerState<BlogAiScreen> {
                           controller: controller,
                           child: Text(
                             response.summary,
-                            style: const TextStyle(
-                              fontFamily: 'Poppins',
-                              fontSize: 16,
-                              height: 1.5,
-                            ),
+                            style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                            color: Theme.of(context).colorScheme.onSurfaceVariant,
+                            fontSize: 15,
+                          ),
                           ),
                         );
                       },

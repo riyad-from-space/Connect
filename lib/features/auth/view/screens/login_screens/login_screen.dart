@@ -192,7 +192,7 @@ class LoginScreen extends ConsumerWidget {
                             } catch (e) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
-                                  content: Text('Error: ${e.toString()}'),
+                                  content: Text(e is Exception ? e.toString().replaceAll('Exception: ', '') : e.toString()),
                                   backgroundColor: Colors.red,
                                 ),
                               );
