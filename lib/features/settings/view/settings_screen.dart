@@ -1,14 +1,13 @@
 import 'package:connect/core/constants/colours.dart';
 import 'package:connect/core/theme/theme_provider.dart';
+import 'package:connect/core/widgets/buttons/submit_button.dart';
 import 'package:connect/features/auth/data/repositories/auth_viewmodel_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:connect/core/widgets/buttons/submit_button.dart';
-
 class SettingsScreen extends ConsumerWidget {
-  const SettingsScreen({Key? key}) : super(key: key);
+  const SettingsScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -16,6 +15,7 @@ class SettingsScreen extends ConsumerWidget {
     final themeMode = ref.watch(themeProvider);
     final isDark = themeMode == ThemeMode.dark;
     final textTheme = Theme.of(context).textTheme;
+    final theme = Theme.of(context);
 
     if (user == null) {
       return Scaffold(
@@ -29,7 +29,9 @@ class SettingsScreen extends ConsumerWidget {
     }
 
     return Scaffold(
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
+        backgroundColor: theme.scaffoldBackgroundColor,
         title: Text('Settings', style: textTheme.titleLarge),
       ),
       body: ListView(
@@ -78,13 +80,14 @@ class SettingsScreen extends ConsumerWidget {
                     size: 20,
                     color: Theme.of(context).colorScheme.onSurface,
                   ),
-                  onPressed: () => Navigator.pushNamed(context, '/user-profile'),
+                  onPressed: () =>
+                      Navigator.pushNamed(context, '/user-profile'),
                 ),
               ],
             ),
           ),
           const Divider(),
-          
+
           // Theme Section
           ListTile(
             leading: Icon(
@@ -99,7 +102,7 @@ class SettingsScreen extends ConsumerWidget {
             ),
           ),
           const Divider(),
-          
+
           // Other Settings
           ListTile(
             leading: Icon(
@@ -168,7 +171,7 @@ class SettingsScreen extends ConsumerWidget {
             },
           ),
           const Divider(),
-          
+
           // Logout Section
           Padding(
             padding: const EdgeInsets.all(16),
@@ -188,7 +191,7 @@ class SettingsScreen extends ConsumerWidget {
               message: '',
             ),
           ),
-          
+
           // App Version
           Center(
             child: Padding(
@@ -196,7 +199,8 @@ class SettingsScreen extends ConsumerWidget {
               child: Text(
                 'Version 1.0.0',
                 style: textTheme.bodySmall?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                  color:
+                      Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
                 ),
               ),
             ),

@@ -1,15 +1,14 @@
 import 'package:connect/core/constants/colours.dart';
-import 'package:connect/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../data/model/blog_model.dart';
 import '../../view_model/ai_viewmodel.dart';
 
 class BlogAiScreen extends ConsumerStatefulWidget {
   final Blog blog;
-  
 
-  const BlogAiScreen({Key? key, required this.blog}) : super(key: key);
+  const BlogAiScreen({super.key, required this.blog});
 
   @override
   ConsumerState<BlogAiScreen> createState() => _BlogAiScreenState();
@@ -17,18 +16,18 @@ class BlogAiScreen extends ConsumerStatefulWidget {
 
 class _BlogAiScreenState extends ConsumerState<BlogAiScreen> {
   bool isSpeaking = false;
-  
 
   @override
   Widget build(BuildContext context) {
-
     final colorScheme = Theme.of(context).colorScheme;
     final theme = Theme.of(context);
 
-    
     return Scaffold(
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        title: const Text('AI Features', style: TextStyle(fontFamily: 'Poppins')),
+        backgroundColor: theme.scaffoldBackgroundColor,
+        title:
+            const Text('AI Features', style: TextStyle(fontFamily: 'Poppins')),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -46,14 +45,14 @@ class _BlogAiScreenState extends ConsumerState<BlogAiScreen> {
               ),
             ),
             const SizedBox(height: 24),
-            
+
             // AI Features
             Text(
               'AI Features',
               style: theme.textTheme.headlineLarge,
             ),
             const SizedBox(height: 16),
-            
+
             // Summary Card
             Card(
               child: ListTile(
@@ -63,9 +62,9 @@ class _BlogAiScreenState extends ConsumerState<BlogAiScreen> {
                 onTap: () => _showSummary(context),
               ),
             ),
-            
+
             const SizedBox(height: 12),
-            
+
             // Text to Speech Card
             Card(
               child: ListTile(
@@ -95,7 +94,9 @@ class _BlogAiScreenState extends ConsumerState<BlogAiScreen> {
         maxChildSize: 0.95,
         builder: (_, controller) => Container(
           decoration: BoxDecoration(
-            color: Theme.of(context).brightness == Brightness.light ? KColor.white : KColor.darkSurface,
+            color: Theme.of(context).brightness == Brightness.light
+                ? KColor.white
+                : KColor.darkSurface,
             borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
           ),
           padding: const EdgeInsets.all(16),
@@ -110,10 +111,9 @@ class _BlogAiScreenState extends ConsumerState<BlogAiScreen> {
               Expanded(
                 child: Consumer(
                   builder: (context, ref, child) {
-                    final summaryAsync = ref.watch(
-                      blogSummaryProvider(widget.blog.content)
-                    );
-                    
+                    final summaryAsync =
+                        ref.watch(blogSummaryProvider(widget.blog.content));
+
                     return summaryAsync.when(
                       data: (response) {
                         if (response.error.isNotEmpty) {
@@ -125,10 +125,15 @@ class _BlogAiScreenState extends ConsumerState<BlogAiScreen> {
                           controller: controller,
                           child: Text(
                             response.summary,
-                            style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                            color: Theme.of(context).colorScheme.onSurfaceVariant,
-                            fontSize: 15,
-                          ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .labelMedium
+                                ?.copyWith(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onSurfaceVariant,
+                                  fontSize: 15,
+                                ),
                           ),
                         );
                       },
@@ -151,7 +156,7 @@ class _BlogAiScreenState extends ConsumerState<BlogAiScreen> {
 
   Future<void> _toggleSpeech(BuildContext context) async {
     final ttsController = ref.read(textToSpeechControllerProvider);
-    
+
     setState(() {
       isSpeaking = !isSpeaking;
     });

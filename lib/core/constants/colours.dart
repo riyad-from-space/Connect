@@ -5,31 +5,31 @@ class KColor {
   static const Color primary = Color(0xff9C27B0);
   static const Color secondary = Color(0xFF00C922);
   static const Color accent = Color(0xFF246BFD);
-  
+
   // Text Colors - Light Theme
   static const Color textPrimary = Color(0xFF1A1A1A);
   static const Color textSecondary = Color(0xFF404040);
   static const Color textTertiary = Color(0xFF666666);
-  
+
   // Text Colors - Dark Theme
   static const Color darkTextPrimary = Color(0xFFE6E6E6);
   static const Color darkTextSecondary = Color(0xFFBDBDBD);
   static const Color darkTextTertiary = Color(0xFF999999);
-  
+
   // Neutral Colors
   static const Color black = Color(0xff212121);
   static const Color darkGrey = Color(0xff5C5D67);
   static const Color grey = Color(0xff7E7F88);
   static const Color lightGrey = Color(0xffC0C0C9);
-  static const Color white = Color(0XFFDEFFFFFF);
-  
+  static const Color white = Color(0xffdeffffff);
+
   // Background Colors - Light Theme
-  static const Color background = Color(0xffF2F9FB);
+  static const Color background = Color(0xffFAFAFA);
   static const Color surface = Color(0xffFAFAFA);
-  
+
   // Background Colors - Dark Theme
   static const Color darkBackground = Color(0xFF121212);
-  static const Color darkSurface = Color(0xFF1E1E1E);
+  static const Color darkSurface = Color(0xFF121212);
   static const Color darkCard = Color(0xFF2C2C2C);
 
   // Status Colors
@@ -55,7 +55,7 @@ class KColor {
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
-  
+
   // Opacity Colors
   static Color blackOpacity5 = black.withOpacity(0.05);
   static Color blackOpacity10 = black.withOpacity(0.1);

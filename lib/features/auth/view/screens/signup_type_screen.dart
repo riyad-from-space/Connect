@@ -1,14 +1,11 @@
 import 'package:connect/features/auth/view/screens/login_screens/login_screen.dart';
-import 'package:connect/features/auth/view/screens/sign_screens/signup_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../core/constants/colours.dart';
-import '../../../../core/constants/text_style.dart';
 import '../../widgets/signup_type_button.dart';
 
 class SignupTypeScreen extends StatefulWidget {
-  const SignupTypeScreen({Key? key}) : super(key: key);
+  const SignupTypeScreen({super.key});
 
   @override
   State<SignupTypeScreen> createState() => _SignupTypeScreenState();
@@ -20,6 +17,7 @@ class _SignupTypeScreenState extends State<SignupTypeScreen> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     return Scaffold(
+      backgroundColor: theme.scaffoldBackgroundColor,
       body: Padding(
         padding: const EdgeInsets.only(top: 154, left: 20, right: 20),
         child: Column(
@@ -32,10 +30,8 @@ class _SignupTypeScreenState extends State<SignupTypeScreen> {
               width: 50,
             ),
             const SizedBox(height: 30),
-            Text(
-              'We Are Preparing Something Great For You!',
-              style: theme.textTheme.headlineLarge
-            ),
+            Text('We Are Preparing Something Great For You!',
+                style: theme.textTheme.headlineLarge),
             const SizedBox(height: 30),
             // InkWell(
             //     onTap: () {
@@ -82,10 +78,8 @@ class _SignupTypeScreenState extends State<SignupTypeScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                Text(
-                  'Already have an account?',
-                  style: theme.textTheme.headlineSmall
-                ),
+                Text('Already have an account?',
+                    style: theme.textTheme.headlineSmall),
                 const SizedBox(width: 2),
                 InkWell(
                   onTap: () {
@@ -98,12 +92,11 @@ class _SignupTypeScreenState extends State<SignupTypeScreen> {
                         MaterialPageRoute(builder: (context) => LoginScreen()),
                       );
                     },
-                    child: Text(
-                      ' Log In',
-                       style: theme.textTheme.headlineSmall!.copyWith(
-                        color: KColor.primary,
-                        fontWeight: FontWeight.w700,)
-                    ),
+                    child: Text(' Log In',
+                        style: theme.textTheme.headlineSmall!.copyWith(
+                          color: KColor.primary,
+                          fontWeight: FontWeight.w700,
+                        )),
                   ),
                 ),
               ],
@@ -111,8 +104,7 @@ class _SignupTypeScreenState extends State<SignupTypeScreen> {
             const SizedBox(height: 30),
             Text(
               'By continuing, you accept the Terms Of Use and Privacy Policy.',
-               style: theme.textTheme.headlineSmall,
-              
+              style: theme.textTheme.headlineSmall,
             ),
           ],
         ),

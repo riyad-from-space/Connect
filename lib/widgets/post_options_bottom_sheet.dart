@@ -1,12 +1,12 @@
 import 'package:connect/core/constants/colours.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../core/theme/text_styles.dart';
-import '../features/blogs/data/model/blog_model.dart';
-import '../features/blogs/view_model/blog_viewmodel.dart';
-import '../features/blogs/view_model/blog_interaction_viewmodel.dart';
 import 'package:connect/features/chat/data/services/chat_service.dart';
 import 'package:connect/features/chat/view/chat_screen.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../features/blogs/data/model/blog_model.dart';
+import '../features/blogs/view_model/blog_interaction_viewmodel.dart';
+import '../features/blogs/view_model/blog_viewmodel.dart';
 
 class PostOptionsBottomSheet extends ConsumerWidget {
   final Blog post;
@@ -15,12 +15,12 @@ class PostOptionsBottomSheet extends ConsumerWidget {
   final bool initialSaveState;
 
   const PostOptionsBottomSheet({
-    Key? key,
+    super.key,
     required this.post,
     required this.userId,
     required this.isAuthor,
     required this.initialSaveState,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -34,13 +34,15 @@ class PostOptionsBottomSheet extends ConsumerWidget {
           ),
         ),
         Container(
-          margin: const EdgeInsets.fromLTRB(8, 100, 8, 10),
+          margin: EdgeInsets.fromLTRB(8, 100, 8, 10),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(24),
-            color: Theme.of(context).brightness == Brightness.light ? KColor.white : KColor.darkSurface,
+            color: Theme.of(context).brightness == Brightness.light
+                ? KColor.white
+                : KColor.darkSurface,
           ),
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(0, 16, 0, 14),
+            padding: EdgeInsets.fromLTRB(0, 16, 0, 14),
             child: Center(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -51,11 +53,15 @@ class PostOptionsBottomSheet extends ConsumerWidget {
                       return GestureDetector(
                         onTap: () async {
                           try {
-                            await ref.read(blogInteractionController).toggleSave(post.id, userId);
+                            await ref
+                                .read(blogInteractionController)
+                                .toggleSave(post.id, userId);
                             if (context.mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
-                                  content: Text(initialSaveState ? 'Post unsaved' : 'Post saved'),
+                                  content: Text(initialSaveState
+                                      ? 'Post unsaved'
+                                      : 'Post saved'),
                                   backgroundColor: Colors.green,
                                 ),
                               );
@@ -65,7 +71,9 @@ class PostOptionsBottomSheet extends ConsumerWidget {
                             if (context.mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
-                                  content: Text(initialSaveState ? 'Failed to unsave post' : 'Failed to save post'),
+                                  content: Text(initialSaveState
+                                      ? 'Failed to unsave post'
+                                      : 'Failed to save post'),
                                   backgroundColor: Colors.red,
                                 ),
                               );
@@ -74,10 +82,13 @@ class PostOptionsBottomSheet extends ConsumerWidget {
                         },
                         child: Text(
                           initialSaveState ? 'Unsave Post' : 'Save Post',
-                           style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                            color: Theme.of(context).colorScheme.onSurfaceVariant,
-                            fontSize: 15,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.labelMedium?.copyWith(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSurfaceVariant,
+                                    fontSize: 15,
+                                  ),
                         ),
                       );
                     },
@@ -90,7 +101,8 @@ class PostOptionsBottomSheet extends ConsumerWidget {
                     GestureDetector(
                       onTap: () async {
                         final chatService = ChatService();
-                        final chatId = await chatService.getOrCreateChatId(userId, post.authorId);
+                        final chatId = await chatService.getOrCreateChatId(
+                            userId, post.authorId);
                         if (context.mounted) {
                           Navigator.push(
                             context,
@@ -104,10 +116,16 @@ class PostOptionsBottomSheet extends ConsumerWidget {
                           );
                         }
                       },
-                      child: Text('Chat with Author',  style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                            color: Theme.of(context).colorScheme.onSurfaceVariant,
-                            fontSize: 15,
-                          ),),
+                      child: Text(
+                        'Chat with Author',
+                        style:
+                            Theme.of(context).textTheme.labelMedium?.copyWith(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onSurfaceVariant,
+                                  fontSize: 15,
+                                ),
+                      ),
                     ),
                   ],
 
@@ -118,16 +136,19 @@ class PostOptionsBottomSheet extends ConsumerWidget {
                     // Edit option
                     GestureDetector(
                       onTap: () {
-                        Navigator.pushNamed(
-                          context, 
-                          '/edit-post',
-                          arguments: post
-                        );
+                        Navigator.pushNamed(context, '/edit-post',
+                            arguments: post);
                       },
-                      child: Text('Edit Blog',  style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                            color: Theme.of(context).colorScheme.onSurfaceVariant,
-                            fontSize: 15,
-                          ),),
+                      child: Text(
+                        'Edit Blog',
+                        style:
+                            Theme.of(context).textTheme.labelMedium?.copyWith(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onSurfaceVariant,
+                                  fontSize: 15,
+                                ),
+                      ),
                     ),
                     const SizedBox(height: 14),
                     Container(height: 1, color: const Color(0xffEFEFEF)),
@@ -138,16 +159,21 @@ class PostOptionsBottomSheet extends ConsumerWidget {
                         ref.read(blogControllerProvider).deleteBlog(post.id);
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
-                            backgroundColor: Colors.red,
-                            content: Text('Blog deleted!')
-                          ),
+                              backgroundColor: Colors.red,
+                              content: Text('Blog deleted!')),
                         );
                         Navigator.pop(context);
                       },
-                      child: Text('Delete Blog', style:Theme.of(context).textTheme.labelMedium?.copyWith(
-                            color: Theme.of(context).colorScheme.onSurfaceVariant,
-                            fontSize: 15,
-                          ),),
+                      child: Text(
+                        'Delete Blog',
+                        style:
+                            Theme.of(context).textTheme.labelMedium?.copyWith(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onSurfaceVariant,
+                                  fontSize: 15,
+                                ),
+                      ),
                     ),
                   ],
                 ],
@@ -163,14 +189,18 @@ class PostOptionsBottomSheet extends ConsumerWidget {
             height: 58,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16),
-              color:Theme.of(context).brightness == Brightness.light ? KColor.white : KColor.darkSurface,
+              color: Theme.of(context).brightness == Brightness.light
+                  ? KColor.white
+                  : KColor.darkSurface,
             ),
             child: Center(
-              child: Text('Cancel',  style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                            color: Theme.of(context).colorScheme.onSurfaceVariant,
-                            fontSize: 15,
-                          ),)
-            ),
+                child: Text(
+              'Cancel',
+              style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    fontSize: 15,
+                  ),
+            )),
           ),
         ),
       ],

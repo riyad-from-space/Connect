@@ -1,5 +1,6 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
 import '../models/user_model.dart';
 
 class AuthRepository {
@@ -41,10 +42,7 @@ class AuthRepository {
       );
 
       // Save to Firestore
-      await _firestore
-          .collection('users')
-          .doc(user.uid)
-          .set(user.toMap());
+      await _firestore.collection('users').doc(user.uid).set(user.toMap());
 
       // Return user model
       return user;
@@ -66,14 +64,20 @@ class AuthRepository {
       );
       if (!userCredential.user!.emailVerified) {
         await _auth.signOut();
-        throw Exception('Please verify your email address before logging in. Check your inbox for the verification link.');
+        throw Exception(
+            'Please verify your email address before logging in. Check your inbox for the verification link.');
       }
-      final doc = await _firestore.collection('users').doc(userCredential.user!.uid).get();
+      final doc = await _firestore
+          .collection('users')
+          .doc(userCredential.user!.uid)
+          .get();
       if (!doc.exists) throw Exception('User not found');
       return UserModel.fromMap(doc.data()!);
     } on FirebaseAuthException catch (e) {
+      print('FIREBASE LOGIN ERROR: code=${e.code}, message=${e.message}');
       throw Exception(e.message ?? 'Failed to login');
     } catch (e) {
+      print('GENERIC LOGIN ERROR: ${e.toString()}');
       throw Exception('Failed to login');
     }
   }

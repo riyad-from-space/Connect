@@ -1,16 +1,18 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../../../../widgets/post_card.dart';
 import '../../../auth/data/repositories/auth_viewmodel_provider.dart';
 import '../../data/model/blog_model.dart';
 import '../../view_model/blog_interaction_viewmodel.dart';
-import '../../../../widgets/post_card.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class SavedPostsScreen extends ConsumerWidget {
-  const SavedPostsScreen({Key? key}) : super(key: key);
+  const SavedPostsScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
     final user = ref.watch(authStateProvider).value;
     if (user == null) {
       return const Scaffold(
@@ -19,8 +21,11 @@ class SavedPostsScreen extends ConsumerWidget {
     }
     final savedPostsAsync = ref.watch(savedPostsProvider(user.uid));
     return Scaffold(
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        title: const Text('Saved Posts', style: TextStyle(fontFamily: 'Poppins')),
+        backgroundColor: theme.scaffoldBackgroundColor,
+        title:
+            const Text('Saved Posts', style: TextStyle(fontFamily: 'Poppins')),
       ),
       body: savedPostsAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
@@ -58,7 +63,8 @@ class SavedPostsScreen extends ConsumerWidget {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Icon(Icons.error_outline, color: Colors.red, size: 48),
+                      const Icon(Icons.error_outline,
+                          color: Colors.red, size: 48),
                       const SizedBox(height: 16),
                       Text(
                         'Error loading saved posts: ${snapshot.error}',
@@ -84,46 +90,49 @@ class SavedPostsScreen extends ConsumerWidget {
               }
 
               try {
-                final blogs = snapshot.data!.docs.map((doc) {
-                  try {
-                    final data = doc.data() as Map<String, dynamic>;
-                    
-                    // Validate required fields with detailed error reporting
-                    final requiredFields = {
-                      'title': data['title'],
-                      'content': data['content'],
-                      'authorId': data['authorId'],
-                      'authorName': data['authorName'],
-                      'category': data['category'],
-                      'createdAt': data['createdAt'],
-                    };
+                final blogs = snapshot.data!.docs
+                    .map((doc) {
+                      try {
+                        final data = doc.data() as Map<String, dynamic>;
 
-                    final missingFields = requiredFields.entries
-                        .where((entry) => entry.value == null)
-                        .map((entry) => entry.key)
-                        .toList();
+                        // Validate required fields with detailed error reporting
+                        final requiredFields = {
+                          'title': data['title'],
+                          'content': data['content'],
+                          'authorId': data['authorId'],
+                          'authorName': data['authorName'],
+                          'category': data['category'],
+                          'createdAt': data['createdAt'],
+                        };
 
-                    if (missingFields.isNotEmpty) {
-                      debugPrint('Skipping invalid blog document ${doc.id}. Missing fields: ${missingFields.join(", ")}');
-                      return null;
-                    }
+                        final missingFields = requiredFields.entries
+                            .where((entry) => entry.value == null)
+                            .map((entry) => entry.key)
+                            .toList();
 
-                    // Additional type validation
-                    if (data['createdAt'] is! Timestamp) {
-                      debugPrint('Invalid createdAt field type in blog ${doc.id}');
-                      return null;
-                    }
+                        if (missingFields.isNotEmpty) {
+                          debugPrint(
+                              'Skipping invalid blog document ${doc.id}. Missing fields: ${missingFields.join(", ")}');
+                          return null;
+                        }
 
-                    return Blog.fromMap(data, doc.id);
-                  } catch (e, stackTrace) {
-                    debugPrint('Error parsing blog document ${doc.id}: $e');
-                    debugPrint(stackTrace.toString());
-                    return null;
-                  }
-                })
-                .where((blog) => blog != null)
-                .cast<Blog>()
-                .toList();
+                        // Additional type validation
+                        if (data['createdAt'] is! Timestamp) {
+                          debugPrint(
+                              'Invalid createdAt field type in blog ${doc.id}');
+                          return null;
+                        }
+
+                        return Blog.fromMap(data, doc.id);
+                      } catch (e, stackTrace) {
+                        debugPrint('Error parsing blog document ${doc.id}: $e');
+                        debugPrint(stackTrace.toString());
+                        return null;
+                      }
+                    })
+                    .where((blog) => blog != null)
+                    .cast<Blog>()
+                    .toList();
 
                 if (blogs.isEmpty) {
                   return const Center(
@@ -156,7 +165,8 @@ class SavedPostsScreen extends ConsumerWidget {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Icon(Icons.error_outline, color: Colors.red, size: 48),
+                      const Icon(Icons.error_outline,
+                          color: Colors.red, size: 48),
                       const SizedBox(height: 16),
                       Text(
                         'Error loading saved posts: $error',

@@ -1,16 +1,17 @@
+import 'package:connect/core/constants/colours.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
-import '../../data/model/blog_model.dart';
+
 import '../../../../widgets/category_chip.dart';
+import '../../data/model/blog_model.dart';
 
 class PostDetailScreen extends StatelessWidget {
   final Blog post;
 
   const PostDetailScreen({
-    Key? key,
+    super.key,
     required this.post,
-  }) : super(key: key);
+  });
 
   String _formatDate(DateTime date) {
     return DateFormat('MMMM dd, yyyy').format(date);
@@ -18,29 +19,20 @@ class PostDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     return Scaffold(
+      backgroundColor: theme.scaffoldBackgroundColor,
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
             expandedHeight: 200,
             pinned: true,
             flexibleSpace: FlexibleSpaceBar(
-              title: Text(
-                post.title,
-                style: GoogleFonts.poppins(
-                  color: Colors.white,
-                ),
-              ),
+              title: Text(post.title, style: theme.textTheme.headlineLarge),
               background: Container(
                 decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Theme.of(context).primaryColor,
-                      Theme.of(context).primaryColor.withOpacity(0.8),
-                    ],
-                  ),
+                  gradient: KColor.purpleGradient,
                 ),
               ),
             ),
@@ -72,9 +64,10 @@ class PostDetailScreen extends StatelessWidget {
                           children: [
                             Text(
                               post.authorName,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w600,
+                              style: theme.textTheme.headlineLarge!.copyWith(
                                 fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: colorScheme.onSurface,
                               ),
                             ),
                             Text(
@@ -92,26 +85,21 @@ class PostDetailScreen extends StatelessWidget {
                   const SizedBox(height: 24),
                   Text(
                     post.content,
-                    style: GoogleFonts.poppins(
-                      fontSize: 15,
-                      height: 1.6,
+                    style: theme.textTheme.labelMedium?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                      fontSize: 16,
                     ),
                   ),
                   const SizedBox(height: 24),
                   if (post.category.isNotEmpty) ...[
-                    const Text(
-                      'Category',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+                    Text('Category',
+                        style: theme.textTheme.headlineLarge!
+                            .copyWith(fontSize: 24)),
                     const SizedBox(height: 8),
                     CategoryChip(
                       label: post.category,
                       isSelected: true,
                       onTap: () {},
-                      selectedColor: Theme.of(context).primaryColor.withOpacity(0.8),
                     ),
                   ],
                 ],

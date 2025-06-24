@@ -1,3 +1,4 @@
+import 'package:connect/core/constants/colours.dart';
 import 'package:flutter/material.dart';
 
 class CategoryChip extends StatelessWidget {
@@ -8,25 +9,22 @@ class CategoryChip extends StatelessWidget {
   final Color? unselectedColor;
 
   const CategoryChip({
-    Key? key,
+    super.key,
     required this.label,
     required this.isSelected,
     required this.onTap,
     this.selectedColor,
     this.unselectedColor,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
+      child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
-          color: isSelected
-              ? (selectedColor ?? Theme.of(context).primaryColor)
-              : (unselectedColor ?? Colors.grey[200]),
+          color: isSelected ? KColor.primary : Colors.grey[200],
           borderRadius: BorderRadius.circular(20),
           boxShadow: isSelected
               ? [

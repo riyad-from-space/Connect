@@ -4,13 +4,14 @@ import 'package:connect/features/blogs/view_model/blog_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
+
 import '../../../widgets/custom_button.dart';
 import '../data/model/blog_model.dart';
 
 class BlogAddEditScreen extends ConsumerStatefulWidget {
   final Blog? post;
 
-  const BlogAddEditScreen({Key? key, this.post}) : super(key: key);
+  const BlogAddEditScreen({super.key, this.post});
 
   @override
   ConsumerState<BlogAddEditScreen> createState() => _BlogAddEditScreenState();
@@ -20,6 +21,7 @@ class _BlogAddEditScreenState extends ConsumerState<BlogAddEditScreen> {
   final _titleController = TextEditingController();
   final _contentController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+
   String? selectedCategory;
   bool _isLoading = false;
 
@@ -35,7 +37,7 @@ class _BlogAddEditScreenState extends ConsumerState<BlogAddEditScreen> {
 
   Future<void> _savePost() async {
     if (!_formKey.currentState!.validate()) return;
-    
+
     if (selectedCategory == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -73,7 +75,8 @@ class _BlogAddEditScreenState extends ConsumerState<BlogAddEditScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(widget.post == null ? 'Post created!' : 'Post updated!'),
+            content:
+                Text(widget.post == null ? 'Post created!' : 'Post updated!'),
             backgroundColor: Colors.green,
           ),
         );
@@ -97,10 +100,13 @@ class _BlogAddEditScreenState extends ConsumerState<BlogAddEditScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final categoriesAsync = ref.watch(categoriesProvider);
 
     return Scaffold(
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
+        backgroundColor: theme.scaffoldBackgroundColor,
         title: Text(widget.post == null ? 'Create Post' : 'Edit Post'),
       ),
       body: categoriesAsync.when(

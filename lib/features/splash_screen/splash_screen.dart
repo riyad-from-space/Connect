@@ -1,12 +1,10 @@
 import 'dart:async';
-import 'package:connect/core/constants/colours.dart';
+
 import 'package:connect/features/auth/widgets/auth_checker.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import '../../core/constants/text_style.dart';
 
 class SplashScreen extends StatefulWidget {
-  const SplashScreen({Key? key}) : super(key: key);
+  const SplashScreen({super.key});
 
   @override
   State<SplashScreen> createState() => _SplashScreenState();
@@ -22,7 +20,7 @@ class _SplashScreenState extends State<SplashScreen> {
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (context) => AuthChecker()),
-              (route) => false, // Removes all previous routes
+          (route) => false, // Removes all previous routes
         );
       },
     );
@@ -31,6 +29,7 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Column(
         children: [
           Expanded(
@@ -54,7 +53,6 @@ class _SplashScreenState extends State<SplashScreen> {
               padding: const EdgeInsets.only(bottom: 20),
               child: Text(
                 'Powered by Connect',
-                
               ),
             ),
           ),

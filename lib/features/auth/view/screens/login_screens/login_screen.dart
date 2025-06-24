@@ -4,6 +4,7 @@ import 'package:connect/features/auth/data/repositories/auth_viewmodel_provider.
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../../widgets/headline.dart';
 
 final isFormValidProvider = StateProvider<bool>((ref) => false);
@@ -12,6 +13,8 @@ class LoginScreen extends ConsumerWidget {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+
+  LoginScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -32,6 +35,7 @@ class LoginScreen extends ConsumerWidget {
     _passwordController.addListener(updateFormValidity);
 
     return Scaffold(
+      backgroundColor: theme.scaffoldBackgroundColor,
       // appBar: AppBar(
       //   automaticallyImplyLeading: false,
       //   // leading: InkWell(
@@ -161,28 +165,30 @@ class LoginScreen extends ConsumerWidget {
                           if (_formKey.currentState!.validate()) {
                             try {
                               // Inside your onSubmit or similar function
-                    await ref.read(authControllerProvider.notifier).login(
-                      email: _emailController.text.trim(),
-                      password: _passwordController.text.trim(),
-                    );
+                              await ref
+                                  .read(authControllerProvider.notifier)
+                                  .login(
+                                    email: _emailController.text.trim(),
+                                    password: _passwordController.text.trim(),
+                                  );
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
                                   content: Text('Login Successful!'),
                                   backgroundColor: Colors.green,
                                 ),
                               );
-                    
+
                               // Navigate to Home page
                               Navigator.pushReplacementNamed(context, '/home');
                             } on FirebaseAuthException catch (e) {
                               String errorMessage =
                                   'An error occurred. Please try again.';
-                    
+
                               if (e.code == 'user-not-found' ||
                                   e.code == 'wrong-password') {
                                 errorMessage = 'Invalid credential';
                               }
-                    
+
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                   content: Text(errorMessage),
@@ -192,7 +198,11 @@ class LoginScreen extends ConsumerWidget {
                             } catch (e) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
-                                  content: Text(e is Exception ? e.toString().replaceAll('Exception: ', '') : e.toString()),
+                                  content: Text(e is Exception
+                                      ? e
+                                          .toString()
+                                          .replaceAll('Exception: ', '')
+                                      : e.toString()),
                                   backgroundColor: Colors.red,
                                 ),
                               );
@@ -210,26 +220,23 @@ class LoginScreen extends ConsumerWidget {
                       ),
                       const SizedBox(height: 20),
                       Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Don\'t have an account?',
-                      style: theme.textTheme.headlineSmall
-                    ),
-                    const SizedBox(width: 4),
-                    InkWell(
-                      onTap: () {
-                        Navigator.pushNamed(context, '/signup');
-                      },
-                      child: Text(
-                        'Sign Up',
-                         style: theme.textTheme.headlineSmall!.copyWith(
-                          color: KColor.primary,
-                          fontWeight: FontWeight.w700,)
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Text('Don\'t have an account?',
+                              style: theme.textTheme.headlineSmall),
+                          const SizedBox(width: 4),
+                          InkWell(
+                            onTap: () {
+                              Navigator.pushNamed(context, '/signup');
+                            },
+                            child: Text('Sign Up',
+                                style: theme.textTheme.headlineSmall!.copyWith(
+                                  color: KColor.primary,
+                                  fontWeight: FontWeight.w700,
+                                )),
+                          ),
+                        ],
                       ),
-                    ),
-                  ],
-                              ),
                     ],
                   ),
                 ],

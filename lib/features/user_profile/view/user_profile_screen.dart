@@ -1,28 +1,31 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connect/core/constants/colours.dart';
 import 'package:connect/core/widgets/buttons/submit_button.dart';
 import 'package:connect/features/auth/data/models/user_model.dart';
 import 'package:connect/features/auth/data/repositories/auth_viewmodel_provider.dart';
 import 'package:connect/features/blogs/view_model/blog_viewmodel.dart';
+import 'package:connect/features/chat/data/services/chat_service.dart';
+import 'package:connect/features/chat/view/chat_screen.dart';
 import 'package:connect/widgets/post_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:connect/features/chat/data/services/chat_service.dart';
-import 'package:connect/features/chat/view/chat_screen.dart';
-
 
 class ProfileScreen extends ConsumerWidget {
   final String? userId;
-  const ProfileScreen({Key? key, this.userId}) : super(key: key);
+  const ProfileScreen({super.key, this.userId});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
     final currentUser = ref.watch(authStateProvider).value;
     final userFuture = userId == null
         ? Future.value(currentUser)
         : Future<UserModel?>.microtask(() async {
-            final snap = await FirebaseFirestore.instance.collection('users').doc(userId).get();
+            final snap = await FirebaseFirestore.instance
+                .collection('users')
+                .doc(userId)
+                .get();
             if (!snap.exists) return null;
             return UserModel.fromMap(snap.data()!);
           });
@@ -39,10 +42,13 @@ class ProfileScreen extends ConsumerWidget {
         }
 
         // Determine if this is the current user's profile
-        final isOwnProfile = userId == null || (currentUser != null && userId == currentUser.uid);
+        final isOwnProfile = userId == null ||
+            (currentUser != null && userId == currentUser.uid);
 
         return Scaffold(
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           appBar: AppBar(
+            backgroundColor: theme.scaffoldBackgroundColor,
             title: Text(
               'Profile',
               style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
@@ -102,7 +108,8 @@ class ProfileScreen extends ConsumerWidget {
               // Posts Section
               Expanded(
                 child: userBlogsAsync.when(
-                  loading: () => const Center(child: CircularProgressIndicator()),
+                  loading: () =>
+                      const Center(child: CircularProgressIndicator()),
                   error: (error, stack) => Center(child: Text('Error: $error')),
                   data: (blogs) {
                     if (blogs.isEmpty) {
@@ -110,7 +117,8 @@ class ProfileScreen extends ConsumerWidget {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.article_outlined, size: 64, color: Colors.grey[400]),
+                            Icon(Icons.article_outlined,
+                                size: 64, color: Colors.grey[400]),
                             const SizedBox(height: 16),
                             Text(
                               'No posts yet',
@@ -125,7 +133,8 @@ class ProfileScreen extends ConsumerWidget {
                               Center(
                                 child: SubmitButton(
                                   isEnabled: true,
-                                  onSubmit: () => Navigator.pushNamed(context, '/create-post'),
+                                  onSubmit: () => Navigator.pushNamed(
+                                      context, '/create-post'),
                                   buttonText: 'Create Your First Post',
                                   message: '',
                                 ),
@@ -150,10 +159,13 @@ class ProfileScreen extends ConsumerWidget {
                               color: Colors.red,
                               alignment: Alignment.centerRight,
                               padding: const EdgeInsets.only(right: 16),
-                              child: const Icon(Icons.delete, color: Colors.white),
+                              child:
+                                  const Icon(Icons.delete, color: Colors.white),
                             ),
                             onDismissed: (_) {
-                              ref.read(blogControllerProvider).deleteBlog(blog.id);
+                              ref
+                                  .read(blogControllerProvider)
+                                  .deleteBlog(blog.id);
                             },
                             child: PostCard(
                               post: blog,
@@ -191,13 +203,15 @@ class ProfileScreen extends ConsumerWidget {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.deepPurple,
                       foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(24)),
                     ),
                     icon: const Icon(Icons.chat_bubble_outline),
                     label: const Text('Chat'),
                     onPressed: () async {
                       final chatService = ChatService();
-                      final chatId = await chatService.getOrCreateChatId(currentUser.uid, user.uid);
+                      final chatId = await chatService.getOrCreateChatId(
+                          currentUser.uid, user.uid);
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -219,23 +233,3 @@ class ProfileScreen extends ConsumerWidget {
     );
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

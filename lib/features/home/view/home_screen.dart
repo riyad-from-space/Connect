@@ -2,11 +2,12 @@ import 'package:connect/features/auth/data/repositories/auth_viewmodel_provider.
 import 'package:connect/features/blogs/view_model/blog_viewmodel.dart';
 import 'package:connect/features/blogs/view_model/category_viewmodel.dart';
 import 'package:connect/features/blogs/view_model/category_viewmodel_impl.dart';
+import 'package:connect/features/chat/view/chat_list_screen.dart';
+import 'package:connect/features/home/view/user_search_delegate.dart';
 import 'package:connect/features/user_profile/view/user_profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:connect/features/home/view/user_search_delegate.dart';
-import 'package:connect/features/chat/view/chat_list_screen.dart';
+
 import '../../../../widgets/post_card.dart';
 
 class HomeScreen extends ConsumerWidget {
@@ -25,21 +26,26 @@ class HomeScreen extends ConsumerWidget {
     final colorScheme = theme.colorScheme;
     final user = ref.watch(authStateProvider).value;
     if (user == null) {
-      return const Scaffold(
-        body: Center(child: Text('Please login to continue.')),
+      return Scaffold(
+        backgroundColor: theme.scaffoldBackgroundColor,
+        body: const Center(child: Text('Please login to continue.')),
       );
     }
 
     // Set initial selected category to onboarding topic if not set
     userAsync.whenData((userData) {
-      if (selectedCategory == null && userData != null && userData.selectedTopics.isNotEmpty) {
+      if (selectedCategory == null &&
+          userData != null &&
+          userData.selectedTopics.isNotEmpty) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          ref.read(selectedCategoryProvider.notifier).state = userData.selectedTopics.first;
+          ref.read(selectedCategoryProvider.notifier).state =
+              userData.selectedTopics.first;
         });
       }
     });
 
     return Scaffold(
+      backgroundColor: theme.scaffoldBackgroundColor,
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: CustomScrollView(
@@ -63,16 +69,15 @@ class HomeScreen extends ConsumerWidget {
                       );
                     },
                     child: CircleAvatar(
-                    radius: 24,
-                    backgroundColor: Theme.of(context).primaryColor,
-                    child: Text(
-                      user.firstName[0].toUpperCase(),
-                      style: theme.textTheme.headlineLarge
+                      radius: 24,
+                      backgroundColor: Theme.of(context).primaryColor,
+                      child: Text(user.firstName[0].toUpperCase(),
+                          style: theme.textTheme.headlineLarge),
                     ),
                   ),
-                  ),
                   TextButton(
-                    onPressed: () => Navigator.pushNamed(context, '/create-post'),
+                    onPressed: () =>
+                        Navigator.pushNamed(context, '/create-post'),
                     child: Text(
                       'Create Post',
                       style: theme.textTheme.titleMedium?.copyWith(
@@ -90,13 +95,16 @@ class HomeScreen extends ConsumerWidget {
                 child: SizedBox(
                   height: 40,
                   child: categoriesAsync.when(
-                    loading: () => Center(child: CircularProgressIndicator(color: colorScheme.primary)),
+                    loading: () => Center(
+                        child: CircularProgressIndicator(
+                            color: colorScheme.primary)),
                     error: (e, _) => Center(
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16.0),
                         child: Text(
                           'Error loading categories: $e',
-                          style: theme.textTheme.bodyMedium?.copyWith(color: colorScheme.error),
+                          style: theme.textTheme.bodyMedium
+                              ?.copyWith(color: colorScheme.error),
                         ),
                       ),
                     ),
@@ -104,14 +112,14 @@ class HomeScreen extends ConsumerWidget {
                       if (categories.isEmpty) {
                         return Center(
                           child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                            child: Text('No categories available', style: theme.textTheme.bodyMedium),
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 16.0),
+                            child: Text('No categories available',
+                                style: theme.textTheme.bodyMedium),
                           ),
                         );
                       }
                       return ListView.separated(
-                        
-                       
                         scrollDirection: Axis.horizontal,
                         itemCount: categories.length,
                         separatorBuilder: (_, __) => const SizedBox(width: 10),
@@ -123,9 +131,12 @@ class HomeScreen extends ConsumerWidget {
                               label: Text(cat),
                               selected: isSelected,
                               selectedColor: colorScheme.primary,
-                              backgroundColor: colorScheme.surfaceVariant,
+                              backgroundColor:
+                                  colorScheme.surfaceContainerHighest,
                               onSelected: (_) {
-                                ref.read(selectedCategoryProvider.notifier).state = isSelected ? null : cat;
+                                ref
+                                    .read(selectedCategoryProvider.notifier)
+                                    .state = isSelected ? null : cat;
                               },
                               // labelStyle: theme.textTheme.bodyMedium?.copyWith(
                               //   color: isSelected ? colorScheme.primary : colorScheme.onSurface,
@@ -142,12 +153,14 @@ class HomeScreen extends ConsumerWidget {
             SliverPadding(
               padding: const EdgeInsets.all(8),
               sliver: blogsAsync.when(
-                loading: () => const SliverFillRemaining(child: Center(child: CircularProgressIndicator())),
+                loading: () => const SliverFillRemaining(
+                    child: Center(child: CircularProgressIndicator())),
                 error: (e, _) => SliverFillRemaining(
                   child: Center(
                     child: Text(
                       'Error loading posts: $e',
-                      style: theme.textTheme.bodyMedium?.copyWith(color: colorScheme.error),
+                      style: theme.textTheme.bodyMedium
+                          ?.copyWith(color: colorScheme.error),
                     ),
                   ),
                 ),
@@ -158,11 +171,17 @@ class HomeScreen extends ConsumerWidget {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.article_outlined, size: 64, color: colorScheme.outline.withOpacity(0.3)),
+                            Icon(Icons.article_outlined,
+                                size: 64,
+                                color: colorScheme.outline.withOpacity(0.3)),
                             const SizedBox(height: 16),
                             Text(
-                              selectedCategory == null ? 'No posts available' : 'No posts in this category',
-                              style: theme.textTheme.titleMedium?.copyWith(color: colorScheme.onSurface.withOpacity(0.7)),
+                              selectedCategory == null
+                                  ? 'No posts available'
+                                  : 'No posts in this category',
+                              style: theme.textTheme.titleMedium?.copyWith(
+                                  color:
+                                      colorScheme.onSurface.withOpacity(0.7)),
                             ),
                           ],
                         ),
@@ -176,7 +195,8 @@ class HomeScreen extends ConsumerWidget {
                         return PostCard(
                           post: post,
                           onTap: () {
-                            Navigator.pushNamed(context, '/post-detail', arguments: post);
+                            Navigator.pushNamed(context, '/post-detail',
+                                arguments: post);
                           },
                         );
                       },
@@ -212,7 +232,8 @@ class HomeScreen extends ConsumerWidget {
                 },
               ),
               IconButton(
-                icon: Icon(Icons.chat_bubble_outline, color: colorScheme.onSurfaceVariant),
+                icon: Icon(Icons.chat_bubble_outline,
+                    color: colorScheme.onSurfaceVariant),
                 onPressed: () {
                   Navigator.push(
                     context,
@@ -223,13 +244,15 @@ class HomeScreen extends ConsumerWidget {
                 },
               ),
               IconButton(
-                icon: Icon(Icons.bookmark_outline, color: colorScheme.onSurfaceVariant),
+                icon: Icon(Icons.bookmark_outline,
+                    color: colorScheme.onSurfaceVariant),
                 onPressed: () {
                   Navigator.pushNamed(context, '/saved-posts');
                 },
               ),
               IconButton(
-                icon: Icon(Icons.settings_outlined, color: colorScheme.onSurfaceVariant),
+                icon: Icon(Icons.settings_outlined,
+                    color: colorScheme.onSurfaceVariant),
                 onPressed: () => Navigator.pushNamed(context, '/settings'),
               ),
             ],
@@ -239,5 +262,3 @@ class HomeScreen extends ConsumerWidget {
     );
   }
 }
-
-

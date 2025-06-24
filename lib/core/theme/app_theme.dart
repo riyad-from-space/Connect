@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+
 import '../constants/colours.dart';
 
 class AppTheme {
@@ -10,34 +11,30 @@ class AppTheme {
       brightness: Brightness.light,
     ).copyWith(
       secondary: KColor.secondary,
-      surface: KColor.surface,
-      background: KColor.background,
+      surface: Colors.white,
       // Adding semantic colors for better theme consistency
       onPrimary: KColor.white,
       onSecondary: KColor.white,
       onSurface: KColor.textPrimary,
-      onBackground: KColor.textPrimary,
     ),
     scaffoldBackgroundColor: KColor.background,
     textTheme: GoogleFonts.poppinsTextTheme().copyWith(
         labelMedium: TextStyle(
-        fontSize: 14,
-        fontWeight: FontWeight.w400,
-        color: KColor.black,
-      ),
-      headlineLarge: TextStyle(
-        fontSize: 32,
-        fontWeight: FontWeight.bold,
-        color: KColor.black,
-        height: 1.2,
-      ),
-      headlineSmall: TextStyle(
-        fontSize: 14,
-        fontWeight: FontWeight.w400,
-
-        color: const Color(0xff5C5D67),
-      )
-    ),
+          fontSize: 14,
+          fontWeight: FontWeight.w400,
+          color: KColor.black,
+        ),
+        headlineLarge: TextStyle(
+          fontSize: 32,
+          fontWeight: FontWeight.bold,
+          color: KColor.black,
+          height: 1.2,
+        ),
+        headlineSmall: TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w400,
+          color: const Color(0xff5C5D67),
+        )),
     appBarTheme: AppBarTheme(
       backgroundColor: KColor.white,
       elevation: 0,
@@ -108,34 +105,31 @@ class AppTheme {
     ).copyWith(
       secondary: KColor.secondary,
       surface: KColor.darkSurface,
-      background: KColor.darkBackground,
       // Adding semantic colors for better theme consistency
       onPrimary: KColor.white,
       onSecondary: KColor.white,
       onSurface: KColor.darkTextPrimary,
-      onBackground: KColor.darkTextPrimary,
     ),
     scaffoldBackgroundColor: KColor.darkBackground,
-    textTheme: GoogleFonts.poppinsTextTheme(ThemeData.dark().textTheme).copyWith(
-
-      labelMedium: TextStyle(
-        fontSize: 14,
-        fontWeight: FontWeight.w500,
-        color: KColor.darkTextSecondary,
-      ),
-      headlineLarge: TextStyle(
-        fontSize: 32,
-        fontWeight: FontWeight.bold,
-        color: KColor.white,
-        height: 1.2,
-      ),
-      headlineSmall: TextStyle(
-        fontSize: 14,
-        fontWeight: FontWeight.w600,
-        fontFamily: GoogleFonts.openSans().fontFamily,
-        color: const Color(0xff5C5D67),
-      )
-    ),
+    textTheme:
+        GoogleFonts.poppinsTextTheme(ThemeData.dark().textTheme).copyWith(
+            labelMedium: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              color: KColor.darkTextSecondary,
+            ),
+            headlineLarge: TextStyle(
+              fontSize: 32,
+              fontWeight: FontWeight.bold,
+              color: KColor.white,
+              height: 1.2,
+            ),
+            headlineSmall: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              fontFamily: GoogleFonts.openSans().fontFamily,
+              color: const Color(0xff5C5D67),
+            )),
     appBarTheme: AppBarTheme(
       backgroundColor: KColor.darkSurface,
       elevation: 0,
