@@ -3,6 +3,7 @@ import 'package:connect/core/constants/colours.dart';
 import 'package:connect/core/widgets/buttons/submit_button.dart';
 import 'package:connect/features/auth/data/models/user_model.dart';
 import 'package:connect/features/auth/data/repositories/auth_viewmodel_provider.dart';
+import 'package:connect/features/auth/data/repositories/follow_repository.dart';
 import 'package:connect/features/blogs/view_model/blog_viewmodel.dart';
 import 'package:connect/features/chat/data/services/chat_service.dart';
 import 'package:connect/features/chat/view/chat_screen.dart';
@@ -29,7 +30,10 @@ class ProfileScreen extends ConsumerWidget {
             if (!snap.exists) return null;
             return UserModel.fromMap(snap.data()!);
           });
-    final userBlogsAsync = ref.watch(userBlogsProvider);
+    // Use correct provider for profile posts
+    final userBlogsAsync = userId == null
+        ? ref.watch(userBlogsProvider)
+        : ref.watch(profileBlogsProvider(userId!));
 
     return FutureBuilder<UserModel?>(
       future: userFuture,
@@ -195,34 +199,77 @@ class ProfileScreen extends ConsumerWidget {
                   },
                 ),
               ),
-              // Add chat button if not own profile
+              // Add chat and follow/unfollow button if not own profile
               if (!isOwnProfile && currentUser != null) ...[
                 Padding(
                   padding: const EdgeInsets.only(bottom: 8.0),
-                  child: ElevatedButton.icon(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.deepPurple,
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(24)),
-                    ),
-                    icon: const Icon(Icons.chat_bubble_outline),
-                    label: const Text('Chat'),
-                    onPressed: () async {
-                      final chatService = ChatService();
-                      final chatId = await chatService.getOrCreateChatId(
-                          currentUser.uid, user.uid);
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => ChatScreen(
-                            chatId: chatId,
-                            otherUserName: user.firstName,
-                            currentUserId: currentUser.uid,
-                          ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      // Follow/Unfollow Button
+                      FutureBuilder<DocumentSnapshot>(
+                        future: FirebaseFirestore.instance
+                            .collection('users')
+                            .doc(currentUser.uid)
+                            .collection('following')
+                            .doc(user.uid)
+                            .get(),
+                        builder: (context, snapshot) {
+                          final isFollowing = snapshot.data?.exists ?? false;
+                          return ElevatedButton.icon(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor:
+                                  isFollowing ? Colors.grey : Colors.deepPurple,
+                              foregroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(24)),
+                            ),
+                            icon: Icon(
+                                isFollowing ? Icons.check : Icons.person_add),
+                            label: Text(isFollowing ? 'Following' : 'Follow'),
+                            onPressed: () async {
+                              final followRepo = FollowRepository();
+                              if (isFollowing) {
+                                await followRepo.unfollowUser(
+                                    currentUser.uid, user.uid);
+                              } else {
+                                await followRepo.followUser(
+                                    currentUser.uid, user.uid);
+                              }
+                              // Force rebuild
+                              (context as Element).markNeedsBuild();
+                            },
+                          );
+                        },
+                      ),
+                      const SizedBox(width: 12),
+                      // Chat Button
+                      ElevatedButton.icon(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.deepPurple,
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(24)),
                         ),
-                      );
-                    },
+                        icon: const Icon(Icons.chat_bubble_outline),
+                        label: const Text('Chat'),
+                        onPressed: () async {
+                          final chatService = ChatService();
+                          final chatId = await chatService.getOrCreateChatId(
+                              currentUser.uid, user.uid);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => ChatScreen(
+                                chatId: chatId,
+                                otherUserName: user.firstName,
+                                currentUserId: currentUser.uid,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ],
                   ),
                 ),
               ],

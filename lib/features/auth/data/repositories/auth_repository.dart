@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 import '../models/user_model.dart';
 
@@ -108,5 +109,14 @@ class AuthRepository {
       if (!doc.exists) return null;
       return UserModel.fromMap(doc.data()!);
     });
+  }
+
+  Future<void> saveFcmToken(String userId) async {
+    final fcmToken = await FirebaseMessaging.instance.getToken();
+    if (fcmToken != null) {
+      await _firestore.collection('users').doc(userId).update({
+        'fcmToken': fcmToken,
+      });
+    }
   }
 }

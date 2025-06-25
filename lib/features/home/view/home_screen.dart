@@ -15,12 +15,11 @@ class HomeScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final blogs = ref.watch(filteredBlogsProvider); // Now a List<Blog>
-    final blogsAsync = ref.watch(blogsProvider); // For loading/error
     final selectedCategory = ref.watch(selectedCategoryProvider);
     final categoriesAsync = ref.watch(categoriesProvider);
     ref.watch(categoryInitializerProvider);
     final userAsync = ref.watch(authStateProvider);
+    final blogsAsync = ref.watch(feedProvider);
 
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
@@ -138,9 +137,6 @@ class HomeScreen extends ConsumerWidget {
                                     .read(selectedCategoryProvider.notifier)
                                     .state = isSelected ? null : cat;
                               },
-                              // labelStyle: theme.textTheme.bodyMedium?.copyWith(
-                              //   color: isSelected ? colorScheme.primary : colorScheme.onSurface,
-                              // ),
                             ),
                           );
                         },
@@ -164,7 +160,7 @@ class HomeScreen extends ConsumerWidget {
                     ),
                   ),
                 ),
-                data: (_) {
+                data: (blogs) {
                   if (blogs.isEmpty) {
                     return SliverFillRemaining(
                       child: Center(
@@ -177,7 +173,7 @@ class HomeScreen extends ConsumerWidget {
                             const SizedBox(height: 16),
                             Text(
                               selectedCategory == null
-                                  ? 'No posts available'
+                                  ? 'No posts from followed users.'
                                   : 'No posts in this category',
                               style: theme.textTheme.titleMedium?.copyWith(
                                   color:

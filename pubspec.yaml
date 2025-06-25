@@ -53,6 +53,8 @@ dependencies:
   intl: ^0.18.1
   freezed_annotation: ^3.0.0
   json_annotation: ^4.9.0
+  firebase_messaging: 15.2.7
+  flutter_local_notifications: ^17.1.2
 
 dev_dependencies:
   flutter_test:
