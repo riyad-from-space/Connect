@@ -59,16 +59,19 @@ class ProfileScreen extends ConsumerWidget {
             ),
           ),
           body: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              // Profile Header
               Container(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.only(left: 16, top: 16, right: 16),
                 child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     // Gradient Avatar as Container
                     Container(
-                      width: 60,
-                      height: 60,
+                      width: 40,
+                      height: 40,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         gradient: KColor.purpleGradient,
@@ -77,33 +80,257 @@ class ProfileScreen extends ConsumerWidget {
                       child: Text(
                         user.firstName[0].toUpperCase(),
                         style: const TextStyle(
-                          fontSize: 32,
+                          fontSize: 26,
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            '${user.firstName} ${user.lastName}',
-                            style: GoogleFonts.poppins(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                            ),
+                    const SizedBox(width: 12),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Text(
+                          '${user.firstName} ${user.lastName}',
+                          style: GoogleFonts.poppins(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
                           ),
-                          Text(
-                            '@${user.username}',
-                            style: GoogleFonts.poppins(
-                              fontSize: 16,
-                              color: Colors.grey,
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          '@${user.username}',
+                          style: GoogleFonts.poppins(
+                            fontSize: 12,
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(width: 16),
+                    // Followers/Following counts
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        FutureBuilder(
+                          future: FirebaseFirestore.instance
+                              .collection('users')
+                              .doc(user.uid)
+                              .collection('followers')
+                              .get(),
+                          builder: (context, snapshotFollowers) {
+                            final followersCount =
+                                snapshotFollowers.data?.docs.length ?? 0;
+                            return Row(
+                              children: [
+                                GestureDetector(
+                                  onTap: () {
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) => UserListDialog(
+                                        userId: user.uid,
+                                        type: 'followers',
+                                      ),
+                                    );
+                                  },
+                                  child: Text(
+                                    'Followers: $followersCount',
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 12,
+                                      color: Colors.grey[700],
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                FutureBuilder(
+                                  future: FirebaseFirestore.instance
+                                      .collection('users')
+                                      .doc(user.uid)
+                                      .collection('following')
+                                      .get(),
+                                  builder: (context, snapshotFollowing) {
+                                    final followingCount =
+                                        snapshotFollowing.data?.docs.length ??
+                                            0;
+                                    return GestureDetector(
+                                      onTap: () {
+                                        showDialog(
+                                          context: context,
+                                          builder: (context) => UserListDialog(
+                                            userId: user.uid,
+                                            type: 'following',
+                                          ),
+                                        );
+                                      },
+                                      child: Text(
+                                        'Following: $followingCount',
+                                        style: GoogleFonts.poppins(
+                                          fontSize: 12,
+                                          color: Colors.grey[700],
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ],
+                            );
+                          },
+                        ),
+                        SizedBox(height: 8),
+                        if (!isOwnProfile && currentUser != null) ...[
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 8.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                // Follow/Unfollow Button
+                                FutureBuilder<DocumentSnapshot>(
+                                  future: FirebaseFirestore.instance
+                                      .collection('users')
+                                      .doc(currentUser.uid)
+                                      .collection('following')
+                                      .doc(user.uid)
+                                      .get(),
+                                  builder: (context, snapshot) {
+                                    // Use a local variable to track following state for instant UI update
+                                    bool isFollowing =
+                                        snapshot.data?.exists ?? false;
+                                    return StatefulBuilder(
+                                      builder: (context, setState) {
+                                        return SizedBox(
+                                          height: 30,
+                                          width: 95,
+                                          child: ElevatedButton(
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor: isFollowing
+                                                  ? Colors.grey
+                                                  : Colors.deepPurple,
+                                              foregroundColor: Colors.white,
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(12),
+                                              ),
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 8),
+                                              elevation: 0,
+                                              textStyle: const TextStyle(
+                                                  fontSize: 13,
+                                                  fontWeight: FontWeight.w500),
+                                            ),
+                                            onPressed: () async {
+                                              final followRepo =
+                                                  FollowRepository();
+                                              if (isFollowing) {
+                                                await followRepo.unfollowUser(
+                                                    currentUser.uid, user.uid);
+                                                setState(() {
+                                                  isFollowing = false;
+                                                });
+                                              } else {
+                                                await followRepo.followUser(
+                                                    currentUser.uid, user.uid);
+                                                setState(() {
+                                                  isFollowing = true;
+                                                });
+                                              }
+                                            },
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                Icon(
+                                                  isFollowing
+                                                      ? Icons.check
+                                                      : Icons.person_add,
+                                                  size: 16,
+                                                  color: Colors.white,
+                                                ),
+                                                const SizedBox(width: 4),
+                                                Text(
+                                                  isFollowing
+                                                      ? 'Following'
+                                                      : 'Follow',
+                                                  style: const TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 13,
+                                                    fontWeight: FontWeight.w500,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                    );
+                                  },
+                                ),
+                                const SizedBox(width: 12),
+                                // Chat Button
+                                SizedBox(
+                                  height: 30,
+                                  width: 70, // Match follow button width
+                                  child: ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.deepPurple,
+                                      foregroundColor: Colors.white,
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(12)),
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 8),
+                                      elevation: 0,
+                                      textStyle: const TextStyle(
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.w500),
+                                    ),
+                                    onPressed: () async {
+                                      final chatService = ChatService();
+                                      final chatId =
+                                          await chatService.getOrCreateChatId(
+                                              currentUser.uid, user.uid);
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (_) => ChatScreen(
+                                            chatId: chatId,
+                                            otherUserName: user.firstName,
+                                            currentUserId: currentUser.uid,
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        const Icon(
+                                          Icons.chat_bubble_outline,
+                                          size:
+                                              16, // Match icon size with follow button
+                                          color: Colors.white,
+                                        ),
+                                        const SizedBox(width: 4),
+                                        const Text(
+                                          'Chat',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 13,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ],
-                      ),
+                      ],
                     ),
                   ],
                 ),
@@ -199,84 +426,89 @@ class ProfileScreen extends ConsumerWidget {
                   },
                 ),
               ),
-              // Add chat and follow/unfollow button if not own profile
-              if (!isOwnProfile && currentUser != null) ...[
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 8.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      // Follow/Unfollow Button
-                      FutureBuilder<DocumentSnapshot>(
-                        future: FirebaseFirestore.instance
-                            .collection('users')
-                            .doc(currentUser.uid)
-                            .collection('following')
-                            .doc(user.uid)
-                            .get(),
-                        builder: (context, snapshot) {
-                          final isFollowing = snapshot.data?.exists ?? false;
-                          return ElevatedButton.icon(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor:
-                                  isFollowing ? Colors.grey : Colors.deepPurple,
-                              foregroundColor: Colors.white,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(24)),
-                            ),
-                            icon: Icon(
-                                isFollowing ? Icons.check : Icons.person_add),
-                            label: Text(isFollowing ? 'Following' : 'Follow'),
-                            onPressed: () async {
-                              final followRepo = FollowRepository();
-                              if (isFollowing) {
-                                await followRepo.unfollowUser(
-                                    currentUser.uid, user.uid);
-                              } else {
-                                await followRepo.followUser(
-                                    currentUser.uid, user.uid);
-                              }
-                              // Force rebuild
-                              (context as Element).markNeedsBuild();
-                            },
-                          );
-                        },
-                      ),
-                      const SizedBox(width: 12),
-                      // Chat Button
-                      ElevatedButton.icon(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.deepPurple,
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(24)),
-                        ),
-                        icon: const Icon(Icons.chat_bubble_outline),
-                        label: const Text('Chat'),
-                        onPressed: () async {
-                          final chatService = ChatService();
-                          final chatId = await chatService.getOrCreateChatId(
-                              currentUser.uid, user.uid);
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => ChatScreen(
-                                chatId: chatId,
-                                otherUserName: user.firstName,
-                                currentUserId: currentUser.uid,
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-              ],
             ],
           ),
         ); // End Scaffold
       },
+    );
+  }
+}
+
+// Add this widget at the bottom of the file:
+class UserListDialog extends StatelessWidget {
+  final String userId;
+  final String type; // 'followers' or 'following'
+  const UserListDialog({super.key, required this.userId, required this.type});
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text(type == 'followers' ? 'Followers' : 'Following'),
+      content: SizedBox(
+        width: 300,
+        height: 400,
+        child: FutureBuilder<QuerySnapshot>(
+          future: FirebaseFirestore.instance
+              .collection('users')
+              .doc(userId)
+              .collection(type)
+              .get(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+              return Center(child: Text('No users'));
+            }
+            final userIds = snapshot.data!.docs.map((doc) => doc.id).toList();
+            return FutureBuilder<List<DocumentSnapshot>>(
+              future: Future.wait(userIds.map((id) => FirebaseFirestore.instance
+                  .collection('users')
+                  .doc(id)
+                  .get())),
+              builder: (context, userSnaps) {
+                if (userSnaps.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                final users = userSnaps.data ?? [];
+                return ListView.builder(
+                  itemCount: users.length,
+                  itemBuilder: (context, index) {
+                    final userData =
+                        users[index].data() as Map<String, dynamic>?;
+                    if (userData == null) return const SizedBox();
+                    return ListTile(
+                      leading: CircleAvatar(
+                        child: Text(
+                            userData['firstName']?[0]?.toUpperCase() ?? '?'),
+                      ),
+                      title: Text(
+                          '${userData['firstName'] ?? ''} ${userData['lastName'] ?? ''}'),
+                      subtitle: Text('@${userData['username'] ?? ''}'),
+                      onTap: () {
+                        Navigator.pop(context);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) =>
+                                ProfileScreen(userId: users[index].id),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                );
+              },
+            );
+          },
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('Close'),
+        ),
+      ],
     );
   }
 }

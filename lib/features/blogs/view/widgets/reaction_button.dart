@@ -1,6 +1,7 @@
 import 'package:connect/core/constants/colours.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../view_model/blog_interaction_viewmodel.dart';
 
 class ReactionButton extends ConsumerWidget {
@@ -12,8 +13,8 @@ class ReactionButton extends ConsumerWidget {
     required this.blogId,
     required this.userId,
     this.size = 24.0,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
