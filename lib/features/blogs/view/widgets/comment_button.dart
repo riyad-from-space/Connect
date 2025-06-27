@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../view_model/blog_interaction_viewmodel.dart';
-import '../comments_bottomsheet.dart';
+import 'comments_bottomsheet.dart';
 
 class CommentButton extends ConsumerWidget {
   final String blogId;
@@ -14,8 +15,8 @@ class CommentButton extends ConsumerWidget {
     required this.userId,
     required this.userName,
     this.size = 24.0,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

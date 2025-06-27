@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/widgets/buttons/back_button.dart';
 import '../../../../widgets/post_card.dart';
 import '../../../auth/data/repositories/auth_viewmodel_provider.dart';
 import '../../data/model/blog_model.dart';
@@ -24,6 +25,10 @@ class SavedPostsScreen extends ConsumerWidget {
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: theme.scaffoldBackgroundColor,
+        leading: GestureDetector(
+          onTap: () => Navigator.pop(context),
+          child: const CustomBackButton(),
+        ),
         title:
             const Text('Saved Posts', style: TextStyle(fontFamily: 'Poppins')),
       ),

@@ -1,12 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:connect/core/widgets/buttons/back_button.dart';
+import 'package:connect/core/widgets/buttons/submit_button.dart';
 import 'package:connect/features/auth/data/repositories/auth_viewmodel_provider.dart';
 import 'package:connect/features/blogs/view_model/blog_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
 
-import '../../../widgets/custom_button.dart';
-import '../data/model/blog_model.dart';
+import '../../data/model/blog_model.dart';
 
 class BlogAddEditScreen extends ConsumerStatefulWidget {
   final Blog? post;
@@ -107,6 +108,11 @@ class _BlogAddEditScreenState extends ConsumerState<BlogAddEditScreen> {
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: theme.scaffoldBackgroundColor,
+        elevation: 0,
+        leading: InkWell(
+          onTap: () => Navigator.pop(context),
+          child: const CustomBackButton(),
+        ),
         title: Text(widget.post == null ? 'Create Post' : 'Edit Post'),
       ),
       body: categoriesAsync.when(
@@ -169,10 +175,11 @@ class _BlogAddEditScreenState extends ConsumerState<BlogAddEditScreen> {
                 }).toList(),
               ),
               const SizedBox(height: 24),
-              CustomButton(
-                text: widget.post == null ? 'Create Post' : 'Update Post',
-                onPressed: _savePost,
-                isLoading: _isLoading,
+              SubmitButton(
+                buttonText: widget.post == null ? 'Create Post' : 'Update Post',
+                onSubmit: _savePost,
+                isEnabled: !_isLoading,
+                message: '',
               ),
             ],
           ),

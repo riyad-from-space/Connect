@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:connect/core/constants/colours.dart';
+import 'package:connect/core/widgets/buttons/back_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:connect/core/constants/colours.dart';
+
 import '../data/models/chat_models.dart';
 import '../data/services/chat_service.dart';
 
@@ -9,7 +11,11 @@ class ChatScreen extends ConsumerStatefulWidget {
   final String chatId;
   final String otherUserName;
   final String currentUserId;
-  const ChatScreen({required this.chatId, required this.otherUserName, required this.currentUserId, Key? key}) : super(key: key);
+  const ChatScreen(
+      {required this.chatId,
+      required this.otherUserName,
+      required this.currentUserId,
+      super.key});
 
   @override
   ConsumerState<ChatScreen> createState() => _ChatScreenState();
@@ -22,7 +28,15 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(widget.otherUserName)),
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        elevation: 0,
+        leading: InkWell(
+          onTap: () => Navigator.pop(context),
+          child: const CustomBackButton(),
+        ),
+        title: Text(widget.otherUserName),
+      ),
       body: Column(
         children: [
           Expanded(
@@ -34,7 +48,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                 }
                 final messages = snapshot.data!;
                 if (messages.isEmpty) {
-                  return const Center(child: Text('No messages yet. Say hello!'));
+                  return const Center(
+                      child: Text('No messages yet. Say hello!'));
                 }
                 return ListView.builder(
                   reverse: true,
@@ -46,10 +61,11 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                       return Align(
                         alignment: Alignment.centerRight,
                         child: Container(
-                          margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 8),
+                          margin: const EdgeInsets.symmetric(
+                              vertical: 2, horizontal: 8),
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
-                            color: Colors.deepPurple[200],
+                            color: Colors.deepPurple[400],
                             borderRadius: BorderRadius.circular(16),
                           ),
                           child: Text(msg.text),
@@ -57,11 +73,17 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                       );
                     } else {
                       return FutureBuilder<DocumentSnapshot>(
-                        future: FirebaseFirestore.instance.collection('users').doc(msg.senderId).get(),
+                        future: FirebaseFirestore.instance
+                            .collection('users')
+                            .doc(msg.senderId)
+                            .get(),
                         builder: (context, userSnap) {
                           String initials = '?';
-                          if (userSnap.hasData && userSnap.data != null && userSnap.data!.exists) {
-                            final data = userSnap.data!.data() as Map<String, dynamic>?;
+                          if (userSnap.hasData &&
+                              userSnap.data != null &&
+                              userSnap.data!.exists) {
+                            final data =
+                                userSnap.data!.data() as Map<String, dynamic>?;
                             if (data != null && data['firstName'] != null) {
                               initials = data['firstName'][0].toUpperCase();
                             }
@@ -73,7 +95,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                               Container(
                                 width: 32,
                                 height: 32,
-                                margin: const EdgeInsets.only(left: 8, right: 4, bottom: 2),
+                                margin: const EdgeInsets.only(
+                                    left: 8, right: 4, bottom: 2),
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
                                   gradient: KColor.purpleGradient,
@@ -89,13 +112,17 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                                 ),
                               ),
                               Container(
-                                margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 0),
+                                margin: const EdgeInsets.symmetric(
+                                    vertical: 2, horizontal: 0),
                                 padding: const EdgeInsets.all(12),
                                 decoration: BoxDecoration(
-                                  color: Colors.grey[300],
+                                  color: Colors.deepPurple[300],
                                   borderRadius: BorderRadius.circular(16),
                                 ),
-                                child: Text(msg.text),
+                                child: Text(
+                                  msg.text,
+                                  style: const TextStyle(color: KColor.black),
+                                ),
                               ),
                             ],
                           );
@@ -114,7 +141,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                 Expanded(
                   child: TextField(
                     controller: _controller,
-                    decoration: const InputDecoration(hintText: 'Type a message...'),
+                    decoration:
+                        const InputDecoration(hintText: 'Type a message...'),
                   ),
                 ),
                 IconButton(

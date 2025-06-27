@@ -122,12 +122,9 @@ class TopicSelectionScreen extends ConsumerWidget {
                       .read(onboardingStatusProvider.notifier)
                       .completeOnboarding();
 
+                  // Instead of pushNamedAndRemoveUntil, use pushReplacementNamed to avoid losing auth state
                   if (context.mounted) {
-                    Navigator.pushNamedAndRemoveUntil(
-                      context,
-                      '/home',
-                      (route) => false,
-                    );
+                    Navigator.pushReplacementNamed(context, '/home');
                   }
                 },
                 buttonText: 'Continue',

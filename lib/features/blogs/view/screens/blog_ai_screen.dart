@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../data/model/blog_model.dart';
 import '../../view_model/ai_viewmodel.dart';
+import '../../../../core/widgets/buttons/back_button.dart';
 
 class BlogAiScreen extends ConsumerStatefulWidget {
   final Blog blog;
@@ -26,6 +27,10 @@ class _BlogAiScreenState extends ConsumerState<BlogAiScreen> {
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: theme.scaffoldBackgroundColor,
+        leading: GestureDetector(
+          onTap: () => Navigator.pop(context),
+          child: const CustomBackButton(),
+        ),
         title:
             const Text('AI Features', style: TextStyle(fontFamily: 'Poppins')),
       ),
@@ -56,7 +61,7 @@ class _BlogAiScreenState extends ConsumerState<BlogAiScreen> {
             // Summary Card
             Card(
               child: ListTile(
-                leading: Icon(Icons.summarize, color: colorScheme.primary),
+                leading: Icon(Icons.summarize, color: Color(0xff9C27B0)),
                 title: const Text('Get Summary'),
                 subtitle: const Text('AI-powered blog summary'),
                 onTap: () => _showSummary(context),
@@ -70,7 +75,7 @@ class _BlogAiScreenState extends ConsumerState<BlogAiScreen> {
               child: ListTile(
                 leading: Icon(
                   isSpeaking ? Icons.stop_circle : Icons.record_voice_over,
-                  color: colorScheme.primary,
+                  color: Color(0xff9C27B0),
                 ),
                 title: Text(isSpeaking ? 'Stop Reading' : 'Read Aloud'),
                 subtitle: const Text('Convert blog to speech'),

@@ -1,25 +1,25 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connect/core/constants/colours.dart';
+import 'package:connect/features/user_profile/view/user_profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+
 import '../features/auth/data/repositories/auth_viewmodel_provider.dart';
 import '../features/blogs/data/model/blog_model.dart';
-import 'post_options_bottom_sheet.dart';
-
-import '../features/blogs/view/widgets/reaction_button.dart';
 import '../features/blogs/view/widgets/comment_button.dart';
-
+import '../features/blogs/view/widgets/reaction_button.dart';
+import 'post_options_bottom_sheet.dart';
 
 class PostCard extends ConsumerWidget {
   final Blog post;
   final VoidCallback onTap;
 
   const PostCard({
-    Key? key,
+    super.key,
     required this.post,
     required this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -28,16 +28,17 @@ class PostCard extends ConsumerWidget {
     final theme = Theme.of(context);
     if (user == null) {
       return const SizedBox.shrink();
-    }    final dateStr = DateFormat('MMM d, yyyy').format(post.createdAt.toDate());
+    }
+    final dateStr = DateFormat('MMM d, yyyy').format(post.createdAt.toDate());
     final isAuthor = user.uid == post.authorId;
-    
+
     return Card(
       elevation: 6,
       margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(24),
       ),
-      shadowColor: colorScheme.primary.withOpacity(0.10),
+      shadowColor: Color(0xff9C27B0).withOpacity(0.10),
       child: Column(
         children: [
           Padding(
@@ -48,16 +49,30 @@ class PostCard extends ConsumerWidget {
                 // Header with author info and actions
                 Row(
                   children: [
-                    CircleAvatar(
-                      radius: 22,
-                      backgroundColor: colorScheme.primary.withOpacity(0.13),
-                      child: Text(
-                        post.authorName[0].toUpperCase(),
-                        style: TextStyle(
-                          fontFamily: 'Poppins',
-                          color: colorScheme.primary,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20,
+                    InkWell(
+                      onTap: () {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const ProfileScreen(),
+                          ),
+                        );
+                      },
+                      child: Container(
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          gradient: KColor.purpleGradient,
+                        ),
+                        alignment: Alignment.center,
+                        child: Text(
+                          user.firstName[0].toUpperCase(),
+                          style: const TextStyle(
+                            fontSize: 26,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ),
@@ -96,21 +111,20 @@ class PostCard extends ConsumerWidget {
                             .collection('savedPosts')
                             .doc(post.id)
                             .get();
-                            
+
                         if (context.mounted) {
                           showModalBottomSheet(
-                            context: context,
-                            backgroundColor: Colors.transparent,
-                            isScrollControlled: true,
-                            builder: (BuildContext context) {
-                              return PostOptionsBottomSheet(
-                                post: post,
-                                userId: user.uid,
-                                isAuthor: isAuthor,
-                                initialSaveState: saveState.exists,
-                              );
-                            }
-                          );
+                              context: context,
+                              backgroundColor: Colors.transparent,
+                              isScrollControlled: true,
+                              builder: (BuildContext context) {
+                                return PostOptionsBottomSheet(
+                                  post: post,
+                                  userId: user.uid,
+                                  isAuthor: isAuthor,
+                                  initialSaveState: saveState.exists,
+                                );
+                              });
                         }
                       },
                     ),
@@ -121,7 +135,8 @@ class PostCard extends ConsumerWidget {
                   borderRadius: BorderRadius.circular(16),
                   onTap: onTap,
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 2),
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 18, horizontal: 2),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -149,7 +164,7 @@ class PostCard extends ConsumerWidget {
                 ),
                 const SizedBox(height: 10),
                 Divider(
-                  color: colorScheme.primary.withOpacity(0.10),
+                  color: Color(0xff9C27B0).withOpacity(0.10),
                   thickness: 1,
                   height: 18,
                 ),
@@ -170,28 +185,33 @@ class PostCard extends ConsumerWidget {
                     IconButton(
                       icon: Icon(
                         Icons.auto_awesome,
-                        color: colorScheme.primary,
+                        color: Color(0xff9C27B0),
                       ),
                       splashRadius: 20,
                       onPressed: () {
-                        Navigator.pushNamed(context, '/blog-ai', arguments: post);
+                        Navigator.pushNamed(context, '/blog-ai',
+                            arguments: post);
                       },
                       tooltip: 'AI Features',
                     ),
                     const Spacer(),
                     Container(
                       height: 28,
-                      constraints: const BoxConstraints(minWidth: 60, maxWidth: 90),
+                      constraints:
+                          const BoxConstraints(minWidth: 60, maxWidth: 90),
                       decoration: BoxDecoration(
                         color: KColor.primary.withOpacity(0.08),
-                        border: Border.all(color: KColor.primary.withOpacity(0.3)),
+                        border:
+                            Border.all(color: KColor.primary.withOpacity(0.3)),
                         borderRadius: BorderRadius.circular(14),
                       ),
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 2),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(Icons.label_rounded, size: 14, color: KColor.primary.withOpacity(0.7)),
+                          Icon(Icons.label_rounded,
+                              size: 14, color: KColor.primary.withOpacity(0.7)),
                           const SizedBox(width: 4),
                           Flexible(
                             child: Text(

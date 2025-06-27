@@ -1,20 +1,25 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:connect/core/constants/colours.dart';
+import 'package:connect/core/widgets/buttons/back_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:connect/core/constants/colours.dart';
+
 import '../data/models/chat_models.dart';
 import '../data/services/chat_service.dart';
 import 'chat_screen.dart';
 
 class ChatListScreen extends ConsumerWidget {
   final String currentUserId;
-  const ChatListScreen({required this.currentUserId, Key? key}) : super(key: key);
+  const ChatListScreen({required this.currentUserId, super.key});
 
   Future<Map<String, String>> _getUserInfo(String userId) async {
-    final snap = await FirebaseFirestore.instance.collection('users').doc(userId).get();
+    final snap =
+        await FirebaseFirestore.instance.collection('users').doc(userId).get();
     if (snap.exists) {
       final data = snap.data();
-      if (data != null && data['firstName'] != null && data['lastName'] != null) {
+      if (data != null &&
+          data['firstName'] != null &&
+          data['lastName'] != null) {
         final name = "${data['firstName']} ${data['lastName']}";
         final initials = data['firstName'][0].toUpperCase();
         return {'name': name, 'initials': initials};
@@ -27,7 +32,13 @@ class ChatListScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final ChatService chatService = ChatService();
     return Scaffold(
-      appBar: AppBar(title: const Text('Chats')),
+      appBar: AppBar(
+        leading: GestureDetector(
+          onTap: () => Navigator.pop(context),
+          child: const CustomBackButton(),
+        ),
+        title: const Text('Chats'),
+      ),
       body: StreamBuilder<List<Chat>>(
         stream: chatService.userChatsStream(currentUserId),
         builder: (context, snapshot) {
@@ -43,7 +54,8 @@ class ChatListScreen extends ConsumerWidget {
             separatorBuilder: (_, __) => const Divider(),
             itemBuilder: (context, index) {
               final chat = chats[index];
-              final otherUserId = chat.members.firstWhere((id) => id != currentUserId);
+              final otherUserId =
+                  chat.members.firstWhere((id) => id != currentUserId);
               return FutureBuilder<Map<String, String>>(
                 future: _getUserInfo(otherUserId),
                 builder: (context, userSnap) {
@@ -67,10 +79,11 @@ class ChatListScreen extends ConsumerWidget {
                         ),
                       ),
                     ),
-                    title: Text('$displayName'),
+                    title: Text(displayName),
                     subtitle: Text(chat.lastMessage),
                     trailing: Text(
-                      TimeOfDay.fromDateTime(chat.lastMessageTime).format(context),
+                      TimeOfDay.fromDateTime(chat.lastMessageTime)
+                          .format(context),
                       style: const TextStyle(fontSize: 12),
                     ),
                     onTap: () {

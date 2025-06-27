@@ -130,9 +130,8 @@ class PostOptionsBottomSheet extends ConsumerWidget {
                   ],
 
                   if (isAuthor) ...[
-                    const SizedBox(height: 14),
-                    Container(height: 1, color: const Color(0xffEFEFEF)),
-                    const SizedBox(height: 14),
+                    const SizedBox(height: 28),
+
                     // Edit option
                     GestureDetector(
                       onTap: () {
@@ -150,8 +149,8 @@ class PostOptionsBottomSheet extends ConsumerWidget {
                                 ),
                       ),
                     ),
-                    const SizedBox(height: 14),
-                    Container(height: 1, color: const Color(0xffEFEFEF)),
+                    const SizedBox(height: 28),
+
                     const SizedBox(height: 14),
                     // Delete option
                     GestureDetector(

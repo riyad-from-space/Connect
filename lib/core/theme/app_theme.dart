@@ -85,7 +85,7 @@ class AppTheme {
     ),
     chipTheme: ChipThemeData(
       backgroundColor: KColor.blackOpacity5,
-      selectedColor: KColor.primaryOpacity20,
+      selectedColor: KColor.primary,
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
       labelStyle: TextStyle(
         fontSize: 14,
@@ -180,7 +180,7 @@ class AppTheme {
     ),
     chipTheme: ChipThemeData(
       backgroundColor: const Color(0xFF2C2C2C),
-      selectedColor: KColor.primaryOpacity20,
+      selectedColor: KColor.primary,
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
       labelStyle: TextStyle(
         fontSize: 14,

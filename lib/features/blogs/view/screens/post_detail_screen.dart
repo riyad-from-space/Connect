@@ -2,6 +2,7 @@ import 'package:connect/core/constants/colours.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../core/widgets/buttons/back_button.dart';
 import '../../../../widgets/category_chip.dart';
 import '../../data/model/blog_model.dart';
 
@@ -28,6 +29,10 @@ class PostDetailScreen extends StatelessWidget {
           SliverAppBar(
             expandedHeight: 200,
             pinned: true,
+            leading: GestureDetector(
+              onTap: () => Navigator.pop(context),
+              child: const CustomBackButton(),
+            ),
             flexibleSpace: FlexibleSpaceBar(
               title: Text(post.title, style: theme.textTheme.headlineLarge),
               background: Container(

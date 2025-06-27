@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../core/constants/colours.dart';
-import '../view_model/blog_interaction_viewmodel.dart';
+import '../../../../core/constants/colours.dart';
+import '../../view_model/blog_interaction_viewmodel.dart';
 
 class CommentBottomSheet extends ConsumerStatefulWidget {
   final String blogId;
@@ -13,8 +13,8 @@ class CommentBottomSheet extends ConsumerStatefulWidget {
     required this.blogId,
     required this.userId,
     required this.userName,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   ConsumerState<CommentBottomSheet> createState() => _CommentBottomSheetState();
@@ -37,7 +37,9 @@ class _CommentBottomSheetState extends ConsumerState<CommentBottomSheet> {
     return SizedBox(
       height: 680,
       child: Scaffold(
-        backgroundColor:Theme.of(context).brightness == Brightness.light ? KColor.white : KColor.darkSurface,
+        backgroundColor: Theme.of(context).brightness == Brightness.light
+            ? KColor.white
+            : KColor.darkSurface,
         body: Stack(
           children: [
             SingleChildScrollView(
@@ -50,7 +52,8 @@ class _CommentBottomSheetState extends ConsumerState<CommentBottomSheet> {
                       child: Container(
                         height: 3,
                         width: 50,
-                        decoration: const BoxDecoration(color: Color(0xffE4E4E9)),
+                        decoration:
+                            const BoxDecoration(color: Color(0xffE4E4E9)),
                       ),
                     ),
                     const SizedBox(height: 10),
@@ -60,7 +63,8 @@ class _CommentBottomSheetState extends ConsumerState<CommentBottomSheet> {
                           return const Center(
                             child: Padding(
                               padding: EdgeInsets.only(top: 32.0),
-                              child: Text('No comments yet. Be the first to comment!'),
+                              child: Text(
+                                  'No comments yet. Be the first to comment!'),
                             ),
                           );
                         }
@@ -75,30 +79,30 @@ class _CommentBottomSheetState extends ConsumerState<CommentBottomSheet> {
                                 Row(
                                   children: [
                                     CircleAvatar(
-                                      child: Text(comment.userName[0].toUpperCase()),
+                                      child: Text(
+                                          comment.userName[0].toUpperCase()),
                                     ),
                                     const SizedBox(width: 10),
                                     Expanded(
                                       child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
                                           Row(
                                             children: [
                                               Text(
                                                 comment.userName,
-                                               
                                               ),
                                               const SizedBox(width: 8),
                                               Text(
-                                                _getTimeAgo(comment.timestamp.toDate()),
-
+                                                _getTimeAgo(
+                                                    comment.timestamp.toDate()),
                                               ),
                                             ],
                                           ),
                                           const SizedBox(height: 4),
                                           Text(
                                             comment.content,
-                                           
                                           ),
                                         ],
                                       ),
@@ -107,8 +111,10 @@ class _CommentBottomSheetState extends ConsumerState<CommentBottomSheet> {
                                       IconButton(
                                         icon: const Icon(Icons.delete_outline),
                                         onPressed: () {
-                                          ref.read(blogInteractionController)
-                                              .deleteComment(widget.blogId, comment.id);
+                                          ref
+                                              .read(blogInteractionController)
+                                              .deleteComment(
+                                                  widget.blogId, comment.id);
                                         },
                                       ),
                                   ],
@@ -120,7 +126,8 @@ class _CommentBottomSheetState extends ConsumerState<CommentBottomSheet> {
                           },
                         );
                       },
-                      loading: () => const Center(child: CircularProgressIndicator()),
+                      loading: () =>
+                          const Center(child: CircularProgressIndicator()),
                       error: (error, stack) => Center(
                         child: Text('Error loading comments: $error'),
                       ),
@@ -133,12 +140,15 @@ class _CommentBottomSheetState extends ConsumerState<CommentBottomSheet> {
               alignment: Alignment.bottomCenter,
               child: Container(
                 decoration: BoxDecoration(
-                  color: Theme.of(context).brightness == Brightness.light ? KColor.white : KColor.darkSurface,
+                  color: Theme.of(context).brightness == Brightness.light
+                      ? KColor.white
+                      : KColor.darkSurface,
                   border: Border(
                     top: BorderSide(color: KColor.grey.withOpacity(0.2)),
                   ),
                 ),
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 child: Row(
                   children: [
                     Expanded(

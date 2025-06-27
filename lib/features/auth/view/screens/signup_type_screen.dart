@@ -62,7 +62,7 @@ class _SignupTypeScreenState extends State<SignupTypeScreen> {
             const SizedBox(height: 30),
             InkWell(
               onTap: () {
-                Navigator.pushNamed(context, '/signup');
+                Navigator.pushReplacementNamed(context, '/signup');
               },
               child: SignupTypeButton(
                 background_color: KColor.backgrounforEmail,

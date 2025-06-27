@@ -15,7 +15,7 @@ class AiFeaturesButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final buttonColor = color ?? colorScheme.primary;
+    final buttonColor = color ?? Color(0xff9C27B0);
 
     return Material(
       color: Colors.transparent,

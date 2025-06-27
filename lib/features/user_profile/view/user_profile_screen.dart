@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connect/core/constants/colours.dart';
+import 'package:connect/core/widgets/buttons/back_button.dart';
 import 'package:connect/core/widgets/buttons/submit_button.dart';
 import 'package:connect/features/auth/data/models/user_model.dart';
 import 'package:connect/features/auth/data/repositories/auth_viewmodel_provider.dart';
@@ -53,6 +54,11 @@ class ProfileScreen extends ConsumerWidget {
           backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           appBar: AppBar(
             backgroundColor: theme.scaffoldBackgroundColor,
+            elevation: 0,
+            leading: InkWell(
+              onTap: () => Navigator.pop(context),
+              child: const CustomBackButton(),
+            ),
             title: Text(
               'Profile',
               style: GoogleFonts.poppins(fontWeight: FontWeight.bold),

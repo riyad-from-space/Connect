@@ -1,3 +1,4 @@
+import 'package:connect/core/constants/colours.dart';
 import 'package:connect/features/auth/data/repositories/auth_viewmodel_provider.dart';
 import 'package:connect/features/blogs/view_model/blog_viewmodel.dart';
 import 'package:connect/features/blogs/view_model/category_viewmodel.dart';
@@ -67,11 +68,22 @@ class HomeScreen extends ConsumerWidget {
                         ),
                       );
                     },
-                    child: CircleAvatar(
-                      radius: 24,
-                      backgroundColor: Theme.of(context).primaryColor,
-                      child: Text(user.firstName[0].toUpperCase(),
-                          style: theme.textTheme.headlineLarge),
+                    child: Container(
+                      width: 50,
+                      height: 50,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        gradient: KColor.purpleGradient,
+                      ),
+                      alignment: Alignment.center,
+                      child: Text(
+                        user.firstName[0].toUpperCase(),
+                        style: const TextStyle(
+                          fontSize: 26,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
                   ),
                   TextButton(
@@ -79,10 +91,8 @@ class HomeScreen extends ConsumerWidget {
                         Navigator.pushNamed(context, '/create-post'),
                     child: Text(
                       'Create Post',
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        color: colorScheme.primary,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: theme.textTheme.headlineMedium
+                          ?.copyWith(color: Color(0xff9C27B0), fontSize: 16),
                     ),
                   ),
                 ],
@@ -96,7 +106,7 @@ class HomeScreen extends ConsumerWidget {
                   child: categoriesAsync.when(
                     loading: () => Center(
                         child: CircularProgressIndicator(
-                            color: colorScheme.primary)),
+                            color: Color(0xff9C27B0))),
                     error: (e, _) => Center(
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -129,7 +139,7 @@ class HomeScreen extends ConsumerWidget {
                             child: ChoiceChip(
                               label: Text(cat),
                               selected: isSelected,
-                              selectedColor: colorScheme.primary,
+                              selectedColor: Color(0xff9C27B0),
                               backgroundColor:
                                   colorScheme.surfaceContainerHighest,
                               onSelected: (_) {
@@ -215,11 +225,11 @@ class HomeScreen extends ConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               IconButton(
-                icon: Icon(Icons.home, color: colorScheme.primary),
+                icon: Icon(Icons.home, color: Color(0xff9C27B0)),
                 onPressed: () {},
               ),
               IconButton(
-                icon: Icon(Icons.search, color: colorScheme.onSurfaceVariant),
+                icon: Icon(Icons.search, color: Color(0xff9C27B0)),
                 onPressed: () async {
                   showSearch(
                     context: context,
@@ -228,8 +238,7 @@ class HomeScreen extends ConsumerWidget {
                 },
               ),
               IconButton(
-                icon: Icon(Icons.chat_bubble_outline,
-                    color: colorScheme.onSurfaceVariant),
+                icon: Icon(Icons.chat_bubble_outline, color: Color(0xff9C27B0)),
                 onPressed: () {
                   Navigator.push(
                     context,
@@ -240,15 +249,13 @@ class HomeScreen extends ConsumerWidget {
                 },
               ),
               IconButton(
-                icon: Icon(Icons.bookmark_outline,
-                    color: colorScheme.onSurfaceVariant),
+                icon: Icon(Icons.bookmark_outline, color: Color(0xff9C27B0)),
                 onPressed: () {
                   Navigator.pushNamed(context, '/saved-posts');
                 },
               ),
               IconButton(
-                icon: Icon(Icons.settings_outlined,
-                    color: colorScheme.onSurfaceVariant),
+                icon: Icon(Icons.settings_outlined, color: Color(0xff9C27B0)),
                 onPressed: () => Navigator.pushNamed(context, '/settings'),
               ),
             ],

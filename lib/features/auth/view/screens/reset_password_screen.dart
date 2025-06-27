@@ -1,9 +1,9 @@
 import 'package:connect/core/widgets/buttons/submit_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../../core/widgets/buttons/back_button.dart';
-import '../../widgets/headline.dart';
 
+import '../../../../core/widgets/buttons/back_button.dart';
+import '../../widgets/headline.dart';
 
 final isFormValidProvider = StateProvider<bool>((ref) => false);
 
@@ -11,6 +11,8 @@ class ResetPasswordScreen extends ConsumerWidget {
   final _formKey = GlobalKey<FormState>();
   final _newPasswordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
+
+  ResetPasswordScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -36,7 +38,6 @@ class ResetPasswordScreen extends ConsumerWidget {
           },
           child: const CustomBackButton(),
         ),
-
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -46,7 +47,6 @@ class ResetPasswordScreen extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.center,
-
               children: [
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -125,7 +125,7 @@ class ResetPasswordScreen extends ConsumerWidget {
                     SubmitButton(
                       message: '',
                       isEnabled: true,
-                      onSubmit: (){
+                      onSubmit: () {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
                             content: Text('Under Development!'),
@@ -169,7 +169,6 @@ class ResetPasswordScreen extends ConsumerWidget {
                       //   }
                       // },
                     ),
-
                   ],
                 ),
               ],

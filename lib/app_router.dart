@@ -1,13 +1,13 @@
+import 'package:connect/features/auth/view/screens/login_screens/login_screen.dart';
 import 'package:connect/features/auth/view/screens/sign_screens/signup_screen.dart';
 import 'package:connect/features/auth/view/screens/signup_type_screen.dart';
 import 'package:connect/features/auth/view/screens/verification_code_screen.dart';
-import 'package:connect/features/auth/view/screens/login_screens/login_screen.dart';
 import 'package:connect/features/auth/widgets/auth_checker.dart';
 import 'package:connect/features/blogs/data/model/blog_model.dart';
-import 'package:connect/features/blogs/view/blog_add_edit_screen.dart';
+import 'package:connect/features/blogs/view/screens/blog_add_edit_screen.dart';
+import 'package:connect/features/blogs/view/screens/blog_ai_screen.dart';
 import 'package:connect/features/blogs/view/screens/post_detail_screen.dart';
 import 'package:connect/features/blogs/view/screens/saved_posts_screen.dart';
-import 'package:connect/features/blogs/view/screens/blog_ai_screen.dart';
 import 'package:connect/features/home/view/home_screen.dart';
 import 'package:connect/features/on_boarding/view/screens/topic_selection_screen.dart';
 import 'package:connect/features/settings/view/settings_screen.dart';
@@ -19,7 +19,7 @@ class AppRouter {
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
       case '/':
-        // Start with SplashScreen, which should navigate to AuthChecker after loading
+        // Start with SplashScreen, which navigates to AuthChecker
         return MaterialPageRoute(builder: (_) => SplashScreen());
       case '/splash':
         return MaterialPageRoute(builder: (_) => SplashScreen());
@@ -41,6 +41,7 @@ class AppRouter {
           settings: RouteSettings(name: '/signup-type'),
         );
       case '/category-selection':
+        // Topic selection after signup/verification
         return MaterialPageRoute(
           builder: (context) => TopicSelectionScreen(),
           settings: RouteSettings(name: '/category-selection'),
@@ -51,6 +52,7 @@ class AppRouter {
           settings: RouteSettings(name: '/verification-code'),
         );
       case '/home':
+        // Main app content
         return MaterialPageRoute(
           builder: (context) => HomeScreen(),
           settings: RouteSettings(name: '/home'),
@@ -77,7 +79,7 @@ class AppRouter {
         return MaterialPageRoute(
           builder: (_) => Scaffold(
             body: Center(
-              child: Text('No route defined for {settings.name}'),
+              child: Text('No route defined for ${settings.name}'),
             ),
           ),
         );

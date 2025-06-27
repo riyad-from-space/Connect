@@ -25,7 +25,9 @@ class SaveButton extends ConsumerWidget {
       child: IconButton(
         icon: Icon(
           isSaved ? Icons.bookmark : Icons.bookmark_border,
-          color: isSaved ? colorScheme.primary : colorScheme.onSurface.withOpacity(0.5),
+          color: isSaved
+              ? Color(0xff9C27B0)
+              : colorScheme.onSurface.withOpacity(0.5),
           size: size,
         ),
         onPressed: onTap,

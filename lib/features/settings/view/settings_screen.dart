@@ -1,5 +1,6 @@
 import 'package:connect/core/constants/colours.dart';
 import 'package:connect/core/theme/theme_provider.dart';
+import 'package:connect/core/widgets/buttons/back_button.dart';
 import 'package:connect/core/widgets/buttons/submit_button.dart';
 import 'package:connect/features/auth/data/repositories/auth_viewmodel_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -32,6 +33,10 @@ class SettingsScreen extends ConsumerWidget {
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: theme.scaffoldBackgroundColor,
+        leading: GestureDetector(
+          onTap: () => Navigator.pop(context),
+          child: const CustomBackButton(),
+        ),
         title: Text('Settings', style: textTheme.titleLarge),
       ),
       body: ListView(
@@ -92,13 +97,13 @@ class SettingsScreen extends ConsumerWidget {
           ListTile(
             leading: Icon(
               isDark ? Icons.dark_mode : Icons.light_mode,
-              color: Theme.of(context).colorScheme.primary,
+              color: Color(0xff9C27B0),
             ),
             title: Text('Dark Mode', style: textTheme.titleMedium),
             trailing: Switch(
               value: isDark,
               onChanged: (_) => ref.read(themeProvider.notifier).toggleTheme(),
-              activeColor: Theme.of(context).colorScheme.primary,
+              activeColor: Color(0xff9C27B0),
             ),
           ),
           const Divider(),
@@ -107,7 +112,7 @@ class SettingsScreen extends ConsumerWidget {
           ListTile(
             leading: Icon(
               Icons.notifications_outlined,
-              color: Theme.of(context).colorScheme.primary,
+              color: Color(0xff9C27B0),
             ),
             title: Text('Notifications', style: textTheme.titleMedium),
             trailing: Icon(
@@ -129,7 +134,7 @@ class SettingsScreen extends ConsumerWidget {
           ListTile(
             leading: Icon(
               Icons.security_outlined,
-              color: Theme.of(context).colorScheme.primary,
+              color: Color(0xff9C27B0),
             ),
             title: Text('Privacy', style: textTheme.titleMedium),
             trailing: Icon(
@@ -151,7 +156,7 @@ class SettingsScreen extends ConsumerWidget {
           ListTile(
             leading: Icon(
               Icons.help_outline,
-              color: Theme.of(context).colorScheme.primary,
+              color: Color(0xff9C27B0),
             ),
             title: Text('Help & Support', style: textTheme.titleMedium),
             trailing: Icon(

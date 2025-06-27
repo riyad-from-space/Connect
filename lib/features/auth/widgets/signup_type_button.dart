@@ -1,8 +1,5 @@
 import 'package:connect/core/constants/colours.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-
-import '../../../core/constants/text_style.dart';
 
 class SignupTypeButton extends StatelessWidget {
   SignupTypeButton(
@@ -34,20 +31,14 @@ class SignupTypeButton extends StatelessWidget {
         children: [
           isGoogle ? image! : icon!,
           const SizedBox(width: 20),
-          Text(
-            'Continue with ',
-            style:theme.textTheme.headlineLarge!.copyWith(
-              fontSize: 22,
-            )
-          ),
+          Text('Continue with ',
+              style: theme.textTheme.headlineLarge!.copyWith(
+                fontSize: 22,
+              )),
           const SizedBox(width: 2),
-          Text(
-            provider_name,
-              style:theme.textTheme.headlineLarge!.copyWith(
-              fontSize: 22,
-              color: KColor.white
-            )
-          ),
+          Text(provider_name,
+              style: theme.textTheme.headlineLarge!
+                  .copyWith(fontSize: 22, color: KColor.white)),
         ],
       ),
     );

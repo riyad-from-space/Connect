@@ -1,13 +1,15 @@
 import 'dart:async';
+
 import 'package:connect/features/auth/view/screens/reset_password_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 
+import '../../../../core/widgets/buttons/back_button.dart';
 import '../../../../core/widgets/buttons/submit_button.dart';
 import '../../widgets/headline.dart';
 
 class VerificationCodeScreen extends StatefulWidget {
-  const VerificationCodeScreen({Key? key}) : super(key: key);
+  const VerificationCodeScreen({super.key});
 
   @override
   State<VerificationCodeScreen> createState() => _VerificationCodeScreenState();
@@ -42,22 +44,21 @@ class _VerificationCodeScreenState extends State<VerificationCodeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final bool isSubmitEnabled = _code != null && _code!.length == 4 && _remainingSeconds > 0;
+    final bool isSubmitEnabled =
+        _code != null && _code!.length == 4 && _remainingSeconds > 0;
 
     return Scaffold(
-      // appBar: AppBar(
-      //   leading: InkWell(
-      //     onTap: () {
-      //       Navigator.pop(context);
-      //     },
-      //     child: const CustomBackButton(),
-      //   ),
-      // ),
+      appBar: AppBar(
+        leading: GestureDetector(
+          onTap: () => Navigator.pop(context),
+          child: const CustomBackButton(),
+        ),
+      ),
       body: Center(
         child: Padding(
           padding: const EdgeInsets.only(left: 20, right: 20, top: 60),
           child: Column(
-         mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Headline(
                 headline: 'Verification Code',
@@ -106,9 +107,9 @@ class _VerificationCodeScreenState extends State<VerificationCodeScreen> {
                   onSubmit: () {
                     Navigator.pushAndRemoveUntil(
                       context,
-                      MaterialPageRoute(builder: (context) => ResetPasswordScreen()
-                      ),(route) => false,
-
+                      MaterialPageRoute(
+                          builder: (context) => ResetPasswordScreen()),
+                      (route) => false,
                     );
                   },
                 ),

@@ -1,8 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
-
-import '../../../core/constants/text_style.dart';
-
 
 class Headline extends StatelessWidget {
   Headline({super.key, required this.headline, required this.sub_headline});
@@ -18,8 +14,10 @@ class Headline extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(headline, style: theme.textTheme.headlineLarge),
-        Text(sub_headline!,style:theme.textTheme.headlineSmall,)
-
+        Text(
+          sub_headline!,
+          style: theme.textTheme.headlineSmall,
+        )
       ],
     );
   }

@@ -37,32 +37,12 @@ class LoginScreen extends ConsumerWidget {
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       // appBar: AppBar(
-      //   automaticallyImplyLeading: false,
-      //   // leading: InkWell(
-      //   //   onTap: () {
-      //   //     Navigator.pop(context);
-      //   //   },
-      //   //   child: const CustomBackButton(),
-      //   // ),
-      //   actions: [
-      //     InkWell(
-      //       onTap: () {
-      //         Navigator.pushNamed(context, '/verification-code');
-      //       },
-      //       child: Padding(
-      //         padding: const EdgeInsets.all(16),
-      //         child: Text(
-      //           'Forgotten Password?',
-      //           style: KTextStyle.subtitle1.copyWith(
-      //             fontFamily: GoogleFonts.openSans().fontFamily,
-      //             fontWeight: FontWeight.w600,
-      //             fontSize: 16,
-      //             color: const Color(0xffA76FFF),
-      //           ),
-      //         ),
-      //       ),
-      //     ),
-      //   ],
+      //   backgroundColor: theme.scaffoldBackgroundColor,
+      //   elevation: 0,
+      //   leading: InkWell(
+      //     onTap: () => Navigator.pop(context),
+      //     child: const CustomBackButton(),
+      //   ),
       // ),
       body: Center(
         child: Padding(
@@ -227,7 +207,8 @@ class LoginScreen extends ConsumerWidget {
                           const SizedBox(width: 4),
                           InkWell(
                             onTap: () {
-                              Navigator.pushNamed(context, '/signup');
+                              Navigator.pushReplacementNamed(
+                                  context, '/signup');
                             },
                             child: Text('Sign Up',
                                 style: theme.textTheme.headlineSmall!.copyWith(

@@ -59,7 +59,6 @@ class KColor {
   // Opacity Colors
   static Color blackOpacity5 = black.withOpacity(0.05);
   static Color blackOpacity10 = black.withOpacity(0.1);
-  static Color primaryOpacity10 = primary.withOpacity(0.1);
-  static Color primaryOpacity20 = primary.withOpacity(0.2);
+
   static Color whiteOpacity60 = white.withOpacity(0.6);
 }
