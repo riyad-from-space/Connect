@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/widgets/buttons/submit_button.dart';
 import '../../../blogs/view_model/blog_viewmodel.dart';
+import '../../../blogs/view_model/category_viewmodel.dart';
 import '../../provider/onboarding_status_provider.dart';
 import '../../provider/selected_categories_provider.dart';
 
@@ -122,9 +123,10 @@ class TopicSelectionScreen extends ConsumerWidget {
                       .read(onboardingStatusProvider.notifier)
                       .completeOnboarding();
 
-                  // Instead of pushNamedAndRemoveUntil, use pushReplacementNamed to avoid losing auth state
+                  // Set selected category to 'Trending' so user sees trending blogs first
                   if (context.mounted) {
-                    Navigator.pushReplacementNamed(context, '/home');
+                    ref.read(selectedCategoryProvider.notifier).state = 'Trending';
+                    Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
                   }
                 },
                 buttonText: 'Continue',

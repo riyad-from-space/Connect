@@ -17,7 +17,7 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    _controller = VideoPlayerController.asset('assets/images/splash.mp4')
+    _controller = VideoPlayerController.asset('assets/images/splash.webm')
       ..initialize().then((_) {
         setState(() {
           _initialized = true;
@@ -50,9 +50,16 @@ class _SplashScreenState extends State<SplashScreen> {
         children: [
           Center(
             child: _initialized
-                ? AspectRatio(
-                    aspectRatio: _controller.value.aspectRatio,
-                    child: VideoPlayer(_controller),
+                ? SizedBox(
+                    width: 180,
+                    height: 180,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(24),
+                      child: AspectRatio(
+                        aspectRatio: _controller.value.aspectRatio,
+                        child: VideoPlayer(_controller),
+                      ),
+                    ),
                   )
                 : const Center(child: CircularProgressIndicator()),
           ),

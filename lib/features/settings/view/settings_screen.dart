@@ -4,6 +4,8 @@ import 'package:connect/core/widgets/buttons/back_button.dart';
 import 'package:connect/core/widgets/buttons/submit_button.dart';
 import 'package:connect/features/auth/data/repositories/auth_viewmodel_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'privacy_policy_screen.dart';
+import 'help_support_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -109,28 +111,28 @@ class SettingsScreen extends ConsumerWidget {
           const Divider(),
 
           // Other Settings
-          ListTile(
-            leading: Icon(
-              Icons.notifications_outlined,
-              color: Color(0xff9C27B0),
-            ),
-            title: Text('Notifications', style: textTheme.titleMedium),
-            trailing: Icon(
-              Icons.arrow_forward_ios,
-              size: 20,
-              color: Theme.of(context).colorScheme.onSurface,
-            ),
-            onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    'Coming soon!',
-                    style: textTheme.bodyMedium?.copyWith(color: Colors.white),
-                  ),
-                ),
-              );
-            },
-          ),
+          // ListTile(
+          //   leading: Icon(
+          //     Icons.notifications_outlined,
+          //     color: Color(0xff9C27B0),
+          //   ),
+          //   title: Text('Notifications', style: textTheme.titleMedium),
+          //   trailing: Icon(
+          //     Icons.arrow_forward_ios,
+          //     size: 20,
+          //     color: Theme.of(context).colorScheme.onSurface,
+          //   ),
+          //   onTap: () {
+          //     ScaffoldMessenger.of(context).showSnackBar(
+          //       SnackBar(
+          //         content: Text(
+          //           'Coming soon!',
+          //           style: textTheme.bodyMedium?.copyWith(color: Colors.white),
+          //         ),
+          //       ),
+          //     );
+          //   },
+          // ),
           ListTile(
             leading: Icon(
               Icons.security_outlined,
@@ -143,12 +145,10 @@ class SettingsScreen extends ConsumerWidget {
               color: Theme.of(context).colorScheme.onSurface,
             ),
             onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    'Coming soon!',
-                    style: textTheme.bodyMedium?.copyWith(color: Colors.white),
-                  ),
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const PrivacyPolicyScreen(),
                 ),
               );
             },
@@ -165,16 +165,15 @@ class SettingsScreen extends ConsumerWidget {
               color: Theme.of(context).colorScheme.onSurface,
             ),
             onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    'Coming soon!',
-                    style: textTheme.bodyMedium?.copyWith(color: Colors.white),
-                  ),
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const HelpSupportScreen(),
                 ),
               );
             },
           ),
+//
           const Divider(),
 
           // Logout Section
