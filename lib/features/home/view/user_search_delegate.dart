@@ -41,11 +41,7 @@ class UserSearchDelegate extends SearchDelegate<UserModel?> {
   Widget _buildUserResults(BuildContext context) {
     final searchLower = query.toLowerCase();
     return FutureBuilder<QuerySnapshot>(
-      future: FirebaseFirestore.instance
-          .collection('users')
-          .where('username', isGreaterThanOrEqualTo: searchLower)
-          .where('username', isLessThanOrEqualTo: searchLower + '\uf8ff')
-          .get(),
+      future: FirebaseFirestore.instance.collection('users').get(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -53,7 +49,21 @@ class UserSearchDelegate extends SearchDelegate<UserModel?> {
         if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
           return const Center(child: Text('No users found.'));
         }
-        final users = snapshot.data!.docs.map((doc) => UserModel.fromMap(doc.data() as Map<String, dynamic>)).toList();
+        // Filter users by username, firstName, or lastName (case-insensitive)
+        final users = snapshot.data!.docs
+            .map((doc) => UserModel.fromMap(doc.data() as Map<String, dynamic>))
+            .where((user) {
+              final username = user.username.toLowerCase();
+              final firstName = user.firstName.toLowerCase();
+              final lastName = user.lastName.toLowerCase();
+              return username.contains(searchLower) ||
+                  firstName.contains(searchLower) ||
+                  lastName.contains(searchLower);
+            })
+            .toList();
+        if (users.isEmpty) {
+          return const Center(child: Text('No users found.'));
+        }
         return ListView.separated(
           itemCount: users.length,
           separatorBuilder: (_, __) => const Divider(),

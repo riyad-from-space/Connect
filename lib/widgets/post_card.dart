@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connect/core/constants/colours.dart';
-import 'package:connect/features/user_profile/view/user_profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -49,30 +48,20 @@ class PostCard extends ConsumerWidget {
                 // Header with author info and actions
                 Row(
                   children: [
-                    InkWell(
-                      onTap: () {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const ProfileScreen(),
-                          ),
-                        );
-                      },
-                      child: Container(
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          gradient: KColor.purpleGradient,
-                        ),
-                        alignment: Alignment.center,
-                        child: Text(
-                          user.firstName[0].toUpperCase(),
-                          style: const TextStyle(
-                            fontSize: 26,
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
+                    Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        gradient: KColor.purpleGradient,
+                      ),
+                      alignment: Alignment.center,
+                      child: Text(
+                         post.authorName[0].toUpperCase(),
+                        style: const TextStyle(
+                          fontSize: 26,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),

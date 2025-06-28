@@ -1,9 +1,21 @@
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connect/features/auth/data/repositories/auth_viewmodel_provider.dart';
 import 'package:connect/features/blogs/view_model/category_viewmodel.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../data/model/blog_model.dart';
+
+// Trending blogs provider: fetches blogs sorted by most liked (reactionCount)
+final trendingBlogsProvider = StreamProvider<List<Blog>>((ref) {
+  return FirebaseFirestore.instance
+      .collection('blogs')
+      .orderBy('reactionCount', descending: true)
+      .limit(10)
+      .snapshots()
+      .map((snap) =>
+          snap.docs.map((doc) => Blog.fromMap(doc.data(), doc.id)).toList());
+});
 
 final blogsProvider = StreamProvider<List<Blog>>((ref) {
   // Fetch all blogs, filtering is handled by filteredBlogsProvider

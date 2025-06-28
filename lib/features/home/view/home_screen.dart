@@ -21,6 +21,7 @@ class HomeScreen extends ConsumerWidget {
     ref.watch(categoryInitializerProvider);
     final userAsync = ref.watch(authStateProvider);
     final blogsAsync = ref.watch(feedProvider);
+    final trendingBlogsAsync = ref.watch(trendingBlogsProvider);
 
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
@@ -98,54 +99,40 @@ class HomeScreen extends ConsumerWidget {
                 ],
               ),
             ),
+            // Categories chips with Trending as the first chip
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.only(top: 16.0),
                 child: SizedBox(
                   height: 40,
                   child: categoriesAsync.when(
-                    loading: () => Center(
-                        child: CircularProgressIndicator(
-                            color: Color(0xff9C27B0))),
+                    loading: () => Center(child: CircularProgressIndicator(color: Color(0xff9C27B0))),
                     error: (e, _) => Center(
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                        child: Text(
-                          'Error loading categories: $e',
-                          style: theme.textTheme.bodyMedium
-                              ?.copyWith(color: colorScheme.error),
-                        ),
+                        child: Text('Error loading categories: $e', style: theme.textTheme.bodyMedium?.copyWith(color: colorScheme.error)),
                       ),
                     ),
                     data: (categories) {
-                      if (categories.isEmpty) {
-                        return Center(
-                          child: Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 16.0),
-                            child: Text('No categories available',
-                                style: theme.textTheme.bodyMedium),
-                          ),
-                        );
-                      }
+                      final allCategories = ['Trending', ...categories];
                       return ListView.separated(
                         scrollDirection: Axis.horizontal,
-                        itemCount: categories.length,
+                        itemCount: allCategories.length,
                         separatorBuilder: (_, __) => const SizedBox(width: 10),
                         itemBuilder: (context, index) {
-                          final cat = categories[index];
-                          final isSelected = cat == selectedCategory;
+                          final cat = allCategories[index];
+                          final isTrending = cat == 'Trending';
+                          final isSelected = isTrending
+                              ? selectedCategory == 'Trending'
+                              : selectedCategory == cat;
                           return Center(
                             child: ChoiceChip(
                               label: Text(cat),
                               selected: isSelected,
                               selectedColor: Color(0xff9C27B0),
-                              backgroundColor:
-                                  colorScheme.surfaceContainerHighest,
+                              backgroundColor: colorScheme.surfaceContainerHighest,
                               onSelected: (_) {
-                                ref
-                                    .read(selectedCategoryProvider.notifier)
-                                    .state = isSelected ? null : cat;
+                                ref.read(selectedCategoryProvider.notifier).state = isTrending ? 'Trending' : (isSelected ? null : cat);
                               },
                             ),
                           );
@@ -156,61 +143,89 @@ class HomeScreen extends ConsumerWidget {
                 ),
               ),
             ),
+            // Show trending blogs if Trending is selected, else show normal blogs
             SliverPadding(
               padding: const EdgeInsets.all(8),
-              sliver: blogsAsync.when(
-                loading: () => const SliverFillRemaining(
-                    child: Center(child: CircularProgressIndicator())),
-                error: (e, _) => SliverFillRemaining(
-                  child: Center(
-                    child: Text(
-                      'Error loading posts: $e',
-                      style: theme.textTheme.bodyMedium
-                          ?.copyWith(color: colorScheme.error),
-                    ),
-                  ),
-                ),
-                data: (blogs) {
-                  if (blogs.isEmpty) {
-                    return SliverFillRemaining(
-                      child: Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.article_outlined,
-                                size: 64,
-                                color: colorScheme.outline.withOpacity(0.3)),
-                            const SizedBox(height: 16),
-                            Text(
-                              selectedCategory == null
-                                  ? 'No posts from followed users.'
-                                  : 'No posts in this category',
-                              style: theme.textTheme.titleMedium?.copyWith(
-                                  color:
-                                      colorScheme.onSurface.withOpacity(0.7)),
-                            ),
-                          ],
+              sliver: (selectedCategory == 'Trending')
+                  ? trendingBlogsAsync.when(
+                      loading: () => const SliverFillRemaining(child: Center(child: CircularProgressIndicator())),
+                      error: (e, _) => SliverFillRemaining(
+                        child: Center(
+                          child: Text('Error loading trending: $e', style: theme.textTheme.bodyMedium?.copyWith(color: colorScheme.error)),
                         ),
                       ),
-                    );
-                  }
-                  return SliverList(
-                    delegate: SliverChildBuilderDelegate(
-                      (context, index) {
-                        final post = blogs[index];
-                        return PostCard(
-                          post: post,
-                          onTap: () {
-                            Navigator.pushNamed(context, '/post-detail',
-                                arguments: post);
-                          },
+                      data: (blogs) {
+                        if (blogs.isEmpty) {
+                          return SliverFillRemaining(
+                            child: Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(Icons.trending_up, size: 64, color: colorScheme.outline.withOpacity(0.3)),
+                                  const SizedBox(height: 16),
+                                  Text('No trending blogs yet.', style: theme.textTheme.titleMedium?.copyWith(color: colorScheme.onSurface.withOpacity(0.7))),
+                                ],
+                              ),
+                            ),
+                          );
+                        }
+                        return SliverList(
+                          delegate: SliverChildBuilderDelegate(
+                            (context, index) {
+                              final post = blogs[index];
+                              return PostCard(
+                                post: post,
+                                onTap: () {
+                                  Navigator.pushNamed(context, '/post-detail', arguments: post);
+                                },
+                              );
+                            },
+                            childCount: blogs.length,
+                          ),
                         );
                       },
-                      childCount: blogs.length,
+                    )
+                  : blogsAsync.when(
+                      loading: () => const SliverFillRemaining(child: Center(child: CircularProgressIndicator())),
+                      error: (e, _) => SliverFillRemaining(
+                        child: Center(
+                          child: Text('Error loading posts: $e', style: theme.textTheme.bodyMedium?.copyWith(color: colorScheme.error)),
+                        ),
+                      ),
+                      data: (blogs) {
+                        if (blogs.isEmpty) {
+                          return SliverFillRemaining(
+                            child: Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(Icons.article_outlined, size: 64, color: colorScheme.outline.withOpacity(0.3)),
+                                  const SizedBox(height: 16),
+                                  Text(
+                                    selectedCategory == null ? 'No posts from followed users.' : 'No posts in this category',
+                                    style: theme.textTheme.titleMedium?.copyWith(color: colorScheme.onSurface.withOpacity(0.7)),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        }
+                        return SliverList(
+                          delegate: SliverChildBuilderDelegate(
+                            (context, index) {
+                              final post = blogs[index];
+                              return PostCard(
+                                post: post,
+                                onTap: () {
+                                  Navigator.pushNamed(context, '/post-detail', arguments: post);
+                                },
+                              );
+                            },
+                            childCount: blogs.length,
+                          ),
+                        );
+                      },
                     ),
-                  );
-                },
-              ),
             ),
           ],
         ),

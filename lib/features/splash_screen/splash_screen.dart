@@ -1,7 +1,8 @@
-import 'dart:async';
+
 
 import 'package:connect/features/auth/widgets/auth_checker.dart';
 import 'package:flutter/material.dart';
+import 'package:video_player/video_player.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -11,41 +12,49 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+  late VideoPlayerController _controller;
+  bool _initialized = false;
   @override
   void initState() {
     super.initState();
-    Timer(
-      const Duration(seconds: 3),
-      () {
+    _controller = VideoPlayerController.asset('assets/images/splash.mp4')
+      ..initialize().then((_) {
+        setState(() {
+          _initialized = true;
+        });
+        _controller.play();
+      });
+    _controller.setLooping(false);
+    _controller.addListener(() {
+      if (_controller.value.position >= _controller.value.duration && _initialized) {
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (context) => AuthChecker()),
-          (route) => false, // Removes all previous routes
+          (route) => false,
         );
-      },
-    );
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      body: Column(
+      backgroundColor: Colors.black,
+      body: Stack(
         children: [
-          Expanded(
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Image.asset(
-                    'assets/images/Ellipse 1.png',
-                    height: 95,
-                    width: 95,
-                  ),
-                  const SizedBox(height: 20),
-                ],
-              ),
-            ),
+          Center(
+            child: _initialized
+                ? AspectRatio(
+                    aspectRatio: _controller.value.aspectRatio,
+                    child: VideoPlayer(_controller),
+                  )
+                : const Center(child: CircularProgressIndicator()),
           ),
           Align(
             alignment: Alignment.bottomCenter,
@@ -53,6 +62,7 @@ class _SplashScreenState extends State<SplashScreen> {
               padding: const EdgeInsets.only(bottom: 20),
               child: Text(
                 'Powered by Connect',
+                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
               ),
             ),
           ),
