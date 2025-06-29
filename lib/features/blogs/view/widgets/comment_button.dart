@@ -1,3 +1,4 @@
+import 'package:connect/core/constants/colours.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -43,7 +44,7 @@ class CommentButton extends ConsumerWidget {
           Icon(
             Icons.comment_outlined,
             size: size,
-            color: Colors.grey[600],
+            color: KColor.primary,
           ),
           const SizedBox(width: 4),
           Text(

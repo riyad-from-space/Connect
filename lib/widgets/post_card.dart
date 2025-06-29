@@ -48,45 +48,65 @@ class PostCard extends ConsumerWidget {
                 // Header with author info and actions
                 Row(
                   children: [
-                    Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        gradient: KColor.purpleGradient,
-                      ),
-                      alignment: Alignment.center,
-                      child: Text(
-                         post.authorName[0].toUpperCase(),
-                        style: const TextStyle(
-                          fontSize: 26,
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
+                    GestureDetector(
+                      onTap: () {
+                        // Always navigate to the author's profile, not the current user's
+                        Navigator.pushNamed(
+                          context,
+                          '/user-profile',
+                          arguments: post.authorId,
+                        );
+                      },
+                      child: Container(
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          gradient: KColor.purpleGradient,
+                        ),
+                        alignment: Alignment.center,
+                        child: Text(
+                          post.authorName[0].toUpperCase(),
+                          style: const TextStyle(
+                            fontSize: 26,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ),
                     const SizedBox(width: 14),
                     Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            post.authorName,
-                            style: theme.textTheme.headlineLarge!.copyWith(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: colorScheme.onSurface,
+                      child: GestureDetector(
+                        onTap: () {
+                          // Always navigate to the author's profile, not the current user's
+                          Navigator.pushNamed(
+                            context,
+                            '/user-profile',
+                            arguments: post.authorId,
+                          );
+                        },
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              post.authorName,
+                              style: theme.textTheme.headlineLarge!.copyWith(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: colorScheme.onSurface,
+                              ),
                             ),
-                          ),
-                          Text(
-                            dateStr,
-                            style: TextStyle(
-                              fontFamily: 'Poppins',
-                              fontSize: 12,
-                              color: colorScheme.onSurfaceVariant,
+                            Text(
+                              dateStr,
+                              style: TextStyle(
+                                fontFamily: 'Poppins',
+                                fontSize: 12,
+                                color: colorScheme.onSurfaceVariant,
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                     IconButton(

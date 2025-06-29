@@ -60,7 +60,8 @@ class AppRouter {
       case '/settings':
         return MaterialPageRoute(builder: (_) => const SettingsScreen());
       case '/user-profile':
-        return MaterialPageRoute(builder: (_) => const ProfileScreen());
+        final userId = settings.arguments as String?;
+        return MaterialPageRoute(builder: (_) => ProfileScreen(userId: userId));
       // Blog Routes
       case '/create-post':
         return MaterialPageRoute(builder: (_) => const BlogAddEditScreen());
