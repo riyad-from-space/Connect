@@ -17,21 +17,26 @@ class CategoryService {
   ];
 
   Future<void> initializeCategories() async {
-    final categoriesRef = _firestore.collection('categories');
-    final categories = await categoriesRef.get();
+    try {
+      final categoriesRef = _firestore.collection('categories');
+      final categories = await categoriesRef.get();
 
-    if (categories.docs.isEmpty) {
-      final batch = _firestore.batch();
-      
-      for (final category in _defaultCategories) {
-        final docRef = categoriesRef.doc(category);
-        batch.set(docRef, {
-          'name': category,
-          'createdAt': FieldValue.serverTimestamp(),
-        });
+      if (categories.docs.isEmpty) {
+        final batch = _firestore.batch();
+
+        for (final category in _defaultCategories) {
+          final docRef = categoriesRef.doc(category);
+          batch.set(docRef, {
+            'name': category,
+            'createdAt': FieldValue.serverTimestamp(),
+          });
+        }
+
+        await batch.commit();
       }
-
-      await batch.commit();
+    } catch (e) {
+      print('ERROR INITIALIZING CATEGORIES: \\${e.toString()}');
+      throw Exception('Failed to initialize categories. Please try again.');
     }
   }
 }

@@ -48,8 +48,11 @@ class AuthRepository {
       // Return user model
       return user;
     } on FirebaseAuthException catch (e) {
+      print(
+          'FIREBASE REGISTER ERROR: code=\\${e.code}, message=\\${e.message}');
       throw Exception(e.message ?? 'Failed to register user');
     } catch (e) {
+      print('GENERIC REGISTER ERROR: \\${e.toString()}');
       throw Exception('Failed to register user');
     }
   }
@@ -87,6 +90,7 @@ class AuthRepository {
     try {
       await _auth.signOut();
     } catch (e) {
+      print('ERROR LOGGING OUT: \\${e.toString()}');
       throw Exception('Failed to logout');
     }
   }
@@ -98,6 +102,7 @@ class AuthRepository {
         'selectedTopics': categories,
       });
     } catch (e) {
+      print('ERROR UPDATING USER CATEGORIES: \\${e.toString()}');
       throw Exception('Failed to update categories');
     }
   }
@@ -105,18 +110,28 @@ class AuthRepository {
   Stream<UserModel?> get currentUser {
     return _auth.authStateChanges().asyncMap((user) async {
       if (user == null) return null;
-      final doc = await _firestore.collection('users').doc(user.uid).get();
-      if (!doc.exists) return null;
-      return UserModel.fromMap(doc.data()!);
+      try {
+        final doc = await _firestore.collection('users').doc(user.uid).get();
+        if (!doc.exists) return null;
+        return UserModel.fromMap(doc.data()!);
+      } catch (e) {
+        print('ERROR FETCHING CURRENT USER: \\${e.toString()}');
+        return null;
+      }
     });
   }
 
   Future<void> saveFcmToken(String userId) async {
-    final fcmToken = await FirebaseMessaging.instance.getToken();
-    if (fcmToken != null) {
-      await _firestore.collection('users').doc(userId).update({
-        'fcmToken': fcmToken,
-      });
+    try {
+      final fcmToken = await FirebaseMessaging.instance.getToken();
+      if (fcmToken != null) {
+        await _firestore.collection('users').doc(userId).update({
+          'fcmToken': fcmToken,
+        });
+      }
+    } catch (e) {
+      print('ERROR SAVING FCM TOKEN: \\${e.toString()}');
+      throw Exception('Failed to save FCM token');
     }
   }
 }

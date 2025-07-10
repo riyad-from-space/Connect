@@ -1,6 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connect/core/constants/colours.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -16,7 +14,24 @@ class TopicSelectionScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final selectedCategories = ref.watch(selectedCategoriesProvider);
+    final onboardingState = ref.watch(onboardingViewModelProvider);
     final theme = Theme.of(context);
+
+    ref.listen<OnboardingState>(onboardingViewModelProvider, (prev, next) {
+      if (next.error != null && context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(next.error!),
+            backgroundColor: Colors.red,
+          ),
+        );
+        ref.read(onboardingViewModelProvider.notifier).clearError();
+      }
+      if (next.complete && context.mounted) {
+        ref.read(selectedCategoryProvider.notifier).state = 'Trending';
+        Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
+      }
+    });
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
@@ -97,40 +112,18 @@ class TopicSelectionScreen extends ConsumerWidget {
                 },
               ),
               const SizedBox(height: 40),
-              SubmitButton(
-                message: 'Please select at least one topic!',
-                isEnabled: selectedCategories.isNotEmpty,
-                onSubmit: () async {
-                  if (selectedCategories.isEmpty) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                          content: Text("Select at least one topic")),
-                    );
-                    return;
-                  }
-
-                  final uid = FirebaseAuth.instance.currentUser!.uid;
-
-                  await FirebaseFirestore.instance
-                      .collection('users')
-                      .doc(uid)
-                      .update({
-                    'selectedTopics': selectedCategories,
-                  });
-
-                  // Mark onboarding as complete
-                  await ref
-                      .read(onboardingStatusProvider.notifier)
-                      .completeOnboarding();
-
-                  // Set selected category to 'Trending' so user sees trending blogs first
-                  if (context.mounted) {
-                    ref.read(selectedCategoryProvider.notifier).state = 'Trending';
-                    Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
-                  }
-                },
-                buttonText: 'Continue',
-              ),
+              if (onboardingState.loading) const CircularProgressIndicator(),
+              if (!onboardingState.loading)
+                SubmitButton(
+                  message: 'Please select at least one topic!',
+                  isEnabled: selectedCategories.isNotEmpty,
+                  onSubmit: () async {
+                    ref
+                        .read(onboardingViewModelProvider.notifier)
+                        .completeOnboarding(selectedCategories);
+                  },
+                  buttonText: 'Continue',
+                ),
             ],
           ),
         ),

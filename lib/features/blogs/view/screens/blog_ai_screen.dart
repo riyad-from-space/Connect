@@ -1,10 +1,9 @@
-import 'package:connect/core/constants/colours.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/widgets/buttons/back_button.dart';
 import '../../data/model/blog_model.dart';
 import '../../view_model/ai_viewmodel.dart';
-import '../../../../core/widgets/buttons/back_button.dart';
 
 class BlogAiScreen extends ConsumerStatefulWidget {
   final Blog blog;
@@ -16,12 +15,23 @@ class BlogAiScreen extends ConsumerStatefulWidget {
 }
 
 class _BlogAiScreenState extends ConsumerState<BlogAiScreen> {
-  bool isSpeaking = false;
-
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final theme = Theme.of(context);
+    final blogAiState = ref.watch(blogAiViewModelProvider);
+
+    ref.listen<BlogAiState>(blogAiViewModelProvider, (prev, next) {
+      if (next.error != null && context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('AI Error: ${next.error}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        ref.read(blogAiViewModelProvider.notifier).clearError();
+      }
+    });
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
@@ -74,14 +84,22 @@ class _BlogAiScreenState extends ConsumerState<BlogAiScreen> {
             Card(
               child: ListTile(
                 leading: Icon(
-                  isSpeaking ? Icons.stop_circle : Icons.record_voice_over,
+                  blogAiState.ttsPlaying
+                      ? Icons.stop_circle
+                      : Icons.record_voice_over,
                   color: Color(0xff9C27B0),
                 ),
-                title: Text(isSpeaking ? 'Stop Reading' : 'Read Aloud'),
+                title: Text(
+                    blogAiState.ttsPlaying ? 'Stop Reading' : 'Read Aloud'),
                 subtitle: const Text('Convert blog to speech'),
                 onTap: () => _toggleSpeech(context),
               ),
             ),
+            if (blogAiState.loading)
+              const Padding(
+                padding: EdgeInsets.all(16.0),
+                child: Center(child: CircularProgressIndicator()),
+              ),
           ],
         ),
       ),
@@ -89,6 +107,7 @@ class _BlogAiScreenState extends ConsumerState<BlogAiScreen> {
   }
 
   void _showSummary(BuildContext context) {
+    ref.read(blogAiViewModelProvider.notifier).summarize(widget.blog.content);
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -97,85 +116,51 @@ class _BlogAiScreenState extends ConsumerState<BlogAiScreen> {
         initialChildSize: 0.7,
         minChildSize: 0.5,
         maxChildSize: 0.95,
-        builder: (_, controller) => Container(
-          decoration: BoxDecoration(
-            color: Theme.of(context).brightness == Brightness.light
-                ? KColor.white
-                : KColor.darkSurface,
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-          ),
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'AI Summary',
-                style: Theme.of(context).textTheme.headlineLarge,
-              ),
-              const SizedBox(height: 16),
-              Expanded(
-                child: Consumer(
-                  builder: (context, ref, child) {
-                    final summaryAsync =
-                        ref.watch(blogSummaryProvider(widget.blog.content));
-
-                    return summaryAsync.when(
-                      data: (response) {
-                        if (response.error.isNotEmpty) {
-                          return Center(
-                            child: Text('Error: ${response.error}'),
-                          );
-                        }
-                        return SingleChildScrollView(
-                          controller: controller,
-                          child: Text(
-                            response.summary,
-                            style: Theme.of(context)
-                                .textTheme
-                                .labelMedium
-                                ?.copyWith(
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .onSurfaceVariant,
-                                  fontSize: 15,
-                                ),
-                          ),
-                        );
-                      },
-                      loading: () => const Center(
-                        child: CircularProgressIndicator(),
-                      ),
-                      error: (error, stack) => Center(
-                        child: Text('Error: $error'),
-                      ),
-                    );
-                  },
+        builder: (_, controller) => Consumer(
+          builder: (context, ref, child) {
+            final blogAiState = ref.watch(blogAiViewModelProvider);
+            if (blogAiState.loading) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            if (blogAiState.error != null) {
+              return Center(child: Text('Error: ${blogAiState.error}'));
+            }
+            if (blogAiState.summary != null) {
+              return SingleChildScrollView(
+                controller: controller,
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Text(
+                    blogAiState.summary!,
+                    style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                          fontSize: 15,
+                        ),
+                  ),
                 ),
-              ),
-            ],
-          ),
+              );
+            }
+            return const SizedBox.shrink();
+          },
         ),
       ),
     );
   }
 
   Future<void> _toggleSpeech(BuildContext context) async {
-    final ttsController = ref.read(textToSpeechControllerProvider);
-
-    setState(() {
-      isSpeaking = !isSpeaking;
-    });
-
-    if (isSpeaking) {
-      await ttsController.speak(widget.blog.content);
+    final blogAiState = ref.read(blogAiViewModelProvider);
+    if (blogAiState.ttsPlaying) {
+      await ref.read(blogAiViewModelProvider.notifier).stopTts();
     } else {
-      await ttsController.stop();
+      await ref
+          .read(blogAiViewModelProvider.notifier)
+          .speak(widget.blog.content);
     }
   }
 
   @override
   void dispose() {
-    ref.read(textToSpeechControllerProvider).stop();
+    ref.read(blogAiViewModelProvider.notifier).stopTts();
     super.dispose();
   }
 }

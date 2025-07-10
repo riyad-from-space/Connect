@@ -1,18 +1,16 @@
 import 'package:connect/core/constants/colours.dart';
 import 'package:flutter/material.dart';
-
-
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../view_model/blog_interaction_viewmodel.dart';
 
-final _optimisticReactionProvider = StateProvider.family<bool?, Map<String, String>>((ref, params) => null);
+final _optimisticReactionProvider =
+    StateProvider.family<bool?, Map<String, String>>((ref, params) => null);
 
 class ReactionButton extends ConsumerWidget {
   final String blogId;
   final String userId;
   final double size;
-  
 
   const ReactionButton({
     required this.blogId,
@@ -24,18 +22,34 @@ class ReactionButton extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final reactionsCount = ref.watch(reactionsCountProvider(blogId));
-    final optimistic = ref.watch(_optimisticReactionProvider({'blogId': blogId, 'userId': userId}));
-    final hasUserReactedAsync = ref.watch(hasUserReactedProvider({'blogId': blogId, 'userId': userId}));
-    final hasUserReacted = optimistic ?? hasUserReactedAsync.asData?.value ?? false;
+    final optimistic = ref.watch(
+        _optimisticReactionProvider({'blogId': blogId, 'userId': userId}));
+    final hasUserReactedAsync =
+        ref.watch(hasUserReactedProvider({'blogId': blogId, 'userId': userId}));
+    final hasUserReacted =
+        optimistic ?? hasUserReactedAsync.asData?.value ?? false;
+
+    // If the Firestore value matches the optimistic value, reset the optimistic state
+    if (optimistic != null &&
+        hasUserReactedAsync.asData != null &&
+        optimistic == hasUserReactedAsync.asData!.value) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ref
+            .read(_optimisticReactionProvider(
+                {'blogId': blogId, 'userId': userId}).notifier)
+            .state = null;
+      });
+    }
 
     return Row(
       children: [
         InkWell(
           onTap: () {
-            ref.read(_optimisticReactionProvider({'blogId': blogId, 'userId': userId}).notifier).state = !hasUserReacted;
-            ref.read(blogInteractionController).toggleReaction(blogId, userId).whenComplete(() {
-              ref.read(_optimisticReactionProvider({'blogId': blogId, 'userId': userId}).notifier).state = null;
-            });
+            ref
+                .read(_optimisticReactionProvider(
+                    {'blogId': blogId, 'userId': userId}).notifier)
+                .state = !hasUserReacted;
+            ref.read(blogInteractionController).toggleReaction(blogId, userId);
           },
           child: AnimatedScale(
             scale: hasUserReacted ? 1.2 : 1.0,

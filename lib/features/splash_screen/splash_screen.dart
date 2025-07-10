@@ -1,5 +1,3 @@
-
-
 import 'package:connect/features/auth/widgets/auth_checker.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
@@ -17,23 +15,37 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    _controller = VideoPlayerController.asset('assets/images/splash.webm')
-      ..initialize().then((_) {
-        setState(() {
-          _initialized = true;
+    try {
+      _controller = VideoPlayerController.asset('assets/images/splash.webm')
+        ..initialize().then((_) {
+          setState(() {
+            _initialized = true;
+          });
+          _controller.play();
         });
-        _controller.play();
+      _controller.setLooping(false);
+      _controller.addListener(() {
+        if (_controller.value.position >= _controller.value.duration &&
+            _initialized) {
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => AuthChecker()),
+            (route) => false,
+          );
+        }
       });
-    _controller.setLooping(false);
-    _controller.addListener(() {
-      if (_controller.value.position >= _controller.value.duration && _initialized) {
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (context) => AuthChecker()),
-          (route) => false,
-        );
-      }
-    });
+    } catch (e) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Failed to load splash video: $e'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      });
+    }
   }
 
   @override
@@ -69,7 +81,8 @@ class _SplashScreenState extends State<SplashScreen> {
               padding: const EdgeInsets.only(bottom: 20),
               child: Text(
                 'Powered by Connect',
-                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                style:
+                    TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
               ),
             ),
           ),

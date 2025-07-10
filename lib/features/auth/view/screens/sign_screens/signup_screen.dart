@@ -1,6 +1,6 @@
 import 'package:connect/core/constants/colours.dart';
 import 'package:connect/core/widgets/buttons/submit_button.dart';
-import 'package:connect/features/auth/data/repositories/auth_viewmodel_provider.dart';
+import 'package:connect/features/auth/view_model/auth_viewmodel_provider.dart';
 import 'package:connect/features/auth/widgets/headline.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';

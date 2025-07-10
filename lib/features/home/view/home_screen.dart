@@ -1,15 +1,14 @@
 import 'package:connect/core/constants/colours.dart';
-import 'package:connect/features/auth/data/repositories/auth_viewmodel_provider.dart';
+import 'package:connect/features/auth/view_model/auth_viewmodel_provider.dart';
 import 'package:connect/features/blogs/view_model/blog_viewmodel.dart';
 import 'package:connect/features/blogs/view_model/category_viewmodel.dart';
 import 'package:connect/features/blogs/view_model/category_viewmodel_impl.dart';
 import 'package:connect/features/chat/view/chat_list_screen.dart';
 import 'package:connect/features/home/view/user_search_delegate.dart';
 import 'package:connect/features/user_profile/view/user_profile_screen.dart';
+import 'package:connect/widgets/post_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-import '../../../../widgets/post_card.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -25,7 +24,12 @@ class HomeScreen extends ConsumerWidget {
 
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final user = ref.watch(authStateProvider).value;
+    if (userAsync is AsyncLoading) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+    final user = userAsync.value;
     if (user == null) {
       return Scaffold(
         backgroundColor: theme.scaffoldBackgroundColor,
@@ -106,11 +110,15 @@ class HomeScreen extends ConsumerWidget {
                 child: SizedBox(
                   height: 40,
                   child: categoriesAsync.when(
-                    loading: () => Center(child: CircularProgressIndicator(color: Color(0xff9C27B0))),
+                    loading: () => Center(
+                        child: CircularProgressIndicator(
+                            color: Color(0xff9C27B0))),
                     error: (e, _) => Center(
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                        child: Text('Error loading categories: $e', style: theme.textTheme.bodyMedium?.copyWith(color: colorScheme.error)),
+                        child: Text('Error loading categories: $e',
+                            style: theme.textTheme.bodyMedium
+                                ?.copyWith(color: colorScheme.error)),
                       ),
                     ),
                     data: (categories) {
@@ -130,9 +138,15 @@ class HomeScreen extends ConsumerWidget {
                               label: Text(cat),
                               selected: isSelected,
                               selectedColor: Color(0xff9C27B0),
-                              backgroundColor: colorScheme.surfaceContainerHighest,
+                              backgroundColor:
+                                  colorScheme.surfaceContainerHighest,
                               onSelected: (_) {
-                                ref.read(selectedCategoryProvider.notifier).state = isTrending ? 'Trending' : (isSelected ? null : cat);
+                                ref
+                                        .read(selectedCategoryProvider.notifier)
+                                        .state =
+                                    isTrending
+                                        ? 'Trending'
+                                        : (isSelected ? null : cat);
                               },
                             ),
                           );
@@ -148,10 +162,13 @@ class HomeScreen extends ConsumerWidget {
               padding: const EdgeInsets.all(8),
               sliver: (selectedCategory == 'Trending')
                   ? trendingBlogsAsync.when(
-                      loading: () => const SliverFillRemaining(child: Center(child: CircularProgressIndicator())),
+                      loading: () => const SliverFillRemaining(
+                          child: Center(child: CircularProgressIndicator())),
                       error: (e, _) => SliverFillRemaining(
                         child: Center(
-                          child: Text('Error loading trending: $e', style: theme.textTheme.bodyMedium?.copyWith(color: colorScheme.error)),
+                          child: Text('Error loading trending: $e',
+                              style: theme.textTheme.bodyMedium
+                                  ?.copyWith(color: colorScheme.error)),
                         ),
                       ),
                       data: (blogs) {
@@ -161,9 +178,16 @@ class HomeScreen extends ConsumerWidget {
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Icon(Icons.trending_up, size: 64, color: colorScheme.outline.withOpacity(0.3)),
+                                  Icon(Icons.trending_up,
+                                      size: 64,
+                                      color:
+                                          colorScheme.outline.withOpacity(0.3)),
                                   const SizedBox(height: 16),
-                                  Text('No trending blogs yet.', style: theme.textTheme.titleMedium?.copyWith(color: colorScheme.onSurface.withOpacity(0.7))),
+                                  Text('No trending blogs yet.',
+                                      style: theme.textTheme.titleMedium
+                                          ?.copyWith(
+                                              color: colorScheme.onSurface
+                                                  .withOpacity(0.7))),
                                 ],
                               ),
                             ),
@@ -176,7 +200,8 @@ class HomeScreen extends ConsumerWidget {
                               return PostCard(
                                 post: post,
                                 onTap: () {
-                                  Navigator.pushNamed(context, '/post-detail', arguments: post);
+                                  Navigator.pushNamed(context, '/post-detail',
+                                      arguments: post);
                                 },
                               );
                             },
@@ -186,10 +211,13 @@ class HomeScreen extends ConsumerWidget {
                       },
                     )
                   : blogsAsync.when(
-                      loading: () => const SliverFillRemaining(child: Center(child: CircularProgressIndicator())),
+                      loading: () => const SliverFillRemaining(
+                          child: Center(child: CircularProgressIndicator())),
                       error: (e, _) => SliverFillRemaining(
                         child: Center(
-                          child: Text('Error loading posts: $e', style: theme.textTheme.bodyMedium?.copyWith(color: colorScheme.error)),
+                          child: Text('Error loading posts: $e',
+                              style: theme.textTheme.bodyMedium
+                                  ?.copyWith(color: colorScheme.error)),
                         ),
                       ),
                       data: (blogs) {
@@ -199,11 +227,19 @@ class HomeScreen extends ConsumerWidget {
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Icon(Icons.article_outlined, size: 64, color: colorScheme.outline.withOpacity(0.3)),
+                                  Icon(Icons.article_outlined,
+                                      size: 64,
+                                      color:
+                                          colorScheme.outline.withOpacity(0.3)),
                                   const SizedBox(height: 16),
                                   Text(
-                                    selectedCategory == null ? 'No posts from followed users.' : 'No posts in this category',
-                                    style: theme.textTheme.titleMedium?.copyWith(color: colorScheme.onSurface.withOpacity(0.7)),
+                                    selectedCategory == null
+                                        ? 'No posts from followed users.'
+                                        : 'No posts in this category',
+                                    style: theme.textTheme.titleMedium
+                                        ?.copyWith(
+                                            color: colorScheme.onSurface
+                                                .withOpacity(0.7)),
                                   ),
                                 ],
                               ),
@@ -217,7 +253,8 @@ class HomeScreen extends ConsumerWidget {
                               return PostCard(
                                 post: post,
                                 onTap: () {
-                                  Navigator.pushNamed(context, '/post-detail', arguments: post);
+                                  Navigator.pushNamed(context, '/post-detail',
+                                      arguments: post);
                                 },
                               );
                             },

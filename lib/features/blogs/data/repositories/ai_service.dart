@@ -1,20 +1,36 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:http/http.dart' as http;
 
 import '../model/ai_response_model.dart';
 
 class AiService {
-  final String apiKey = 'AIzaSyBNQDdQcBux6hckuUPfm08YEy4kGyDLpZM';
+  late final String apiKey;
   final String baseUrl =
       'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
   late final FlutterTts flutterTts;
   bool _isInitialized = false;
+  bool _apiKeyLoaded = false;
 
   AiService() {
     _initTts();
+    _loadApiKey();
+  }
+
+  Future<void> _loadApiKey() async {
+    try {
+      final configString = await rootBundle.loadString('assets/config.json');
+      final config = jsonDecode(configString);
+      apiKey = config['GEMINI_API_KEY'] ?? '';
+      _apiKeyLoaded = true;
+    } catch (e) {
+      print('Error loading Gemini API key: $e');
+      apiKey = '';
+      _apiKeyLoaded = false;
+    }
   }
 
   Future<void> _initTts() async {
@@ -64,6 +80,12 @@ class AiService {
 
   Future<AiResponse> summarizeText(String text) async {
     try {
+      if (!_apiKeyLoaded) {
+        await _loadApiKey();
+      }
+      if (apiKey.isEmpty) {
+        return AiResponse(error: 'Gemini API key not found.');
+      }
       final response = await http.post(
         Uri.parse('$baseUrl?key=$apiKey'),
         headers: {
@@ -139,6 +161,11 @@ class AiService {
   }
 
   Future<void> stop() async {
-    await flutterTts.stop();
+    try {
+      await flutterTts.stop();
+    } catch (e) {
+      print('Error stopping TTS: \\${e.toString()}');
+      throw Exception('Failed to stop text-to-speech');
+    }
   }
 }

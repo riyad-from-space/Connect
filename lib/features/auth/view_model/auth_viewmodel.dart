@@ -11,26 +11,41 @@ class AuthViewModel {
     required String lastName,
     required String username,
   }) async {
-    await _authRepository.registerUser(
-      email: email,
-      password: password,
-      firstName: firstName,
-      lastName: lastName,
-      username: username,
-    );
+    try {
+      await _authRepository.registerUser(
+        email: email,
+        password: password,
+        firstName: firstName,
+        lastName: lastName,
+        username: username,
+      );
+    } catch (e) {
+      print('ERROR SIGNING UP: \\${e.toString()}');
+      throw Exception('Failed to sign up. Please try again.');
+    }
   }
 
   Future<UserModel> login({
     required String email,
     required String password,
   }) async {
-    return await _authRepository.loginUser(
-      email: email,
-      password: password,
-    );
+    try {
+      return await _authRepository.loginUser(
+        email: email,
+        password: password,
+      );
+    } catch (e) {
+      print('ERROR LOGGING IN: \\${e.toString()}');
+      throw Exception('Failed to login. Please try again.');
+    }
   }
 
   Future<void> logout() async {
-    await _authRepository.logout();
+    try {
+      await _authRepository.logout();
+    } catch (e) {
+      print('ERROR LOGGING OUT: \\${e.toString()}');
+      throw Exception('Failed to logout. Please try again.');
+    }
   }
 }

@@ -1,10 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connect/core/constants/colours.dart';
+import 'package:connect/features/auth/view_model/auth_viewmodel_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
-import '../features/auth/data/repositories/auth_viewmodel_provider.dart';
 import '../features/blogs/data/model/blog_model.dart';
 import '../features/blogs/view/widgets/comment_button.dart';
 import '../features/blogs/view/widgets/reaction_button.dart';

@@ -1,10 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:connect/widgets/post_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/widgets/buttons/back_button.dart';
-import '../../../../widgets/post_card.dart';
-import '../../../auth/data/repositories/auth_viewmodel_provider.dart';
+import '../../../auth/view_model/auth_viewmodel_provider.dart';
 import '../../data/model/blog_model.dart';
 import '../../view_model/blog_interaction_viewmodel.dart';
 
@@ -14,7 +14,13 @@ class SavedPostsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    final user = ref.watch(authStateProvider).value;
+    final userAsync = ref.watch(authStateProvider);
+    if (userAsync is AsyncLoading) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+    final user = userAsync.value;
     if (user == null) {
       return const Scaffold(
         body: Center(child: Text('Please login to view saved posts')),

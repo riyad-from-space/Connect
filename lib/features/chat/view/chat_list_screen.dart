@@ -46,14 +46,16 @@ class ChatListScreen extends ConsumerWidget {
             return const Center(child: CircularProgressIndicator());
           }
           final chats = snapshot.data!;
-          if (chats.isEmpty) {
+          final nonEmptyChats =
+              chats.where((c) => c.lastMessage.trim().isNotEmpty).toList();
+          if (nonEmptyChats.isEmpty) {
             return const Center(child: Text('No chats yet.'));
           }
           return ListView.separated(
-            itemCount: chats.length,
+            itemCount: nonEmptyChats.length,
             separatorBuilder: (_, __) => const Divider(),
             itemBuilder: (context, index) {
-              final chat = chats[index];
+              final chat = nonEmptyChats[index];
               final otherUserId =
                   chat.members.firstWhere((id) => id != currentUserId);
               return FutureBuilder<Map<String, String>>(

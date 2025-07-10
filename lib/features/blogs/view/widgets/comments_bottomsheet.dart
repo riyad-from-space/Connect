@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -97,6 +98,9 @@ class _CommentBottomSheetState extends ConsumerState<CommentBottomSheet> {
                                               Text(
                                                 _getTimeAgo(
                                                     comment.timestamp.toDate()),
+                                                style: TextStyle(
+                                                    fontSize: 12,
+                                                    color: Colors.grey),
                                               ),
                                             ],
                                           ),
@@ -117,6 +121,54 @@ class _CommentBottomSheetState extends ConsumerState<CommentBottomSheet> {
                                                   widget.blogId, comment.id);
                                         },
                                       ),
+                                    Consumer(
+                                      builder: (context, ref, _) {
+                                        final hasReacted = ref
+                                                .watch(
+                                                    hasUserReactedToCommentProvider({
+                                                  'blogId': widget.blogId,
+                                                  'commentId': comment.id,
+                                                  'userId': widget.userId,
+                                                }))
+                                                .asData
+                                                ?.value ??
+                                            false;
+                                        final reactionsCount = ref
+                                                .watch(
+                                                    commentReactionsCountProvider({
+                                                  'blogId': widget.blogId,
+                                                  'commentId': comment.id,
+                                                }))
+                                                .asData
+                                                ?.value ??
+                                            0;
+                                        return Row(
+                                          children: [
+                                            IconButton(
+                                              icon: Icon(
+                                                hasReacted
+                                                    ? Icons.favorite
+                                                    : Icons.favorite_border,
+                                                color: hasReacted
+                                                    ? KColor.primary
+                                                    : Colors.grey,
+                                              ),
+                                              onPressed: () {
+                                                ref
+                                                    .read(
+                                                        blogInteractionController)
+                                                    .toggleCommentReaction(
+                                                      widget.blogId,
+                                                      comment.id,
+                                                      widget.userId,
+                                                    );
+                                              },
+                                            ),
+                                            Text(reactionsCount.toString()),
+                                          ],
+                                        );
+                                      },
+                                    ),
                                   ],
                                 ),
                                 const SizedBox(height: 16),
@@ -131,6 +183,34 @@ class _CommentBottomSheetState extends ConsumerState<CommentBottomSheet> {
                       error: (error, stack) => Center(
                         child: Text('Error loading comments: $error'),
                       ),
+                    ),
+                    Row(
+                      children: [
+                        Consumer(
+                          builder: (context, ref, _) {
+                            final reactionsCount = ref
+                                .watch(reactionsCountProvider(widget.blogId));
+                            return TextButton(
+                              onPressed: () {
+                                showModalBottomSheet(
+                                  context: context,
+                                  builder: (context) => UsersReactedBottomSheet(
+                                      blogId: widget.blogId),
+                                );
+                              },
+                              child: Row(
+                                children: [
+                                  const Icon(Icons.people, size: 18),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                      'View all reactions (${reactionsCount.asData?.value}' ??
+                                          '0' ')'),
+                                ],
+                              ),
+                            );
+                          },
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -215,5 +295,100 @@ class _CommentBottomSheetState extends ConsumerState<CommentBottomSheet> {
     } else {
       return 'just now';
     }
+  }
+}
+
+class UsersReactedBottomSheet extends ConsumerWidget {
+  final String blogId;
+  const UsersReactedBottomSheet({required this.blogId, super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final reactionsStream = FirebaseFirestore.instance
+        .collection('reactions')
+        .doc(blogId)
+        .collection('userReactions')
+        .snapshots();
+    return SizedBox(
+      height: 400,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Users who reacted'),
+          automaticallyImplyLeading: false,
+        ),
+        body: StreamBuilder(
+          stream: reactionsStream,
+          builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+              return const Center(child: Text('No reactions yet.'));
+            }
+            final userIds = snapshot.data!.docs
+                .map((doc) => doc['userId'] as String)
+                .toList();
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Text(
+                    'Reacted by',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                ),
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: userIds.length,
+                    itemBuilder: (context, index) {
+                      final userId = userIds[index];
+                      return FutureBuilder<DocumentSnapshot>(
+                        future: FirebaseFirestore.instance
+                            .collection('users')
+                            .doc(userId)
+                            .get(),
+                        builder: (context, userSnap) {
+                          if (userSnap.connectionState ==
+                              ConnectionState.waiting) {
+                            return const ListTile(
+                              leading: CircleAvatar(
+                                  child: CircularProgressIndicator(
+                                      strokeWidth: 2)),
+                              title: Text('Loading...'),
+                            );
+                          }
+                          if (!userSnap.hasData || !userSnap.data!.exists) {
+                            return ListTile(
+                              leading:
+                                  const CircleAvatar(child: Icon(Icons.person)),
+                              title: Text(userId),
+                            );
+                          }
+                          final data =
+                              userSnap.data!.data() as Map<String, dynamic>;
+                          final name = (data['firstName'] ?? '') +
+                              (data['lastName'] != null
+                                  ? ' ' + data['lastName']
+                                  : '');
+                          final avatarLetter =
+                              (data['firstName'] ?? 'U').toString().isNotEmpty
+                                  ? data['firstName'][0].toUpperCase()
+                                  : 'U';
+                          return ListTile(
+                            leading: CircleAvatar(child: Text(avatarLetter)),
+                            title: Text(name.isNotEmpty ? name : userId),
+                          );
+                        },
+                      );
+                    },
+                  ),
+                ),
+              ],
+            );
+          },
+        ),
+      ),
+    );
   }
 }

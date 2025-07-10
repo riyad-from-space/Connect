@@ -3,8 +3,8 @@ import 'package:connect/core/constants/colours.dart';
 import 'package:connect/core/widgets/buttons/back_button.dart';
 import 'package:connect/core/widgets/buttons/submit_button.dart';
 import 'package:connect/features/auth/data/models/user_model.dart';
-import 'package:connect/features/auth/data/repositories/auth_viewmodel_provider.dart';
 import 'package:connect/features/auth/data/repositories/follow_repository.dart';
+import 'package:connect/features/auth/view_model/auth_viewmodel_provider.dart';
 import 'package:connect/features/blogs/view_model/blog_viewmodel.dart';
 import 'package:connect/features/chat/data/services/chat_service.dart';
 import 'package:connect/features/chat/view/chat_screen.dart';
@@ -20,7 +20,13 @@ class ProfileScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    final currentUser = ref.watch(authStateProvider).value;
+    final currentUserAsync = ref.watch(authStateProvider);
+    if (currentUserAsync is AsyncLoading) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+    final currentUser = currentUserAsync.value;
     final userFuture = userId == null
         ? Future.value(currentUser)
         : Future<UserModel?>.microtask(() async {
@@ -36,6 +42,36 @@ class ProfileScreen extends ConsumerWidget {
         ? ref.watch(userBlogsProvider)
         : ref.watch(profileBlogsProvider(userId!));
 
+    ref.listen<UserProfileState>(userProfileViewModelProvider, (prev, next) {
+      if (next.error != null && context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error: ${next.error}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        ref.read(userProfileViewModelProvider.notifier).clearError();
+      }
+      if (next.followSuccess && context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Followed user!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+        ref.read(userProfileViewModelProvider.notifier).clearFollowSuccess();
+      }
+      if (next.unfollowSuccess && context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Unfollowed user!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+        ref.read(userProfileViewModelProvider.notifier).clearUnfollowSuccess();
+      }
+    });
+
     return FutureBuilder<UserModel?>(
       future: userFuture,
       builder: (context, snapshot) {
@@ -49,6 +85,24 @@ class ProfileScreen extends ConsumerWidget {
         // Determine if this is the current user's profile
         final isOwnProfile = userId == null ||
             (currentUser != null && userId == currentUser.uid);
+
+        // Chat navigation logic here
+        final userProfileState = ref.watch(userProfileViewModelProvider);
+        if (userProfileState.chatId != null && currentUser != null) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => ChatScreen(
+                  chatId: userProfileState.chatId!,
+                  otherUserName: user.firstName,
+                  currentUserId: currentUser.uid,
+                ),
+              ),
+            );
+            ref.read(userProfileViewModelProvider.notifier).clearChatId();
+          });
+        }
 
         return Scaffold(
           backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -142,11 +196,10 @@ class ProfileScreen extends ConsumerWidget {
                                       ),
                                     );
                                   },
-                                  child: Text(
-                                    'Followers: $followersCount',
-                                    textAlign: TextAlign.start,
-                                    style: theme.textTheme.headlineMedium?.copyWith(fontSize: 16)
-                                  ),
+                                  child: Text('Followers: $followersCount',
+                                      textAlign: TextAlign.start,
+                                      style: theme.textTheme.headlineMedium
+                                          ?.copyWith(fontSize: 16)),
                                 );
                               },
                             ),
@@ -170,11 +223,10 @@ class ProfileScreen extends ConsumerWidget {
                                       ),
                                     );
                                   },
-                                  child: Text(
-                                    'Following: $followingCount',
-                                    textAlign: TextAlign.start,
-                                    style: theme.textTheme.headlineMedium?.copyWith(fontSize: 16)
-                                  ),
+                                  child: Text('Following: $followingCount',
+                                      textAlign: TextAlign.start,
+                                      style: theme.textTheme.headlineMedium
+                                          ?.copyWith(fontSize: 16)),
                                 );
                               },
                             ),
@@ -196,7 +248,8 @@ class ProfileScreen extends ConsumerWidget {
                                   .doc(user.uid)
                                   .get(),
                               builder: (context, snapshot) {
-                                bool isFollowing = snapshot.data?.exists ?? false;
+                                bool isFollowing =
+                                    snapshot.data?.exists ?? false;
                                 return StatefulBuilder(
                                   builder: (context, setState) {
                                     return SizedBox(
@@ -208,37 +261,56 @@ class ProfileScreen extends ConsumerWidget {
                                               : Colors.deepPurple,
                                           foregroundColor: Colors.white,
                                           shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.circular(12)),
-                                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                                              borderRadius:
+                                                  BorderRadius.circular(12)),
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 8),
                                           elevation: 0,
-                                          textStyle: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
+                                          textStyle: const TextStyle(
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.w500),
                                         ),
                                         onPressed: () async {
-                                          final followRepo = FollowRepository();
+                                          if (userProfileState.loading) return;
                                           if (isFollowing) {
-                                            await followRepo.unfollowUser(currentUser.uid, user.uid);
+                                            ref
+                                                .read(
+                                                    userProfileViewModelProvider
+                                                        .notifier)
+                                                .unfollowUser(
+                                                    currentUser.uid, user.uid);
                                             setState(() {
                                               isFollowing = false;
                                             });
                                           } else {
-                                            await followRepo.followUser(currentUser.uid, user.uid);
+                                            ref
+                                                .read(
+                                                    userProfileViewModelProvider
+                                                        .notifier)
+                                                .followUser(
+                                                    currentUser.uid, user.uid);
                                             setState(() {
                                               isFollowing = true;
                                             });
                                           }
                                         },
                                         child: Row(
-                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
                                           mainAxisSize: MainAxisSize.min,
                                           children: [
                                             Icon(
-                                              isFollowing ? Icons.check : Icons.person_add,
+                                              isFollowing
+                                                  ? Icons.check
+                                                  : Icons.person_add,
                                               size: 18,
                                               color: Colors.white,
                                             ),
                                             const SizedBox(width: 6),
                                             Text(
-                                              isFollowing ? 'Following' : 'Follow',
+                                              isFollowing
+                                                  ? 'Following'
+                                                  : 'Follow',
                                               style: const TextStyle(
                                                 color: Colors.white,
                                                 fontSize: 15,
@@ -264,23 +336,19 @@ class ProfileScreen extends ConsumerWidget {
                                   foregroundColor: Colors.white,
                                   shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(12)),
-                                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                                  padding:
+                                      const EdgeInsets.symmetric(horizontal: 8),
                                   elevation: 0,
-                                  textStyle: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
+                                  textStyle: const TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w500),
                                 ),
                                 onPressed: () async {
-                                  final chatService = ChatService();
-                                  final chatId = await chatService.getOrCreateChatId(currentUser.uid, user.uid);
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (_) => ChatScreen(
-                                        chatId: chatId,
-                                        otherUserName: user.firstName,
-                                        currentUserId: currentUser.uid,
-                                      ),
-                                    ),
-                                  );
+                                  if (userProfileState.loading) return;
+                                  ref
+                                      .read(
+                                          userProfileViewModelProvider.notifier)
+                                      .startChat(currentUser.uid, user.uid);
                                 },
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
@@ -486,5 +554,94 @@ class UserListDialog extends StatelessWidget {
         ),
       ],
     );
+  }
+}
+
+class UserProfileState {
+  final bool loading;
+  final String? error;
+  final bool followSuccess;
+  final bool unfollowSuccess;
+  final String? chatId;
+  UserProfileState({
+    this.loading = false,
+    this.error,
+    this.followSuccess = false,
+    this.unfollowSuccess = false,
+    this.chatId,
+  });
+
+  UserProfileState copyWith({
+    bool? loading,
+    String? error,
+    bool? followSuccess,
+    bool? unfollowSuccess,
+    String? chatId,
+  }) {
+    return UserProfileState(
+      loading: loading ?? this.loading,
+      error: error,
+      followSuccess: followSuccess ?? false,
+      unfollowSuccess: unfollowSuccess ?? false,
+      chatId: chatId,
+    );
+  }
+}
+
+final userProfileViewModelProvider =
+    StateNotifierProvider<UserProfileViewModel, UserProfileState>((ref) {
+  return UserProfileViewModel();
+});
+
+class UserProfileViewModel extends StateNotifier<UserProfileState> {
+  UserProfileViewModel() : super(UserProfileState());
+
+  Future<void> followUser(String currentUserId, String targetUserId) async {
+    state = state.copyWith(loading: true, error: null, followSuccess: false);
+    try {
+      final repo = FollowRepository();
+      await repo.followUser(currentUserId, targetUserId);
+      state = state.copyWith(loading: false, followSuccess: true);
+    } catch (e) {
+      state = state.copyWith(loading: false, error: e.toString());
+    }
+  }
+
+  Future<void> unfollowUser(String currentUserId, String targetUserId) async {
+    state = state.copyWith(loading: true, error: null, unfollowSuccess: false);
+    try {
+      final repo = FollowRepository();
+      await repo.unfollowUser(currentUserId, targetUserId);
+      state = state.copyWith(loading: false, unfollowSuccess: true);
+    } catch (e) {
+      state = state.copyWith(loading: false, error: e.toString());
+    }
+  }
+
+  Future<void> startChat(String userId1, String userId2) async {
+    state = state.copyWith(loading: true, error: null, chatId: null);
+    try {
+      final chatService = ChatService();
+      final chatId = await chatService.getOrCreateChatId(userId1, userId2);
+      state = state.copyWith(loading: false, chatId: chatId);
+    } catch (e) {
+      state = state.copyWith(loading: false, error: e.toString());
+    }
+  }
+
+  void clearError() {
+    state = state.copyWith(error: null);
+  }
+
+  void clearFollowSuccess() {
+    state = state.copyWith(followSuccess: false);
+  }
+
+  void clearUnfollowSuccess() {
+    state = state.copyWith(unfollowSuccess: false);
+  }
+
+  void clearChatId() {
+    state = state.copyWith(chatId: null);
   }
 }

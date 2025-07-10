@@ -2,24 +2,94 @@ import 'package:connect/core/constants/colours.dart';
 import 'package:connect/core/theme/theme_provider.dart';
 import 'package:connect/core/widgets/buttons/back_button.dart';
 import 'package:connect/core/widgets/buttons/submit_button.dart';
-import 'package:connect/features/auth/data/repositories/auth_viewmodel_provider.dart';
+import 'package:connect/features/auth/view_model/auth_viewmodel_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'privacy_policy_screen.dart';
-import 'help_support_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import 'help_support_screen.dart';
+import 'privacy_policy_screen.dart';
+
+class SettingsState {
+  final bool loading;
+  final String? error;
+  final bool loggedOut;
+  SettingsState({this.loading = false, this.error, this.loggedOut = false});
+
+  SettingsState copyWith({bool? loading, String? error, bool? loggedOut}) {
+    return SettingsState(
+      loading: loading ?? this.loading,
+      error: error,
+      loggedOut: loggedOut ?? this.loggedOut,
+    );
+  }
+}
+
+final settingsViewModelProvider =
+    StateNotifierProvider<SettingsViewModel, SettingsState>((ref) {
+  return SettingsViewModel();
+});
+
+class SettingsViewModel extends StateNotifier<SettingsState> {
+  SettingsViewModel() : super(SettingsState());
+
+  Future<void> logout() async {
+    state = state.copyWith(loading: true, error: null, loggedOut: false);
+    try {
+      await FirebaseAuth.instance.signOut();
+      state = state.copyWith(loading: false, loggedOut: true);
+    } catch (e) {
+      state = state.copyWith(loading: false, error: e.toString());
+    }
+  }
+
+  void clearError() {
+    state = state.copyWith(error: null);
+  }
+
+  void clearLoggedOut() {
+    state = state.copyWith(loggedOut: false);
+  }
+}
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final user = ref.watch(authStateProvider).value;
+    final userAsync = ref.watch(authStateProvider);
     final themeMode = ref.watch(themeProvider);
     final isDark = themeMode == ThemeMode.dark;
     final textTheme = Theme.of(context).textTheme;
     final theme = Theme.of(context);
+    final settingsState = ref.watch(settingsViewModelProvider);
 
+    ref.listen<SettingsState>(settingsViewModelProvider, (prev, next) {
+      if (next.error != null && context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to logout: ${next.error}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        ref.read(settingsViewModelProvider.notifier).clearError();
+      }
+      if (next.loggedOut && context.mounted) {
+        ref.read(settingsViewModelProvider.notifier).clearLoggedOut();
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          '/login',
+          (route) => false,
+        );
+      }
+    });
+
+    if (userAsync is AsyncLoading) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+    final user = userAsync.value;
     if (user == null) {
       return Scaffold(
         body: Center(
@@ -179,21 +249,16 @@ class SettingsScreen extends ConsumerWidget {
           // Logout Section
           Padding(
             padding: const EdgeInsets.all(16),
-            child: SubmitButton(
-              isEnabled: true,
-              onSubmit: () async {
-                await FirebaseAuth.instance.signOut();
-                if (context.mounted) {
-                  Navigator.pushNamedAndRemoveUntil(
-                    context,
-                    '/login',
-                    (route) => false,
-                  );
-                }
-              },
-              buttonText: 'Logout',
-              message: '',
-            ),
+            child: settingsState.loading
+                ? const Center(child: CircularProgressIndicator())
+                : SubmitButton(
+                    isEnabled: true,
+                    onSubmit: () async {
+                      ref.read(settingsViewModelProvider.notifier).logout();
+                    },
+                    buttonText: 'Logout',
+                    message: '',
+                  ),
           ),
 
           // App Version

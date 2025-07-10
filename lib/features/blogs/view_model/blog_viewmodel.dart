@@ -1,8 +1,8 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:connect/features/auth/data/repositories/auth_viewmodel_provider.dart';
+import 'package:connect/features/auth/view_model/auth_viewmodel_provider.dart';
 import 'package:connect/features/blogs/view_model/category_viewmodel.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:uuid/uuid.dart';
 
 import '../data/model/blog_model.dart';
 
@@ -49,15 +49,30 @@ class BlogController {
   BlogController(this._ref);
 
   Future<void> createBlog(Blog blog) async {
-    await _firestore.collection('blogs').doc(blog.id).set(blog.toMap());
+    try {
+      await _firestore.collection('blogs').doc(blog.id).set(blog.toMap());
+    } catch (e) {
+      print('ERROR CREATING BLOG: \\${e.toString()}');
+      throw Exception('Failed to create blog. Please try again.');
+    }
   }
 
   Future<void> updateBlog(Blog blog) async {
-    await _firestore.collection('blogs').doc(blog.id).update(blog.toMap());
+    try {
+      await _firestore.collection('blogs').doc(blog.id).update(blog.toMap());
+    } catch (e) {
+      print('ERROR UPDATING BLOG: \\${e.toString()}');
+      throw Exception('Failed to update blog. Please try again.');
+    }
   }
 
   Future<void> deleteBlog(String blogId) async {
-    await _firestore.collection('blogs').doc(blogId).delete();
+    try {
+      await _firestore.collection('blogs').doc(blogId).delete();
+    } catch (e) {
+      print('ERROR DELETING BLOG: \\${e.toString()}');
+      throw Exception('Failed to delete blog. Please try again.');
+    }
   }
 }
 
@@ -128,3 +143,65 @@ final feedProvider = StreamProvider<List<Blog>>((ref) async* {
     return blogs;
   });
 });
+
+class BlogAddEditState {
+  final bool loading;
+  final String? error;
+  final bool success;
+  BlogAddEditState({this.loading = false, this.error, this.success = false});
+
+  BlogAddEditState copyWith({bool? loading, String? error, bool? success}) {
+    return BlogAddEditState(
+      loading: loading ?? this.loading,
+      error: error,
+      success: success ?? this.success,
+    );
+  }
+}
+
+final blogAddEditViewModelProvider =
+    StateNotifierProvider<BlogAddEditViewModel, BlogAddEditState>((ref) {
+  return BlogAddEditViewModel(ref);
+});
+
+class BlogAddEditViewModel extends StateNotifier<BlogAddEditState> {
+  final Ref ref;
+  BlogAddEditViewModel(this.ref) : super(BlogAddEditState());
+
+  Future<void> saveBlog(
+      {Blog? existing,
+      required String title,
+      required String content,
+      required String category}) async {
+    state = state.copyWith(loading: true, error: null, success: false);
+    try {
+      final user = ref.read(authStateProvider).value;
+      if (user == null) throw Exception('User not authenticated');
+      final post = Blog(
+        id: existing?.id ?? const Uuid().v4(),
+        title: title,
+        content: content,
+        category: category,
+        authorId: user.uid,
+        authorName: '${user.firstName} ${user.lastName}',
+        createdAt: existing?.createdAt ?? Timestamp.now(),
+      );
+      if (existing == null) {
+        await ref.read(blogControllerProvider).createBlog(post);
+      } else {
+        await ref.read(blogControllerProvider).updateBlog(post);
+      }
+      state = state.copyWith(loading: false, success: true);
+    } catch (e) {
+      state = state.copyWith(loading: false, error: e.toString());
+    }
+  }
+
+  void clearError() {
+    state = state.copyWith(error: null);
+  }
+
+  void clearSuccess() {
+    state = state.copyWith(success: false);
+  }
+}

@@ -1,11 +1,8 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connect/core/widgets/buttons/back_button.dart';
 import 'package:connect/core/widgets/buttons/submit_button.dart';
-import 'package:connect/features/auth/data/repositories/auth_viewmodel_provider.dart';
 import 'package:connect/features/blogs/view_model/blog_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:uuid/uuid.dart';
 
 import '../../data/model/blog_model.dart';
 
@@ -24,7 +21,6 @@ class _BlogAddEditScreenState extends ConsumerState<BlogAddEditScreen> {
   final _formKey = GlobalKey<FormState>();
 
   String? selectedCategory;
-  bool _isLoading = false;
 
   @override
   void initState() {
@@ -36,44 +32,23 @@ class _BlogAddEditScreenState extends ConsumerState<BlogAddEditScreen> {
     }
   }
 
-  Future<void> _savePost() async {
-    if (!_formKey.currentState!.validate()) return;
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final categoriesAsync = ref.watch(categoriesProvider);
+    final addEditState = ref.watch(blogAddEditViewModelProvider);
 
-    if (selectedCategory == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please select a category'),
-          backgroundColor: Colors.red,
-        ),
-      );
-      return;
-    }
-
-    setState(() => _isLoading = true);
-
-    try {
-      final user = ref.read(authStateProvider).value;
-      if (user == null) {
-        throw Exception('User not authenticated');
+    ref.listen<BlogAddEditState>(blogAddEditViewModelProvider, (prev, next) {
+      if (next.error != null && context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error saving post: ${next.error}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        ref.read(blogAddEditViewModelProvider.notifier).clearError();
       }
-
-      final post = Blog(
-        id: widget.post?.id ?? const Uuid().v4(),
-        title: _titleController.text.trim(),
-        content: _contentController.text.trim(),
-        category: selectedCategory!,
-        authorId: user.uid,
-        authorName: '${user.firstName} ${user.lastName}',
-        createdAt: widget.post?.createdAt ?? Timestamp.now(),
-      );
-
-      if (widget.post == null) {
-        await ref.read(blogControllerProvider).createBlog(post);
-      } else {
-        await ref.read(blogControllerProvider).updateBlog(post);
-      }
-
-      if (mounted) {
+      if (next.success && context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content:
@@ -81,28 +56,10 @@ class _BlogAddEditScreenState extends ConsumerState<BlogAddEditScreen> {
             backgroundColor: Colors.green,
           ),
         );
+        ref.read(blogAddEditViewModelProvider.notifier).clearSuccess();
         Navigator.pop(context);
       }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error saving post: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    } finally {
-      if (mounted) {
-        setState(() => _isLoading = false);
-      }
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final categoriesAsync = ref.watch(categoriesProvider);
+    });
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
@@ -175,12 +132,33 @@ class _BlogAddEditScreenState extends ConsumerState<BlogAddEditScreen> {
                 }).toList(),
               ),
               const SizedBox(height: 24),
-              SubmitButton(
-                buttonText: widget.post == null ? 'Create Post' : 'Update Post',
-                onSubmit: _savePost,
-                isEnabled: !_isLoading,
-                message: '',
-              ),
+              if (addEditState.loading)
+                const Center(child: CircularProgressIndicator()),
+              if (!addEditState.loading)
+                SubmitButton(
+                  buttonText:
+                      widget.post == null ? 'Create Post' : 'Update Post',
+                  onSubmit: () async {
+                    if (!_formKey.currentState!.validate()) return;
+                    if (selectedCategory == null) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Please select a category'),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
+                      return;
+                    }
+                    ref.read(blogAddEditViewModelProvider.notifier).saveBlog(
+                          existing: widget.post,
+                          title: _titleController.text.trim(),
+                          content: _contentController.text.trim(),
+                          category: selectedCategory!,
+                        );
+                  },
+                  isEnabled: true,
+                  message: '',
+                ),
             ],
           ),
         ),
