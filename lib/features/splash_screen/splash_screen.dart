@@ -1,5 +1,7 @@
-import 'package:connect/features/auth/widgets/auth_checker.dart';
+import 'package:connect/features/on_boarding/view/screens/app_introduction_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:video_player/video_player.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -24,14 +26,30 @@ class _SplashScreenState extends State<SplashScreen> {
           _controller.play();
         });
       _controller.setLooping(false);
-      _controller.addListener(() {
+      _controller.addListener(() async {
         if (_controller.value.position >= _controller.value.duration &&
             _initialized) {
-          Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(builder: (context) => AuthChecker()),
-            (route) => false,
-          );
+          final prefs = await SharedPreferences.getInstance();
+          final onboardingComplete =
+              prefs.getBool('onboardingComplete') ?? false;
+          if (!onboardingComplete) {
+            print('Navigating to AppIntroductionScreen from SplashScreen');
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => const AppIntroductionScreen()),
+              (route) => false,
+            );
+          } else {
+            final user = FirebaseAuth.instance.currentUser;
+            if (user != null) {
+              print('Navigating to HomeScreen from SplashScreen');
+              Navigator.pushReplacementNamed(context, '/home');
+            } else {
+              print('Navigating to SignupTypeScreen from SplashScreen');
+              Navigator.pushReplacementNamed(context, '/signup-type');
+            }
+          }
         }
       });
     } catch (e) {
